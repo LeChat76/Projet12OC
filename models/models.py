@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, TIMESTAMP, Float, Enum, ForeignKey, text
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, TIMESTAMP, Float, Enum, ForeignKey, text, create_engine, inspect
+from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import bcrypt
 
 
 Base = declarative_base()
@@ -9,8 +10,8 @@ class Employee(Base):
     __tablename__ = 'employee'
     id = Column(Integer(), primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False, unique=True)
-    password = Column(String(20), nullable=False)
-    role = Column(Enum('management', 'support', 'commercial'), nullable=False)
+    password = Column(String(255), nullable=False)
+    role = Column(Enum('management', 'support', 'commercial', 'superadmin'), nullable=False)
     status = Column(String(7), nullable=False, server_default='ENABLE')
     customers = relationship("Customer", back_populates="employee")
 
@@ -64,3 +65,32 @@ class Contract(Base):
     event_id = Column(Integer(), ForeignKey('event.id'), nullable=True)
     customer = relationship("Customer", back_populates="contracts")
     event = relationship("Event")
+
+class Database:
+    def __init__(self, db_url):
+        self.engine = create_engine(db_url)
+        self.Session = sessionmaker(bind=self.engine)
+        self.user_id = None
+
+    def create_tables(self):
+        Base.metadata.create_all(self.engine)
+
+    def create_superadmin(self):
+        session = self.get_session()
+        superadmin = Employee(
+            username='cedric',
+            role='superadmin',
+            password=bcrypt.hashpw('Toto1234!'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        )
+        session.add(superadmin)
+        session.commit()
+        session.close()
+
+    def tables_exist(self):
+        inspector = inspect(self.engine)
+        table_names = inspector.get_table_names()
+        required_tables = ['customer', 'employee', 'contract', 'event']
+        return all(table_name in table_names for table_name in required_tables)
+
+    def get_session(self):
+        return self.Session()
