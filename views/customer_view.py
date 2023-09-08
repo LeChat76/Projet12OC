@@ -1,17 +1,17 @@
-import os
-from constants import MENU_CUSTOMER_CREATION, MENU_CUSTOMER_UPDATE, MENU_CUSTOMER_DELETE, MENU_CUSTOMER_EXIT
+from utils.utils import clear_screen, check_permission
+from constants.constants import MENU_CUSTOMER_CREATION, MENU_CUSTOMER_UPDATE, MENU_CUSTOMER_DELETE, MENU_CUSTOMER_EXIT
 from models.models import Customer
+import re
 
 
 class CustomerView:
-    """ Menu CUSTOMER """
 
-    def player_menu(self):
+    def customer_menu(self):
         """ Menu 1 """
         choix = None
         while choix !=  MENU_CUSTOMER_CREATION and choix != MENU_CUSTOMER_UPDATE and choix != MENU_CUSTOMER_DELETE and\
                 choix != MENU_CUSTOMER_EXIT:
-            # self.clear_screen()
+            clear_screen()
             print("+-------------------------------+")
             print("|          MENU JOUEUR          |")
             print("+-------------------------------+")
@@ -26,12 +26,12 @@ class CustomerView:
                 choix = None
             else:
                 choix = int(choix)
-        # self.clear_screen()
+        clear_screen()
         return choix
     
-    def add_customer(self):
+    def add_customer(self, employee):
         """ Method to ask informations about new customer to add """
-        # self.clear_screen()
+
         customer_name, customer_email, customer_phone, customer_company = None, None, None, None
         
         while not customer_name:
@@ -39,27 +39,37 @@ class CustomerView:
         
         while not customer_email:
             customer_email = input('Email du client (obligatoire, max 255 caractères): ')
+            if re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", customer_email):
+                break
+            else:
+                customer_email = None
+                print("\nL'adresse e-mail n'est pas valide. Veuillez réessayer.\n")
         
-        customer_phone = input('Numero de telephone du client (facultatif, max 20 caracères): ')
+        while not customer_phone:
+            customer_phone = input('Numero de telephone du client (facultatif, max 20 caracères): ')
+            if re.match(r"^[0-9+\-]+( [0-9+\-]+)*$", customer_phone):
+                break
+            elif customer_phone == '':
+                break
+            else:
+                customer_phone = None
+                print("\nLe numéro de téléphone n'est pas valide. Veuillez réessayer.\n")
         
         while not customer_company:
             customer_company = input("Nom de l'entreprise (obligatoire, max 255 caractères): ")
         
-        new_customer = Customer(customer_name, customer_email, customer_phone, customer_company, '1')
+        new_customer = Customer(customer_name, customer_email, customer_phone, customer_company, employee.id)
 
         return new_customer
+    
+    def update_customer(self, employee):
+        """ Method to update informations about new customer to add """
 
-
-        
-
-
-
-        
-
-
-
-    def clear_screen(self):
-        if os.name == "posix":
-            os.system("clear")
-        elif os.name == "nt":
-            os.system('cls')
+        clear_screen()
+        permission = check_permission('commercial', employee)
+        if permission:
+            customer = input('Quel est le nom du client à modifier [ENTRER pour afficher une liste]? ')
+            if not customer:
+                pass
+            else:
+                pass       
