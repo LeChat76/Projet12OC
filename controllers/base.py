@@ -47,8 +47,8 @@ class epicEvents:
                 self.login_menu()
 
 class BaseController:
-    def __init__(self, db_url):
-        self.db = Database(db_url)
+    def __init__(self):
+        self.db = Database(DB_URL)
 
     def initialize(self):
         """ db init """

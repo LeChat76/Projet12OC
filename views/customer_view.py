@@ -72,4 +72,5 @@ class CustomerView:
             if not customer:
                 pass
             else:
-                pass       
+                pass
+        

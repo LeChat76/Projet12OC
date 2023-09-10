@@ -5,7 +5,7 @@ from constants.constants import DB_URL
 def main():
     """ Launching start here """
 
-    controller = BaseController(DB_URL)
+    controller = BaseController()
     epicevents = epicEvents()
 
     try:
