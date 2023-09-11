@@ -1,7 +1,5 @@
 from getpass_asterisk.getpass_asterisk import getpass_asterisk
 import time
-from utils.utils import clear_screen
-from constants.constants import MENU_CLIENTS, MENU_CONTRATS, MENU_EVENEMENTS, MENU_EXIT
 
 
 class LoginMenu:
@@ -24,7 +22,7 @@ class LoginMenu:
             time.sleep(0.1)
             print("       | |")
             time.sleep(0.1)
-            print("       |_|")
+            print("       |_|\n")
             time.sleep(0.1)
 
         username = input("Nom d'utilisateur : ")

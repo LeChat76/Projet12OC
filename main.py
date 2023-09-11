@@ -1,5 +1,5 @@
 from controllers.base import epicEvents, BaseController
-from constants.constants import DB_URL
+from constants.database_config import DB_URL
 
 
 def main():

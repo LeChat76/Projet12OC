@@ -1,10 +1,10 @@
-import sys
-from utils.utils import clear_screen
+from views.utils_view import clear_screen
 from models.models import Database
 from models.employee_model import EmployeeModel
 from views.login_view import LoginMenu
 from views.main_menu import MainMenu
-from constants.constants import MENU_CLIENTS, MENU_CONTRATS, MENU_EVENEMENTS, MENU_EXIT, DB_URL
+from constants.base_menu import MENU_CLIENTS, MENU_CONTRATS, MENU_EVENEMENTS, MENU_EXIT
+from constants.database_config import DB_URL
 from controllers.customer_controller import CustomerController
 
 
@@ -17,7 +17,7 @@ class epicEvents:
         self.employee_model = EmployeeModel()
 
     def login_menu(self):
-        """ Display login menu of Epic Events CRM """
+        """ login menu of Epic Events CRM """
 
         show_title = True
         authentication = False
@@ -37,7 +37,7 @@ class epicEvents:
                 print('\nUtilisateur inexistant.\n')
 
     def main_menu(self, employee):
-        """ Display main menu """
+        """ main menu """
 
         while True:
             choice = self.main_menu_view.main_menu()

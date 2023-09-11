@@ -16,7 +16,7 @@ class Employee(Base):
     customers = relationship("Customer", back_populates="employee")
 
     def __repr__(self):
-        return f'Employe {self.username}, role {self.role}.'
+        return f"Employe '{self.username}', role '{self.role}'."
 
 class Customer(Base):
     def __init__(self, name, email, phone, company, employee_id):
@@ -25,6 +25,9 @@ class Customer(Base):
         self.phone = phone
         self.company = company
         self.employee_id = employee_id
+    
+    def __repr__(self):
+        return f'Client "{self.name}", email "{self.email}", telephone "{self.phone}" de la société "{self.company}".'
 
     __tablename__ = 'customer'
     id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -37,9 +40,6 @@ class Customer(Base):
     employee_id = Column(Integer(), ForeignKey('employee.id'), nullable=False)
     employee = relationship("Employee", back_populates="customers")
     contracts = relationship("Contract", back_populates="customer")
-
-    def __repr__(self):
-        return f'Client {self.name} de la societe {self.company}.'
 
 class Event(Base):
     __tablename__ = 'event'

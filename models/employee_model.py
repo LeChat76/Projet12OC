@@ -1,5 +1,5 @@
 from models.models import Database, Employee
-from constants.constants import DB_URL
+from constants.database_config import DB_URL
 import bcrypt
 
 
