@@ -37,3 +37,10 @@ class EmployeeModel():
         else:
             return None
 
+    def search_employee_by_department(self, department):
+        """
+        method to select all employee bye department
+        INPUT : str(department)
+        OUTPUT : list of employees
+        """
+        

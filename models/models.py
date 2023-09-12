@@ -54,6 +54,14 @@ class Event(Base):
     employee = relationship("Employee")
 
 class Contract(Base):
+    
+    def __init__(self, customer_info, price, due, status, customer_id):
+        self.customer_info = customer_info
+        self.price = price
+        self.due = due
+        self.status = status
+        self.customer_id = customer_id
+    
     __tablename__ = 'contract'
     id = Column(Integer(), primary_key=True, autoincrement=True)
     customer_info = Column(String(5000), nullable=True)

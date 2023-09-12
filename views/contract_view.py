@@ -1,5 +1,8 @@
 from views.utils_view import clear_screen
+from models.contract_model import ContractModel
 from models.models import Contract
+from views.customer_view import CustomerView
+from models.customer_model import CustomerModel
 from constants.contract_menu import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_EXIT
 
 
@@ -7,7 +10,9 @@ class ContractView:
     """ Customer view class """
 
     def __init__(self):
-        self.contract_model = Contract()
+        self.contract_model = ContractModel()
+        self.customer_view = CustomerView()
+        self.customer_model = CustomerModel()
 
     def contract_menu(self):
         """ Menu 2 - CONTRAT """
@@ -34,3 +39,55 @@ class ContractView:
         clear_screen()
 
         return choice
+
+    def add_contract(self, employee):
+        """ ask informations about new contract to add """
+
+        clear_screen()
+        price, due = None, None
+        
+        customer_info = input('Information sur le client (max 5000 caractères) : ')
+
+        while True:
+
+            while True:
+                price = input('Prix [ENTRER = 0€] : ')
+                if price == '':
+                    price = 0
+                    break
+                elif not price.isnumeric() and not price == '':
+                    print('\nMerci de renseigner uniquement des chiffres.\n')
+                else:
+                    break
+            
+            while True:
+                due = input('Montant restant du [ENTRER = 0€] : ')
+                if due == '':
+                    due = 0
+                    break
+                elif not due.isnumeric() and not due == '':
+                    print('\nMerci de renseigner uniquement des chiffres.\n')
+                elif int(due) > int(price):
+                    print('\nLe montant du ne peut pas etre superieur au montant du contrat.\n')
+                else:
+                    break
+
+            while True:
+                status = input('Contrat signé : (o)ui / (n)on [ENTRER = non]')
+                if not status.lower() == 'o' and not status.lower() == 'n' and not status == '':
+                    print('\nSaisie incorrect, reessayez svp.\n')
+                elif status.lower() == '' or status.lower() == 'n':
+                    status = 'NOT-SIGNED'
+                    break
+                else:
+                    status = 'SIGNED'
+                    break
+            
+            customer_choice = self.customer_view.select_customer_by_entry()
+            if customer_choice.lower() == 'q':
+                return 'q'
+                break
+            else:
+                customer = self.customer_model.create_customer_object(customer_choice)
+                new_contract = Contract(customer_info, price, due, status, customer.id)
+                return new_contract

@@ -43,20 +43,23 @@ class CustomerController:
         """ update customer method """
         
         # display choice selection (by input or list)
-        customer_choice = self.customer_view.select_customer(employee)
-        # if valid choice : convert choice in object
-        customer = self.customer_model.create_customer_object(customer_choice)
-        if customer:
-            # check permission to modify customer by the logged employee...
-            permission = check_permission_customer(customer, employee)
-            if permission:
-                #.... if permit : display customer modification menu
-                self.customer_view.modify_customer(customer)
+        customer_choice = self.customer_view.select_customer_by_entry()
+        if not customer_choice.lower() == 'q':
+            # if valid choice : convert choice in object
+            customer = self.customer_model.create_customer_object(customer_choice)
+            if customer:
+                # check permission to modify customer by the logged employee...
+                permission = check_permission_customer(customer, employee)
+                if permission:
+                    #.... if permit : display customer modification menu
+                    self.customer_view.modify_customer(customer)
+                else:
+                    #... if not permit : display customer info
+                    self.customer_view.display_customer_informations(customer)
             else:
-                #... if not permit : display customer info
-                self.customer_view.display_customer_informations(customer)
+                display_message('Aucun client trouvé avec ce nom. Retour au menu.', True, 2)
         else:
-            display_message('Aucun client trouvé avec ce nom. Retour au menu.', True, 2)
+            display_message('Retour au menu...', True, 2)
     
     def delete_customer(self, employee):
         """ delete customer method"""
@@ -69,7 +72,7 @@ class CustomerController:
             time.sleep(2)
         else:
             # display choice selection (bye input or list)
-            customer_choice = self.customer_view.select_customer(employee)
+            customer_choice = self.customer_view.select_customer_by_entry(employee)
             # if valid choice : convert choice in object
             customer = self.customer_model.create_customer_object(customer_choice)
             if customer:

@@ -1,5 +1,5 @@
 from views.utils_view import clear_screen
-from constants.base_menu import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EXIT
+from constants.base_menu import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EMPLOYEES, MENU_EXIT
 
 
 class MainMenu:
@@ -8,9 +8,10 @@ class MainMenu:
     def main_menu(self):
         """ Root menu """
 
-        choix = None
-        while choix != MENU_CUSTOMERS and choix != MENU_CONTRACTS\
-                and choix != MENU_EVENTS and choix != MENU_EXIT:
+        choice = None
+        while choice != MENU_CUSTOMERS and choice != MENU_CONTRACTS\
+                and choice != MENU_EVENTS and choice != MENU_EXIT\
+                and choice != MENU_EMPLOYEES:
             clear_screen()
             print("+-------------------------------+")
             print("|             MENU              |")
@@ -18,13 +19,14 @@ class MainMenu:
             print("| 1 - clients                   |")
             print("| 2 - contrats                  |")
             print("| 3 - evenements                |")
-            print("| 4 - quitter                   |")
+            print("| 4 - employees                 |")
+            print("| 5 - quitter                   |")
             print("+-------------------------------+")
-            choix = input("Quel est votre choix : ")
-            if not choix.isnumeric():
+            choice = input("Quel est votre choix : ")
+            if not choice.isnumeric():
                 print("Merci de préciser un choix numérique.")
-                choix = None
+                choice = None
             else:
-                choix = int(choix)
+                choice = int(choice)
         clear_screen()
-        return choix
+        return choice

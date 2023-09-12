@@ -29,8 +29,8 @@ class CustomerModel:
         finally:
             session.close()
     
-    def search_customer(self, employee):
-        """ method to select customers associated to an employee """
+    def search_all_customers(self):
+        """ method to select all customers """
 
         try:
             session = self.db.get_session()

@@ -40,7 +40,6 @@ class CustomerView:
     def add_customer(self, employee):
         """ ask informations about new customer to add """
 
-        clear_screen()
         customer_name, customer_email, customer_phone, customer_company = None, None, None, None
         
         while not customer_name:
@@ -55,7 +54,7 @@ class CustomerView:
                 print("\nL'adresse e-mail n'est pas valide. Veuillez réessayer.\n")
         
         while not customer_phone:
-            customer_phone = input('Numero de telephone du client (facultatif, max 20 caracères): ')
+            customer_phone = input('Numero de telephone du client (facultatif, max 20 caractères): ')
             if re.match(r"^[0-9+\-]+( [0-9+\-]+)*$", customer_phone):
                 break
             elif customer_phone == '':
@@ -71,14 +70,14 @@ class CustomerView:
 
         return new_customer
     
-    def select_customer(self, employee):
+    def select_customer_by_entry(self):
         """ selection of a customer by typing """
 
-        clear_screen()
+        # clear_screen()
         while True:
             customer_name = input('Quel est le nom du client [ENTRER pour afficher une liste]? ')
             if not customer_name:
-                customer = self.select_customer_by_list(employee)
+                customer = self.select_customer_by_list()
                 return customer
             elif any(char.isalpha() for char in customer_name) and any(char.isdigit() for char in customer_name):
                 return customer_name
@@ -87,12 +86,12 @@ class CustomerView:
                 return customer_name                
 
     
-    def select_customer_by_list(self, employee):
+    def select_customer_by_list(self):
         """ selection of a customer by list """
 
-        clear_screen()
+        # clear_screen()
         # display list of customers
-        list_customers = self.customer_model.search_customer(employee)
+        list_customers = self.customer_model.search_all_customers()
         while True:
             counter = 1
             choice_made = False
@@ -102,17 +101,24 @@ class CustomerView:
                 counter += 1
                 time.sleep(0.1)
                 if counter %5 == 0:
-                    choice = input ('\nAvez vous fait un choix [ENTER pour continuer]? ')
+                    choice = input ('\nAvez vous fait un choix [ENTRER] pour continuer ou (q)uitter? ')
                     print()
-                    if choice:
+                    if choice.lower() == 'q':
+                        choice_made = True
+                        break
+                    elif choice:
                         choice_made = True
                         break
 
             if not choice_made:
-                choice = input('\nLa liste est terminée. [ENTRER] pour relancer la liste ou (q)uitter? ')
+                choice = input('\nLa liste est terminée. Faites un choix, [ENTRER] pour relancer ou (q)uitter? ')
                 print()
                 if choice.lower() == 'q':
+                    choice_made = True
                     break
+                elif choice:
+                    choice_made = True
+                    return choice
             else:
                 return choice
         
@@ -181,13 +187,11 @@ class CustomerView:
         RESULT : displaying customer informations
         """
 
-        print('\nVotre autorisation ne vous permet que de voir les informations clients.\n')
+        print("Vos droits ne vous donne accès qu'en lecture.\n")
         print(f'Nom              : {customer.name}')
         print(f'Email            : {customer.email}')
         print(f'Societe          : {customer.company}')
         print(f'Telephone        : {customer.phone}')
-        print(f'Date de creation : {customer.date_creation}\n')
-        input('[ENTRER] pour retourner au menu.\n')
+        print(f'Date de creation : {customer.date_creation}')
+        input('\n[ENTRER] pour retourner au menu.\n')
     
-    def delete_customer(self):
-        """ display the customer deletion menu """
