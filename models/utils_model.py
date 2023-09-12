@@ -1,11 +1,11 @@
-def check_permission_menu(necessary_role, employee):
+def check_permission_menu(department, employee):
     """
     check authorization of the employee to access to a specific menu
     INPUT : type of menu (customer, contract or event) and employee object
     OUPUT : True or False
     """
 
-    if necessary_role == employee.role or employee.role == 'superadmin':
+    if department == employee.department or employee.department == 'superadmin':
         return True
     else:
         return False
@@ -18,7 +18,7 @@ def check_permission_customer(customer, employee):
     OUTPUT : True of False
     """
 
-    if customer.employee_id == employee.id or employee.role == 'superadmin':
+    if customer.employee_id == employee.id or employee.department == 'superadmin':
         return True
     else:
         return False

@@ -1,4 +1,5 @@
-from models.models import Database, Customer
+from models.models import Customer
+from models.models import Database
 from constants.database_config import DB_URL
 from views.utils_view import display_message
 
@@ -8,11 +9,6 @@ class CustomerModel:
 
     def __init__(self):
         self.db = Database(DB_URL)
-
-    def search_customer(self):
-        """ method to search customer in the database """
-
-        pass
 
     def add_customer(self, new_customer):
         """
@@ -46,7 +42,7 @@ class CustomerModel:
         finally:
             session.close()
     
-    def select_customer(self, choice):
+    def create_customer_object(self, choice):
         """
         method to select an customer in the database
         INPUT : choice (int or str) entered by employee

@@ -3,9 +3,10 @@ import time
 
 
 class LoginMenu:
-    
+    """ Login class """
+
     def login_menu(self, show_title):
-        """ LOGIN Menu """
+        """ Login Menu """
 
         if show_title == True:
             print(" ______       _         ______               _       ")
@@ -27,9 +28,11 @@ class LoginMenu:
 
         username = input("Nom d'utilisateur : ")
         if not username:
+            # A SUPPRIMER
             username = 'cedric'
         password = getpass_asterisk('Mot de passe : ')
         if not password:
+            # A SUPPRIMER
             password = 'Toto1234!'
 
         return username, password

@@ -13,10 +13,11 @@ class CustomerView:
         self.customer_model = CustomerModel()
 
     def customer_menu(self):
-        """ Menu 1 """
-        choix = None
-        while choix !=  MENU_CUSTOMER_CREATION and choix != MENU_CUSTOMER_UPDATE and choix != MENU_CUSTOMER_DELETE and\
-                choix != MENU_CUSTOMER_EXIT:
+        """ Menu 1 - CLIENT """
+
+        choice = None
+        while choice !=  MENU_CUSTOMER_CREATION and choice != MENU_CUSTOMER_UPDATE and\
+            choice != MENU_CUSTOMER_DELETE and choice != MENU_CUSTOMER_EXIT:
             clear_screen()
             print("+-------------------------------+")
             print("|          MENU JOUEUR          |")
@@ -26,18 +27,20 @@ class CustomerView:
             print("| 3 - suppression d'un client   |")
             print("| 4 - revenir au menu principal |")
             print("+-------------------------------+")
-            choix = input("Quel est votre choix : ")
-            if not choix.isnumeric():
+
+            choice = input("Quel est votre choix : ")
+            if not choice.isnumeric():
                 print("Merci de préciser un choix numérique.")
-                choix = None
+                choice = None
             else:
-                choix = int(choix)
-        clear_screen()
-        return choix
+                choice = int(choice)
+
+        return choice
     
     def add_customer(self, employee):
         """ ask informations about new customer to add """
 
+        clear_screen()
         customer_name, customer_email, customer_phone, customer_company = None, None, None, None
         
         while not customer_name:
@@ -69,7 +72,7 @@ class CustomerView:
         return new_customer
     
     def select_customer(self, employee):
-        """ update informations about customer """
+        """ selection of a customer by typing """
 
         clear_screen()
         while True:
@@ -85,10 +88,10 @@ class CustomerView:
 
     
     def select_customer_by_list(self, employee):
-        """ display customers associated to an employee """
+        """ selection of a customer by list """
 
-        # display list
         clear_screen()
+        # display list of customers
         list_customers = self.customer_model.search_customer(employee)
         while True:
             counter = 1
@@ -113,81 +116,78 @@ class CustomerView:
             else:
                 return choice
         
-    def modify_customer(self, customer_choice, permission):
-        """ display modifications input for a customer """    
+    def modify_customer(self, customer):
+        """ modifications input for a customer """    
 
-        # extract customer data from database
-        customer = self.customer_model.select_customer(customer_choice)
+        clear_screen()
+        print('\nClient selectionné :', customer)
+        print()
 
-        if permission:
-            print('\nClient selectionné :', customer)
-            print()
+        # view and modify value in customer
+        customer_name, customer_email, customer_phone, customer_company = None, None, None, None
+        modification_state = False
 
-            # view and modify value in customer
-            customer_name, customer_email, customer_phone, customer_company = None, None, None, None
-            modification_state = False
-
-
-            while True:
-                customer_name = input(f"Nom du client '{customer.name}' [ENTRER pour conserver actuel]: ")
-                if customer_name:
-                    modification_state = True
-                    customer.name = customer_name
-                    break
-                else:
-                    break
-
-            while True:
-                customer_email = input(f"Email du client '{customer.email}' [ENTRER pour conserver actuel]: ")
-                if re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", customer_email):
-                    modification_state = True
-                    customer.email = customer_email
-                    break
-                elif not customer_email:
-                    break
-                else:
-                    print("\nL'adresse e-mail n'est pas valide. Veuillez réessayer.\n")
-
-            while True:
-                customer_phone = input(f"Numero de telephone du client '{customer.phone}' [ENTRER pour conserver actuel]: ")
-                if re.match(r"^[0-9+\-]+( [0-9+\-]+)*$", customer_phone):
-                    modification_state = True
-                    customer.phone = customer_phone
-                    break
-                elif not customer_phone:
-                    break
-                else:
-                    print("\nLe numéro de téléphone n'est pas valide. Veuillez réessayer.\n")
-            
-            while True:
-                customer_company = input(f"Nom de la société du client '{customer.company}' [ENTRER pour conserver actuel]: ")
-                if customer_company:
-                    modification_state = True
-                    customer.company = customer_company
-                    break
-                else:
-                    break
-            
-            if modification_state:
-                #record modifications in database
-                self.customer_model.update_customer(customer)
+        while True:
+            customer_name = input(f"Nom du client '{customer.name}' [ENTRER pour conserver actuel]: ")
+            if customer_name:
+                modification_state = True
+                customer.name = customer_name
+                break
             else:
-                print('\nAucune modification apportée au client, retour au menu.\n')
-                time.sleep(2)
-        else:
-            print('\nVotre autorisation ne vous permet que de voir les informations clients.\n')
-            print(f'Nom              : {customer.name}')
-            print(f'Email            : {customer.email}')
-            print(f'Societe          : {customer.company}')
-            print(f'Telephone        : {customer.phone}')
-            print(f'Date de creation : {customer.date_creation}\n')
-            input('[ENTRER] pour retourner au menu.\n')
-    
-    def delete_customer(self, customer):
-        """ display the customer deletion menu """
+                break
 
+        while True:
+            customer_email = input(f"Email du client '{customer.email}' [ENTRER pour conserver actuel]: ")
+            if re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", customer_email):
+                modification_state = True
+                customer.email = customer_email
+                break
+            elif not customer_email:
+                break
+            else:
+                print("\nL'adresse e-mail n'est pas valide. Veuillez réessayer.\n")
+
+        while True:
+            customer_phone = input(f"Numero de telephone du client '{customer.phone}' [ENTRER pour conserver actuel]: ")
+            if re.match(r"^[0-9+\-]+( [0-9+\-]+)*$", customer_phone):
+                modification_state = True
+                customer.phone = customer_phone
+                break
+            elif not customer_phone:
+                break
+            else:
+                print("\nLe numéro de téléphone n'est pas valide. Veuillez réessayer.\n")
         
+        while True:
+            customer_company = input(f"Nom de la société du client '{customer.company}' [ENTRER pour conserver actuel]: ")
+            if customer_company:
+                modification_state = True
+                customer.company = customer_company
+                break
+            else:
+                break
+        
+        if modification_state:
+            #record modifications in database
+            self.customer_model.update_customer(customer)
+        else:
+            print('\nAucune modification apportée au client, retour au menu.\n')
+            time.sleep(2)
 
+    def display_customer_informations(self, customer):
+        """
+        display customer information
+        INPUT : customer object
+        RESULT : displaying customer informations
+        """
 
-
-
+        print('\nVotre autorisation ne vous permet que de voir les informations clients.\n')
+        print(f'Nom              : {customer.name}')
+        print(f'Email            : {customer.email}')
+        print(f'Societe          : {customer.company}')
+        print(f'Telephone        : {customer.phone}')
+        print(f'Date de creation : {customer.date_creation}\n')
+        input('[ENTRER] pour retourner au menu.\n')
+    
+    def delete_customer(self):
+        """ display the customer deletion menu """

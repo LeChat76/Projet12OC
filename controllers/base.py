@@ -1,19 +1,33 @@
+import sys
 from views.utils_view import clear_screen
 from models.models import Database
 from models.employee_model import EmployeeModel
 from views.login_view import LoginMenu
 from views.main_menu import MainMenu
-from constants.base_menu import MENU_CLIENTS, MENU_CONTRATS, MENU_EVENEMENTS, MENU_EXIT
+from constants.base_menu import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EXIT
 from constants.database_config import DB_URL
 from controllers.customer_controller import CustomerController
+from controllers.contract_controller import ContractController
 
 
 class epicEvents:
+    """ Epic Events class """
+
     def __init__(self):
         self.db = Database(DB_URL)
+        if not self.db.tables_exist():
+            print('TOP')
+            input()
+            try:
+                self.db.create_tables()
+                self.db.create_superadmin()
+            except Exception as e:
+                print(f"Une erreur s'est produite lors de l'initialisation de la base de données : {e}")
+                sys.exit()
         self.login_view = LoginMenu()
         self.main_menu_view = MainMenu()
         self.customer_controller = CustomerController(self.db)
+        self.contract_controller = ContractController(self.db)
         self.employee_model = EmployeeModel()
 
     def login_menu(self):
@@ -41,16 +55,11 @@ class epicEvents:
 
         while True:
             choice = self.main_menu_view.main_menu()
-            if choice == MENU_CLIENTS:
+            if choice == MENU_CUSTOMERS:
                 self.customer_controller.menu_customer(employee)
+            if choice == MENU_CONTRACTS:
+                self.contract_controller.menu_customer(employee)
+            if choice == MENU_EVENTS:
+                pass
             elif choice == MENU_EXIT:
                 self.login_menu()
-
-class BaseController:
-    def __init__(self):
-        self.db = Database(DB_URL)
-
-    def initialize(self):
-        """ db init """
-        self.db.create_tables()
-        self.db.create_superadmin()

@@ -1,11 +1,12 @@
-from controllers.base import epicEvents, BaseController
+from controllers.base import epicEvents
+from models.models import Database
 from constants.database_config import DB_URL
 
 
 def main():
     """ Launching start here """
 
-    controller = BaseController()
+    db = Database(DB_URL)
     epicevents = epicEvents()
 
     try:
@@ -13,9 +14,9 @@ def main():
     except KeyboardInterrupt:
         print("\n\nFin du script par l'utilisateur.\n")
     finally:
-        if controller.db:
+        if db:
             print('Fermeture de la session MySql\n')
-            controller.db.get_session().close()
+            db.get_session().close()
 
 if __name__ == "__main__":
     main()

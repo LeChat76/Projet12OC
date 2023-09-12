@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, TIMESTAMP, Float, Enum, ForeignKey, text, create_engine, inspect
-from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, sessionmaker
 import bcrypt
 
 
@@ -11,12 +11,12 @@ class Employee(Base):
     id = Column(Integer(), primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
-    role = Column(Enum('management', 'support', 'commercial', 'superadmin'), nullable=False)
+    department = Column(Enum('management', 'support', 'commercial', 'superadmin'), nullable=False)
     status = Column(String(7), nullable=False, server_default='ENABLE')
     customers = relationship("Customer", back_populates="employee")
 
     def __repr__(self):
-        return f"Employe '{self.username}', role '{self.role}'."
+        return f"Employe '{self.username}', department '{self.department}'."
 
 class Customer(Base):
     def __init__(self, name, email, phone, company, employee_id):
@@ -70,16 +70,17 @@ class Database:
     def __init__(self, db_url):
         self.engine = create_engine(db_url)
         self.Session = sessionmaker(bind=self.engine)
-        self.user_id = None
+        # self.user_id = None
 
     def create_tables(self):
+        print('CREATE TABLE')
         Base.metadata.create_all(self.engine)
 
     def create_superadmin(self):
         session = self.get_session()
         superadmin = Employee(
             username='cedric',
-            role='superadmin',
+            department='superadmin',
             password=bcrypt.hashpw('Toto1234!'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         )
         session.add(superadmin)
