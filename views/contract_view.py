@@ -1,25 +1,25 @@
 from views.utils_view import clear_screen
-from models.contract_model import ContractModel
-from models.models import Contract
+from models.models import ContractModel
 from views.customer_view import CustomerView
-from models.customer_model import CustomerModel
-from constants.contract_menu import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_EXIT
+from models.models import CustomerModel
+from constants.contract_menu import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_EXIT
 
 
 class ContractView:
     """ Customer view class """
 
     def __init__(self):
-        self.contract_model = ContractModel()
+        self.contract_model = ContractModel(None, None, None, None, None)
         self.customer_view = CustomerView()
-        self.customer_model = CustomerModel()
+        self.customer_model = CustomerModel(None, None, None, None, None)
 
     def contract_menu(self):
         """ Menu 2 - CONTRAT """
 
         choice = None
         while choice !=  MENU_CONTRACT_CREATION and choice != MENU_CONTRACT_UPDATE and\
-            choice != MENU_CONTRACT_DELETE and choice != MENU_CONTRACT_EXIT:
+            choice != MENU_CONTRACT_DELETE and choice != MENU_CONTRACT_EXIT and\
+            choice != MENU_CONTRACT_SIGNATURE:
             clear_screen()
             print("+-------------------------------+")
             print("|          MENU CONTRAT         |")
@@ -27,7 +27,8 @@ class ContractView:
             print("| 1 - création d'un contrat     |")
             print("| 2 - voir/modifier un contrat  |")
             print("| 3 - suppression d'un contrat  |")
-            print("| 4 - revenir au menu principal |")
+            print("| 4 - signer un contrat         |")
+            print("| 5 - revenir au menu principal |")
             print("+-------------------------------+")
 
             choice = input("Quel est votre choix : ")
@@ -40,7 +41,7 @@ class ContractView:
 
         return choice
 
-    def add_contract(self, employee):
+    def add_contract(self):
         """ ask informations about new contract to add """
 
         clear_screen()
@@ -89,5 +90,5 @@ class ContractView:
                 break
             else:
                 customer = self.customer_model.create_customer_object(customer_choice)
-                new_contract = Contract(customer_info, price, due, status, customer.id)
+                new_contract = ContractModel(customer_info, price, due, status, customer.id)
                 return new_contract

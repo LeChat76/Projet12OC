@@ -2,15 +2,14 @@ import re
 import time
 from views.utils_view import clear_screen
 from constants.customer_menu import MENU_CUSTOMER_CREATION, MENU_CUSTOMER_UPDATE, MENU_CUSTOMER_DELETE, MENU_CUSTOMER_EXIT
-from models.models import Customer
-from models.customer_model import CustomerModel
+from models.models import CustomerModel
 
 
 class CustomerView:
     """ Customer view class """
 
     def __init__(self):
-        self.customer_model = CustomerModel()
+        self.customer_model = CustomerModel(None, None, None, None, None)
 
     def customer_menu(self):
         """ Menu 1 - CLIENT """
@@ -66,7 +65,7 @@ class CustomerView:
         while not customer_company:
             customer_company = input("Nom de l'entreprise (obligatoire, max 255 caractères): ")
         
-        new_customer = Customer(customer_name, customer_email, customer_phone, customer_company, employee.id)
+        new_customer = CustomerModel(customer_name, customer_email, customer_phone, customer_company, employee.id)
 
         return new_customer
     
@@ -89,15 +88,16 @@ class CustomerView:
     def select_customer_by_list(self):
         """ selection of a customer by list """
 
-        # clear_screen()
         # display list of customers
         list_customers = self.customer_model.search_all_customers()
         while True:
             counter = 1
+            customer_id_list = []
             choice_made = False
 
             for customer in list_customers:
                 print(str(counter) + ' - ' + str(customer))
+                customer_id_list.append(customer.id)
                 counter += 1
                 time.sleep(0.1)
                 if counter %5 == 0:
@@ -111,11 +111,10 @@ class CustomerView:
                         break
 
             if not choice_made:
-                choice = input('\nLa liste est terminée. Faites un choix, [ENTRER] pour relancer ou (q)uitter? ')
+                choice = input('\nFin de liste atteint. Faites un choix, [ENTRER] pour relancer ou (q)uitter? ')
                 print()
                 if choice.lower() == 'q':
-                    choice_made = True
-                    break
+                    return choice
                 elif choice:
                     choice_made = True
                     return choice
@@ -187,7 +186,7 @@ class CustomerView:
         RESULT : displaying customer informations
         """
 
-        print("Vos droits ne vous donne accès qu'en lecture.\n")
+        print("\nVos droits ne vous donne accès qu'en lecture.\n")
         print(f'Nom              : {customer.name}')
         print(f'Email            : {customer.email}')
         print(f'Societe          : {customer.company}')

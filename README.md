@@ -7,8 +7,7 @@ Lancer l'application avec `python main.py`
 
 * Menu 1 - 1 : creation client
 * Menu 1 - 2 : vue/modification client
-* Menu 1 - 3 : suppression client
-
+* Menu 1 - 3 : suppression client  
 * Menu 2 - 1 : creation contrat
 
 

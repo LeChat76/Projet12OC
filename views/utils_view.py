@@ -9,19 +9,22 @@ def clear_screen():
     elif os.name == "nt":
         os.system('cls')
 
-def display_message(message, spaces, timing):
+def display_message(message, space_before, space_after,timing):
     """
     display message
-    INPUT : message to display, True of False for space before and after message, timing for time to display message
+    INPUT : message to display, True of False for space before and after message, timing for time to display message (pause=need [ENTER] to continue)
     OUTPUT : message displaying
     """
 
-    if spaces:
+    if space_before:
         print()
     print(message)
-    if spaces:
+    if space_after:
         print()
-    time.sleep(timing)
+    if timing == 'pause':
+        input()
+    else:
+        time.sleep(timing)
 
 def input_message(message):
     """

@@ -1,7 +1,7 @@
 import sys
 from views.utils_view import clear_screen
 from models.models import Database
-from models.employee_model import EmployeeModel
+from models.models import EmployeeModel
 from views.login_view import LoginMenu
 from views.main_menu import MainMenu
 from constants.base_menu import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EXIT
