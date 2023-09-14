@@ -2,7 +2,8 @@ from sqlalchemy import Column, Integer, String, TIMESTAMP, Float, Enum, ForeignK
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, joinedload
 from sqlalchemy.exc import IntegrityError
-from constants.database_config import DB_URL
+from constants.database import DB_URL
+from constants.department import MANAGEMENT, SUPPORT, SUPERADMIN, COMMERCIAL
 from views.utils_view import display_message
 import bcrypt
 
@@ -12,7 +13,7 @@ Base = declarative_base()
 class EventModel(Base):
     """ Event class """
 
-    __tablename__ = 'event'
+    __tablename__ = "event"
     id = Column(Integer(), primary_key=True, autoincrement=True)
     customer_contact = Column(String(255), nullable=False)
     date_start = Column(TIMESTAMP, nullable=False)
@@ -20,9 +21,9 @@ class EventModel(Base):
     location = Column(String(255), nullable=False)
     attendees = Column(Integer(), nullable=False, default=0)
     notes = Column(String(1000), nullable=True)
-    employee_id = Column(Integer(), ForeignKey('employee.id'), nullable=False)
+    employee_id = Column(Integer(), ForeignKey("employee.id"), nullable=False)
     employee = relationship("EmployeeModel", back_populates="event")
-    contract_id = Column(Integer(), ForeignKey('contract.id'), nullable=False)
+    contract_id = Column(Integer(), ForeignKey("contract.id"), nullable=False)
     contract = relationship("ContractModel", uselist=False, back_populates="event")
 
 class EmployeeModel(Base):
@@ -30,12 +31,12 @@ class EmployeeModel(Base):
     def __init__(self):
         self.db = Database(DB_URL)
 
-    __tablename__ = 'employee'
+    __tablename__ = "employee"
     id = Column(Integer(), primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
-    status = Column(String(7), nullable=False, server_default='ENABLE')
-    department_id = Column(Integer(), ForeignKey('department.id'), nullable=False)
+    status = Column(String(7), nullable=False, server_default="ENABLE")
+    department_id = Column(Integer(), ForeignKey("department.id"), nullable=False)
     department = relationship("DepartmentModel", back_populates="employee")
     customer = relationship("CustomerModel", back_populates="employee")
     contract = relationship("ContractModel", back_populates="employee")
@@ -52,6 +53,7 @@ class EmployeeModel(Base):
             employee = session.query(EmployeeModel).filter_by(username=input_username).first()
             return employee
         except Exception as e:
+            session.rollback()
             display_message(f"Erreur lors de la recherche employee : {str(e)}", True, True, 3)
             return None
         finally:
@@ -68,6 +70,7 @@ class EmployeeModel(Base):
             employee = session.query(EmployeeModel).filter_by(id=employee_id).first()
             return employee
         except Exception as e:
+            session.rollback()
             display_message(f"Erreur lors de la creation de l'objet employee : {str(e)}", True, True, 3)
             return None
         finally:
@@ -82,7 +85,7 @@ class EmployeeModel(Base):
         """
 
         db_password = self.password
-        if bcrypt.checkpw(input_password.encode('utf-8'), db_password.encode('utf-8')):
+        if bcrypt.checkpw(input_password.encode("utf-8"), db_password.encode("utf-8")):
             return True
         else:
             return None
@@ -97,11 +100,12 @@ class EmployeeModel(Base):
         try:
             session = self.db.get_session()
             employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
-            if department == employee.department.name or employee.department.name == 'superadmin':
+            if department == employee.department.name or employee.department.name == "superadmin":
                 return True
             else:
                 return False
         except Exception as e:
+            session.rollback()
             display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
             return None
         finally:
@@ -118,11 +122,12 @@ class EmployeeModel(Base):
         try:
             session = self.db.get_session()
             employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
-            if customer.employee_id == employee.id or employee.department.name == 'superadmin':
+            if customer.employee_id == employee.id or employee.department.name == "superadmin":
                 return True
             else:
                 return False
         except Exception as e:
+            session.rollback()
             display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
             return None
         finally:
@@ -131,7 +136,7 @@ class EmployeeModel(Base):
 class DepartmentModel(Base):
     """ Department class """
 
-    __tablename__ = 'department'
+    __tablename__ = "department"
     id = Column(Integer(), primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False, unique=True)
     description = Column(String(255), nullable=True)
@@ -148,20 +153,20 @@ class CustomerModel(Base):
         self.company = company
         self.employee = employee
     
-    __tablename__ = 'customer'
+    __tablename__ = "customer"
     id = Column(Integer(), primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
     phone = Column(String(20), nullable=True)
     company = Column(String(255), nullable=False)
-    date_creation = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'), nullable=False)
-    date_update = Column(TIMESTAMP, onupdate=text('CURRENT_TIMESTAMP'), nullable=True)
-    employee_id = Column(Integer(), ForeignKey('employee.id'), nullable=False)
+    date_creation = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
+    date_update = Column(TIMESTAMP, onupdate=text("CURRENT_TIMESTAMP"), nullable=True)
+    employee_id = Column(Integer(), ForeignKey("employee.id"), nullable=False)
     employee = relationship("EmployeeModel", back_populates="customer")
     contract = relationship("ContractModel", back_populates="customer")
 
     def __repr__(self):
-        return f'Client "{self.name}", email "{self.email}", telephone "{self.phone}" de la société "{self.company}".'
+        return f"Client '{self.name}', email '{self.email}', telephone '{self.phone}' de la société '{self.company}'."
 
     def add_customer(self, new_customer):
         """
@@ -195,6 +200,7 @@ class CustomerModel(Base):
             customers_list = session.query(CustomerModel).all()
             return customers_list
         except Exception as e:
+            session.rollback()
             display_message(f"Erreur lors de la recherche des clients : {str(e)}", True, True, 3)
             return None
         finally:
@@ -214,6 +220,7 @@ class CustomerModel(Base):
                 customer = session.query(CustomerModel).filter_by(name = choice).first()
             return customer
         except Exception as e:
+            session.rollback()
             display_message(f"Erreur lors de la creation de l'objet client : {str(e)}", True, True, 3)
             return None
         finally:
@@ -235,13 +242,19 @@ class CustomerModel(Base):
             customer.company = updated_customer.company
             session.commit()
             display_message(f"Client '{updated_customer.name}' mis à jour avec succès!", True, True, 3)
+        except IntegrityError as e:
+            session.rollback()
+            display_message("Erreur lors de l'ajout du client : l'email est déjà associé à un autre client.", True, False, 0)
+            display_message("Retour au menu....", False, False, 3)
+            return None
         except Exception as e:
-            display_message(f"Erreur lors de la modification du client : {str(e)}", True, True, 3)
+            session.rollback()
+            display_message(f"Erreur lors de l'ajout du client : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
 
-    def delete_customer(self, customer):
+    def delete_customer(self, customer_obj):
         """
         method to delete customer from database
         INPUT : customer object
@@ -250,11 +263,12 @@ class CustomerModel(Base):
 
         try:
             session = self.db.get_session()
-            customer_to_delete = session.query(CustomerModel).filter_by(id=customer.id).first()
+            customer_to_delete = session.query(CustomerModel).filter_by(id=customer_obj.id).first()
             session.delete(customer_to_delete)
             session.commit()
             display_message(f"Client '{customer_to_delete.name}' supprimé avec succès!", True, True, 3)
         except Exception as e:
+            session.rollback()
             display_message(f"Erreur lors de la suppresion du client : {str(e)}", True, True, 3)
             return None
         finally:
@@ -272,16 +286,16 @@ class ContractModel(Base):
         self.customer = customer
         self.employee_id = employee_id
     
-    __tablename__ = 'contract'
+    __tablename__ = "contract"
     id = Column(Integer(), primary_key=True, autoincrement=True)
     customer_info = Column(String(5000), nullable=True)
     price = Column(Float(), nullable=False, default=0)
     due = Column(Float(), nullable=False, default=0)
-    date_creation = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'), nullable=False)
-    status = Column(String(10), nullable=False, server_default='NOT-SIGNED')
-    customer_id = Column(Integer(), ForeignKey('customer.id'), nullable=False)
+    date_creation = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
+    status = Column(String(10), nullable=False, server_default="NOT-SIGNED")
+    customer_id = Column(Integer(), ForeignKey("customer.id"), nullable=False)
     customer = relationship("CustomerModel", back_populates="contract")
-    employee_id = Column(Integer(), ForeignKey('employee.id'), nullable=False)
+    employee_id = Column(Integer(), ForeignKey("employee.id"), nullable=False)
     employee = relationship("EmployeeModel", back_populates="contract")
     event = relationship("EventModel", uselist=False, back_populates="contract")
 
@@ -289,18 +303,18 @@ class ContractModel(Base):
         status_text = "OUI" if self.status == "SIGNED" else "NON"
         return f"Contrat numero '{self.id}' pour le client '{self.customer.name}' de la société '{self.customer.company}', signé : '{status_text}."
 
-    def add_contract(self, new_contract):
+    def add_contract(self, new_contract_obj):
         """
         method to add customer in the database
-        INPUT : entered values for a new customer
+        INPUT : contract object
         RESULT : record of the new customer in the database
         """
         
         try:
             session = self.db.get_session()
-            session.add(new_contract)
+            session.add(new_contract_obj)
             session.commit()
-            display_message(str(new_contract) + ' créé avec succes. Retour au menu...', True, True, 3)
+            display_message(str(new_contract_obj) + " créé avec succes. Retour au menu...", True, True, 3)
         except Exception as e:
             session.rollback()
             display_message(f"Erreur lors de l'ajout du contrat : {str(e)}", True, True, 3)
@@ -310,7 +324,7 @@ class ContractModel(Base):
 
     def create_contract_object(self, contract_id):
         """
-        method to create contract object
+        method to create contract object with contract id
         INPUT : contract id
         OUTPUT : contract object """
 
@@ -319,6 +333,7 @@ class ContractModel(Base):
             contract_obj = session.query(ContractModel).options(joinedload(ContractModel.customer)).filter_by(id=contract_id).first()
             return contract_obj
         except Exception as e:
+            session.rollback()
             display_message(f"Erreur lors de la creation de l'objet contrat: {str(e)}", True, True, 3)
             return None
         finally:
@@ -326,16 +341,15 @@ class ContractModel(Base):
 
     def check_permission_contract(self, employee_id):
         """
-        function to check authorization of an employee on a customer
-        (check if customer.employee_id == employee.id)
-        INPUT : customer object & employee id
+        function to check authorization to access to the contract signature menu (dept management or superadmin)
+        INPUT : employee id
         OUTPUT : True of False
         """
 
         try:
             session = self.db.get_session()
             employee_obj = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
-            if employee_obj.department.name == "management" or employee_obj.department.name == 'superadmin':
+            if employee_obj.department.name == MANAGEMENT or employee_obj.department.name == SUPERADMIN:
                 return True
             else:
                 return False
@@ -353,6 +367,7 @@ class ContractModel(Base):
             contracts_list = session.query(ContractModel).options(joinedload(ContractModel.customer)).all()
             return contracts_list
         except Exception as e:
+            session.rollback()
             display_message(f"Erreur lors de la recherche des contrats : {str(e)}", True, True, 3)
             return None
         finally:
@@ -369,7 +384,8 @@ class ContractModel(Base):
             return True
         else:
             return False
-    def update_contract(self, updated_contract):
+        
+    def update_contract(self, updated_contract_obj):
         """
         method to update contract in database
         INPUT : contract object
@@ -378,14 +394,15 @@ class ContractModel(Base):
 
         try:
             session = self.db.get_session()
-            contract = session.query(ContractModel).filter_by(id=updated_contract.id).first()
-            contract.customer_info = updated_contract.customer_info
-            contract.price = updated_contract.price
-            contract.due = updated_contract.due
-            contract.status = updated_contract.status
+            contract = session.query(ContractModel).filter_by(id=updated_contract_obj.id).first()
+            contract.customer_info = updated_contract_obj.customer_info
+            contract.price = updated_contract_obj.price
+            contract.due = updated_contract_obj.due
+            contract.status = updated_contract_obj.status
             session.commit()
-            display_message(f"Contrat '{updated_contract.id}' mis à jour avec succès!", True, True, 3)
+            display_message(f"Contrat '{updated_contract_obj.id}' mis à jour avec succès!", True, True, 3)
         except Exception as e:
+            session.rollback()
             display_message(f"Erreur lors de la modification du contrat : {str(e)}", True, True, 3)
             return None
         finally:
@@ -404,7 +421,7 @@ class Database:
     def tables_exist(self):
         inspector = inspect(self.engine)
         table_names = inspector.get_table_names()
-        required_tables = ['customer', 'employee', 'contract', 'event']
+        required_tables = ["customer", "employee", "contract", "event"]
         return all(table_name in table_names for table_name in required_tables)
 
     def get_session(self):

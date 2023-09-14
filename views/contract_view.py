@@ -3,7 +3,7 @@ from views.utils_view import clear_screen
 from models.models import ContractModel
 from views.customer_view import CustomerView
 from models.models import CustomerModel, EmployeeModel
-from constants.contract_menu import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_EXIT
+from constants.contract import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_EXIT
 
 
 class ContractView:
@@ -39,7 +39,6 @@ class ContractView:
                 choice = None
             else:
                 choice = int(choice)
-        clear_screen()
 
         return choice
 
@@ -54,51 +53,52 @@ class ContractView:
         while True:
 
             while True:
-                price = input('Prix [ENTRER = 0€] : ')
-                if price == '':
+                price = input("Prix ([ENTRER] = 0€) : ")
+                if price == "":
                     price = 0
                     break
-                elif not price.isnumeric() and not price == '':
-                    print('\nMerci de renseigner uniquement des chiffres.\n')
+                elif not price.isnumeric() and not price == "":
+                    print("\nMerci de renseigner uniquement des chiffres.\n")
                 else:
                     break
             
             while True:
                 due = input(f"Montant restant du (< à {price}, [ENTRER = 0€] : ")
-                if due == '':
+                if due == "":
                     due = 0
                     break
-                elif not due.isnumeric() and not due == '':
-                    print('\nMerci de renseigner uniquement des chiffres.\n')
+                elif not due.isnumeric() and not due == "":
+                    print("\nMerci de renseigner uniquement des chiffres.\n")
                 elif int(due) > int(price):
-                    print('\nLe montant du ne peut pas etre superieur au montant du contrat.\n')
+                    print("\nLe montant du ne peut pas etre superieur au montant du contrat.\n")
                 else:
                     break
 
             while True:
-                status = input('Contrat signé (o)ui / (n)on [ENTRER = non] : ')
-                if not status.lower() == 'o' and not status.lower() == 'n' and not status == '':
-                    print('\nSaisie incorrect, reessayez svp.\n')
-                elif status == '' or status.lower() == 'n':
-                    status = 'NOT-SIGNED'
+                status = input("Contrat signé (o)ui/(n)on ([ENTRER] = non): ")
+                if not status.lower() == "o" and not status.lower() == "n" and not status == "":
+                    print("\nSaisie incorrect, reessayez svp.\n")
+                elif status == "" or status.lower() == "n":
+                    status = "NOT-SIGNED"
                     break
                 else:
-                    status = 'SIGNED'
+                    status = "SIGNED"
                     break
             
             customer_choice = self.customer_view.select_customer_by_entry()
-            if customer_choice.lower() == 'q':
-                return 'q'
+            if customer_choice.lower() == "q":
+                return "q"
             else:
                 customer_obj = self.customer_model.create_customer_object(customer_choice)
-                new_contract = ContractModel(customer_info, price, due, status, customer_obj, employee_id)
-                return new_contract
+                new_contract_obj = ContractModel(customer_info, price, due, status, customer_obj, employee_id)
+                return new_contract_obj
 
     def select_contract_by_entry(self):
         """ selection of a contract by typing """
 
         while True:
-            contract_number = input('Quel est le numero du contrat ([ENTRER] pour afficher une liste)? ')
+            contract_number = input("\nQuel est le numero du contrat ([ENTRER] pour afficher une liste)? ")
+            print()
             if not contract_number:
                 contract = self.select_contract_by_list()
                 return contract
@@ -113,58 +113,60 @@ class ContractView:
         # display list of contracts
         list_contracts = self.contract_model.search_all_contracts()
         while True:
-            counter = 1
+            counter_int = 1
             contract_id_list = []
-            choice_made = False
+            choice_made_boolean = False
 
             for contract in list_contracts:
                 print(" - " + str(contract))
                 contract_id_list.append(contract.id)
-                counter += 1
+                counter_int += 1
                 time.sleep(0.1)
-                if counter %5 == 0:
-                    choice = input ('\nAvez vous fait un choix [ENTRER] pour continuer ou (q)uitter? ')
+                if counter_int %5 == 0:
+                    choice = input ("\nAvez vous fait un choix [ENTRER] pour continuer ou (q)uitter? ")
                     print()
-                    if choice.lower() == 'q':
-                        choice_made = True
+                    if choice.lower() == "q":
+                        choice_made_boolean = True
                         break
                     elif choice:
-                        choice_made = True
+                        choice_made_boolean = True
                         break
+                    else:
+                        print()
 
-            if not choice_made:
-                choice = input('\nFin de liste atteint. Faites un choix, [ENTRER] pour relancer ou (q)uitter? ')
-                print()
-                if choice.lower() == 'q':
+            if not choice_made_boolean:
+                choice = input("\nFin de liste atteinte. Faites un choix, [ENTRER] pour relancer ou (q)uitter? ")
+                # print()
+                if choice.lower() == "q":
                     return choice
                 elif choice:
-                    choice_made = True
+                    choice_made_boolean = True
                     return choice
             else:
                 return choice
         
-    def modify_contract(self, contract):
+    def modify_contract(self, contract_obj):
         """ modifications input for a contract """    
 
         clear_screen()
-        print('\nContrat selectionné :', contract)
+        print("\nContrat selectionné :", contract_obj)
         print()
 
         # view and modify value for an contract
         customer_info = None
-        modification_state = False
+        modification_state_boolean = False
 
-        print(f"Information actuelle sur le client et son evenement :\n {contract.customer_info}\n")
+        print(f"Information actuelle sur le client et son evenement :\n {contract_obj.customer_info}\n")
         customer_info = input("Modifier ([ENTRER] pour conserver information actuelle)? ")
         if customer_info:
-            modification_state = True
-            contract.customer_info = customer_info
+            modification_state_boolean = True
+            contract_obj.customer_info = customer_info
 
         while True:
-            price = input(f"Prix actuel : '{contract.price}' [ENTRER pour conserver prix actuel]: ")
+            price = input(f"Prix actuel : '{contract_obj.price}' [ENTRER pour conserver prix actuel]: ")
             if price.isnumeric():
-                modification_state = True
-                contract.price = price
+                modification_state_boolean = True
+                contract_obj.price = price
                 break
             elif not price:
                 break
@@ -172,64 +174,74 @@ class ContractView:
                 print("\nMerci de préciser un prix en chiffre...\n")
 
         while True:
-            print(f"Montant restant du actuel : '{contract.due}")
-            due = input(f"Preciser nouveau montant (<{contract.price}) [ENTRER pour conserver montant actuel]: ")
+            print(f"Montant restant du actuel : '{contract_obj.due}")
+            due = input(f"Preciser nouveau montant (<{contract_obj.price}) [ENTRER pour conserver montant actuel]: ")
             if due.isnumeric():
-                modification_state = True
-                contract.due = due
+                modification_state_boolean = True
+                contract_obj.due = due
                 break
             elif not due:
                 break
             elif int(due) > int(price):
-                print('\nLe montant du ne peut pas etre superieur au montant du contrat.\n')
+                print("\nLe montant du ne peut pas etre superieur au montant du contrat.\n")
             else:
                 print("\nMerci de préciser un montant en chiffre...\n")
         
         while True:
             status = input("Signer contrat? (o/N): ")
-            if not status.lower() == 'o' and not status.lower() == 'n' and not status == '':
-                print('\nSaisie incorrect, reessayez svp.\n')
-            elif status == '' or status.lower() == 'n':
-                status = 'NOT-SIGNED'
+            if not status.lower() == "o" and not status.lower() == "n" and not status == "":
+                print("\nSaisie incorrect, reessayez svp.\n")
+            elif status == "" or status.lower() == "n":
+                status = "NOT-SIGNED"
                 break
             else:
-                status = 'SIGNED'
+                status = "SIGNED"
                 break
         
-        if modification_state:
+        if modification_state_boolean:
             #record modifications in database
-            self.contract_model.update_contract(contract)
+            self.contract_model.update_contract(contract_obj)
         else:
-            print('\nAucune modification apportée au contrat, retour au menu.\n')
+            print("\nAucune modification apportée au contrat, retour au menu.\n")
             time.sleep(3)
 
-    def sign_contract(self, contract):
+    def sign_contract(self, contract_obj):
         """
         sign contract method
         INPUT : contract object
-        OUTPUT : contract.status=SIGNED
+        OUTPUT : contract.status="SIGNED"
         """
 
         clear_screen()
-        print('\nContrat selectionné :', contract)
-        print()
+        print("\nContrat selectionné :", contract_obj)
+        while True:
+            print()
+            status = input("Contrat signé (o)ui/(n)on ([ENTRER] = non): ")
+            if not status.lower() == "o" and not status.lower() == "n" and not status == "":
+                print("\nSaisie incorrect, reessayez svp.\n")
+            elif status == "" or status.lower() == "n":
+                print("\nRetour au menu...")
+                time.sleep(3)
+                break
+            else:
+                contract_obj.status = "SIGNED"
+                self.contract_model.update_contract(contract_obj)
+                print("\nContrat signé. Retour au menu...")
+                time.sleep(3)
+                break
 
-        contract.status = "SIGNED"
-        self.contract_model.update_contract(contract)
-        
-
-    def display_contract_informations(self, contract):
+    def display_contract_informations(self, contract_obj):
         """
         display contract information
         INPUT : contract object
-        RESULT : displaying contract informations
+        RESULT : display contract informations
         """
 
         print("\nVos droits ne vous donne accès qu'en lecture.\n")
-        print(f'* Numéro           : {contract.id}')
-        print(f'* Prix             : {contract.price}')
-        print(f'* Due              : {contract.due}')
-        print(f'* Status           : {contract.status}')
-        print(f'* Information      : {contract.customer_info}')
-        input('\n[ENTRER] pour retourner au menu.\n')
+        print(f"* Numéro           : {contract_obj.id}")
+        print(f"* Prix             : {contract_obj.price}")
+        print(f"* Due              : {contract_obj.due}")
+        print(f"* Status           : {contract_obj.status}")
+        print(f"* Information      : {contract_obj.customer_info}")
+        input("\n[ENTRER] pour retourner au menu.\n")
     

@@ -1,3 +1,4 @@
+# CONSTANTS FOR DATABASE CONFIG
 DB_USER = 'root'
 DB_PASSWORD = 'Toto1234!'
 DB_HOST = 'localhost'

@@ -7,7 +7,7 @@ def clear_screen():
     if os.name == "posix":
         os.system("clear")
     elif os.name == "nt":
-        os.system('cls')
+        os.system("cls")
 
 def display_message(message, space_before, space_after,timing):
     """
@@ -21,7 +21,7 @@ def display_message(message, space_before, space_after,timing):
     print(message)
     if space_after:
         print()
-    if timing == 'pause':
+    if timing == "pause":
         input()
     else:
         time.sleep(timing)

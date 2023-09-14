@@ -1,6 +1,6 @@
 from controllers.base import epicEvents
 from models.models import Database
-from constants.database_config import DB_URL
+from constants.database import DB_URL
 
 
 def main():

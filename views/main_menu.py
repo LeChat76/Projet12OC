@@ -1,5 +1,5 @@
 from views.utils_view import clear_screen
-from constants.base_menu import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EMPLOYEES, MENU_EXIT
+from constants.base import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EMPLOYEES, MENU_EXIT
 
 
 class MainMenu:

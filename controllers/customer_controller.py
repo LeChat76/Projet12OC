@@ -1,9 +1,9 @@
 import time
 from models.models import CustomerModel, EmployeeModel
 from views.customer_view import CustomerView
-# from models.utils_model import check_permission_menu, check_permission_customer
 from views.utils_view import display_message, input_message	
-from constants.customer_menu import MENU_CUSTOMER_CREATION, MENU_CUSTOMER_UPDATE, MENU_CUSTOMER_DELETE, MENU_CUSTOMER_EXIT
+from constants.customer import MENU_CUSTOMER_CREATION, MENU_CUSTOMER_UPDATE, MENU_CUSTOMER_DELETE, MENU_CUSTOMER_EXIT
+from constants.department import COMMERCIAL
 
 
 class CustomerController:
@@ -33,63 +33,62 @@ class CustomerController:
         """ creation of customer method """
 
         # check permission of the logged employee to access to this menu
-        permission = self.employee_model.check_permission_menu('commercial', employee_id)
+        permission = self.employee_model.check_permission_menu(COMMERCIAL, employee_id)
         if permission:
             employee_obj = self.employee_model.create_employee_object(employee_id)
-            new_customer = self.customer_view.add_customer(employee_obj)
-            self.customer_model.add_customer(new_customer)
+            new_customer_obj = self.customer_view.add_customer(employee_obj)
+            self.customer_model.add_customer(new_customer_obj)
         else:
-            display_message("Vous n'avez pas les authorisations necessaire pour la creation de clients.", True, True, 2)
+            display_message("Vous n'avez pas les authorisations necessaire pour la creation de clients.\n Retour au menu...", True, True, 2)
     
     def update_customer(self, employee_id):
         """ update customer method """
         
         # display choice selection (by input or list)
         customer_choice = self.customer_view.select_customer_by_entry()
-        if not customer_choice.lower() == 'q':
+        if not customer_choice.lower() == "q":
             # if valid choice : convert choice in object
-            customer = self.customer_model.create_customer_object(customer_choice)
-            if customer:
+            customer_obj = self.customer_model.create_customer_object(customer_choice)
+            if customer_obj:
                 # check permission to modify customer by the logged employee...
-                permission = self.employee_model.check_permission_customer(customer, employee_id)
+                permission = self.employee_model.check_permission_customer(customer_obj, employee_id)
                 if permission:
                     #.... if permit : display customer modification menu
-                    self.customer_view.modify_customer(customer)
+                    self.customer_view.modify_customer(customer_obj)
                 else:
                     #... if not permit : display customer info
-                    self.customer_view.display_customer_informations(customer)
+                    self.customer_view.display_customer_informations(customer_obj)
             else:
-                display_message('Aucun client trouvé avec ce nom. Retour au menu.', True, True, 2)
+                display_message("Aucun client trouvé avec ce nom. Retour au menu.", True, True, 3)
         else:
-            display_message('Retour au menu...', True, True, 2)
+            display_message("Retour au menu...", True, True, 3)
     
     def delete_customer(self, employee_id):
         """ delete customer method"""
 
-        choice = ''
+        choice = ""
         # check permission to access to this menu
-        permission = self.employee_model.check_permission_menu('commercial', employee_id)
+        permission = self.employee_model.check_permission_menu(COMMERCIAL, employee_id)
         if not permission:
-            print("Vous n'avez pas la permission de suppression des clients.")
-            time.sleep(2)
+            display_message("Vous n'avez pas la permission de supprimer des clients. Retour au menu...", True, False, 3)
         else:
             # display choice selection (bye input or list)
             customer_choice = self.customer_view.select_customer_by_entry()
-            if not customer_choice.lower() == 'q':
+            if not customer_choice.lower() == "q":
                 # if valid choice : convert choice in object
-                customer = self.customer_model.create_customer_object(customer_choice)
-                if customer:
-                    while choice.lower() != 'o' and choice.lower() != 'n':
-                        choice = input_message(f'Etes vous sure de vouloir supprimer le client "{customer.name}" (o/N)? ')
-                        if choice.lower() == 'o':
-                            self.customer_model.delete_customer(customer)
-                        elif choice.lower() == 'n' or choice.lower() == '':
-                            display_message('Annulation de la suppression. Retour au menu.', True, True, 2)
+                customer_obj = self.customer_model.create_customer_object(customer_choice)
+                if customer_obj:
+                    while choice.lower() != "o" and choice.lower() != "n":
+                        choice = input_message(f"\nEtes vous sure de vouloir supprimer le client '{customer_obj.name}' (o/N)? ")
+                        if choice.lower() == "o":
+                            self.customer_model.delete_customer(customer_obj)
+                        elif choice.lower() == "n" or choice.lower() == "":
+                            display_message("Annulation de la suppression. Retour au menu.", True, True, 3)
                             break
                 else:
-                    display_message('Aucun client trouvé avec ce nom. Retour au menu.', True, True, 2)
+                    display_message("Aucun client trouvé avec ce nom. Retour au menu.", True, True, 3)
             else:
-                display_message('Retour au menu...', True, True, 2)
+                display_message("Retour au menu...", False, False, 3)
 
 
 

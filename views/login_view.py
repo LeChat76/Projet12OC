@@ -29,10 +29,10 @@ class LoginMenu:
         username = input("Nom d'utilisateur : ")
         if not username:
             # A SUPPRIMER
-            username = 'cedric'
-        password = getpass_asterisk('Mot de passe : ')
+            username = "cedric"
+        password = getpass_asterisk("Mot de passe : ")
         if not password:
             # A SUPPRIMER
-            password = 'Toto1234!'
+            password = "Toto1234!"
 
         return username, password

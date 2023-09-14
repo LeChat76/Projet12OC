@@ -4,8 +4,8 @@ from models.models import Database
 from models.models import EmployeeModel
 from views.login_view import LoginMenu
 from views.main_menu import MainMenu
-from constants.base_menu import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EXIT
-from constants.database_config import DB_URL
+from constants.base import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EXIT
+from constants.database import DB_URL
 from controllers.customer_controller import CustomerController
 from controllers.contract_controller import ContractController
 from views.utils_view import display_message
@@ -44,9 +44,9 @@ class epicEvents:
                     authentication = True
                     self.main_menu(employee.id)
                 else:
-                    display_message('Password incorrect! Merci de resaisir.', True, True, 0)
+                    display_message("Password incorrect! Merci de resaisir.", True, True, 0)
             else:
-                display_message('Utilisateur inexistant.', True, True, 0)
+                display_message("Utilisateur inexistant.", True, True, 0)
 
     def main_menu(self, employee_id):
         """ main menu """
