@@ -36,7 +36,7 @@ class CustomerView:
 
         return choice
     
-    def add_customer(self, employee):
+    def add_customer(self, employee_obj):
         """ ask informations about new customer to add """
 
         customer_name, customer_email, customer_phone, customer_company = None, None, None, None
@@ -65,14 +65,13 @@ class CustomerView:
         while not customer_company:
             customer_company = input("Nom de l'entreprise (obligatoire, max 255 caractères): ")
         
-        new_customer = CustomerModel(customer_name, customer_email, customer_phone, customer_company, employee)
+        new_customer = CustomerModel(customer_name, customer_email, customer_phone, customer_company, employee_obj)
 
         return new_customer
     
     def select_customer_by_entry(self):
         """ selection of a customer by typing """
 
-        # clear_screen()
         while True:
             customer_name = input('Quel est le nom du client [ENTRER pour afficher une liste]? ')
             if not customer_name:
@@ -187,10 +186,10 @@ class CustomerView:
         """
 
         print("\nVos droits ne vous donne accès qu'en lecture.\n")
-        print(f'Nom              : {customer.name}')
-        print(f'Email            : {customer.email}')
-        print(f'Societe          : {customer.company}')
-        print(f'Telephone        : {customer.phone}')
-        print(f'Date de creation : {customer.date_creation}')
+        print(f'* Nom              : {customer.name}')
+        print(f'* Email            : {customer.email}')
+        print(f'* Societe          : {customer.company}')
+        print(f'* Telephone        : {customer.phone}')
+        print(f'* Date de creation : {customer.date_creation}')
         input('\n[ENTRER] pour retourner au menu.\n')
     

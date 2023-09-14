@@ -15,32 +15,33 @@ class CustomerController:
         self.employee_model = EmployeeModel()
         self.customer_model = CustomerModel(None, None, None, None, None)
 
-    def menu_customer(self, employee):
+    def menu_customer(self, employee_id):
         """ Customer menu """
         
         while True:
             choix = self.customer_view.customer_menu()
             if choix == MENU_CUSTOMER_CREATION:
-                self.add_customer(employee)
+                self.add_customer(employee_id)
             if choix == MENU_CUSTOMER_UPDATE:
-                self.update_customer(employee)
+                self.update_customer(employee_id)
             elif choix == MENU_CUSTOMER_DELETE:
-                self.delete_customer(employee)
+                self.delete_customer(employee_id)
             elif choix == MENU_CUSTOMER_EXIT:
                 break
     
-    def add_customer(self, employee):
+    def add_customer(self, employee_id):
         """ creation of customer method """
 
         # check permission of the logged employee to access to this menu
-        permission = self.employee_model.check_permission_menu('commercial', employee)
+        permission = self.employee_model.check_permission_menu('commercial', employee_id)
         if permission:
-            new_customer = self.customer_view.add_customer(employee)
+            employee_obj = self.employee_model.create_employee_object(employee_id)
+            new_customer = self.customer_view.add_customer(employee_obj)
             self.customer_model.add_customer(new_customer)
         else:
             display_message("Vous n'avez pas les authorisations necessaire pour la creation de clients.", True, True, 2)
     
-    def update_customer(self, employee):
+    def update_customer(self, employee_id):
         """ update customer method """
         
         # display choice selection (by input or list)
@@ -50,7 +51,7 @@ class CustomerController:
             customer = self.customer_model.create_customer_object(customer_choice)
             if customer:
                 # check permission to modify customer by the logged employee...
-                permission = self.employee_model.check_permission_customer(customer, employee)
+                permission = self.employee_model.check_permission_customer(customer, employee_id)
                 if permission:
                     #.... if permit : display customer modification menu
                     self.customer_view.modify_customer(customer)
@@ -62,12 +63,12 @@ class CustomerController:
         else:
             display_message('Retour au menu...', True, True, 2)
     
-    def delete_customer(self, employee):
+    def delete_customer(self, employee_id):
         """ delete customer method"""
 
         choice = ''
         # check permission to access to this menu
-        permission = self.employee_model.check_permission_menu('commercial', employee)
+        permission = self.employee_model.check_permission_menu('commercial', employee_id)
         if not permission:
             print("Vous n'avez pas la permission de suppression des clients.")
             time.sleep(2)

@@ -1,6 +1,6 @@
 from views.contract_view import ContractView
 from models.models import ContractModel, EmployeeModel
-from constants.contract_menu import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_EXIT
+from constants.contract_menu import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_DELETE, MENU_CONTRACT_EXIT
 # from models.utils_model import check_permission_menu, check_permission_customer
 from views.utils_view import display_message
 
@@ -12,29 +12,31 @@ class ContractController:
         self.db = db
         self.contract_view = ContractView()
         self.employee_model = EmployeeModel() 
-        self.contract_model = ContractModel(None, None, None, None, None) 
+        self.contract_model = ContractModel(None, None, None, None, None, None) 
 
-    def menu_customer(self, employee):
+    def menu_customer(self, employee_id):
         """ Contract menu """
         
         while True:
-            choix = self.contract_view.contract_menu()
-            if choix == MENU_CONTRACT_CREATION:
-                self.add_contract(employee)
-            if choix == MENU_CONTRACT_UPDATE:
+            choice = self.contract_view.contract_menu()
+            if choice == MENU_CONTRACT_CREATION:
+                self.add_contract(employee_id)
+            elif choice == MENU_CONTRACT_UPDATE:
+                self.update_contract(employee_id)
+            elif choice == MENU_CONTRACT_SIGNATURE:
+                self.sign_contract(employee_id)
+            elif choice == MENU_CONTRACT_DELETE:
                 pass
-            elif choix == MENU_CONTRACT_DELETE:
-                pass
-            elif choix == MENU_CONTRACT_EXIT:
+            elif choice == MENU_CONTRACT_EXIT:
                 break
     
-    def add_contract(self, employee):
+    def add_contract(self, employee_id):
         """ creation of contract method """
 
         # check permission of the logged employee to access to this menu
-        permission = self.employee_model.check_permission_menu('management', employee)
+        permission = self.employee_model.check_permission_menu('management', employee_id)
         if permission:
-            new_contract = self.contract_view.add_contract()
+            new_contract = self.contract_view.add_contract(employee_id)
             if new_contract == 'q':
                 display_message("Ajout de contrat abandonné par l'utilisateur. Retour au menu.", True, True, 2)
             else:
@@ -42,24 +44,53 @@ class ContractController:
         else:
             display_message("Vous n'avez pas les authorisations necessaire pour la creation de clients.", True, True, 2)
     
-    def update_contract(self, employee):
+    def update_contract(self, employee_id):
         """ update contract method """
 
         # display choice selection (by input or list)
-        contract_choice = self.customer_view.select_contract_by_entry()
+        contract_choice = self.contract_view.select_contract_by_entry()
         if not contract_choice.lower() == 'q':
             # if valid choice : convert choice in object
-            contract = self.customer_model.create_customer_object(contract_choice)
-            if contract:
-                # check permission to modify customer by the logged employee...
-                permission = self.employee_model.check_permission_customer(contract, employee)
-                if permission:
-                    #.... if permit : display customer modification menu
-                    self.customer_view.modify_customer(contract)
+            contract_obj = self.contract_model.create_contract_object(contract_choice)
+            if contract_obj:
+                #check if contract is signed, if yes, modification is forget
+                contract_signed = self.contract_model.check_signature(contract_obj)
+                if not contract_signed:
+                    # check permission to modify contract by the logged employee
+                    permission = self.contract_model.check_permission_contract(employee_id)
+                    if permission:
+                        #.... if permit : display customer modification menu
+                        self.contract_view.modify_contract(contract_obj)
+                    else:
+                        #... if not permit : display customer info
+                        self.contract_view.display_contract_informations(contract_obj)
                 else:
-                    #... if not permit : display customer info
-                    self.customer_view.display_customer_informations(contract)
+                    self.contract_view.display_contract_informations(contract_obj)
             else:
-                display_message('Aucun contrat trouvé avec ce nom. Retour au menu.', True, True, 2)
+                display_message('Aucun contrat trouvé avec ce numero. Retour au menu.', True, True, 2)
+        else:
+            display_message('Retour au menu...', True, True, 2)
+    
+    def sign_contract(self, employee_id):
+        """ sign contract method """
+
+        # display choice selection (by input or list)
+        contract_choice = self.contract_view.select_contract_by_entry()
+        if not contract_choice.lower() == 'q':
+            # if valid choice : convert choice in object
+            contract_obj = self.contract_model.create_contract_object(contract_choice)
+            if contract_obj:
+                #check if contract is signed, if yes, modification is forget
+                contract_signed = self.contract_model.check_signature(contract_obj)
+                if not contract_signed:
+                    # check permission to modify contract by the logged employee
+                    permission = self.contract_model.check_permission_contract(contract_obj, employee_id)
+                    if permission:
+                        #.... if permit : display customer modification menu
+                        self.contract_view.sign_contract(contract_obj)
+                else:
+                    display_message("Ce contrat est signé donc interdit de le modifier. Retour au menu...", True, True, 3)
+            else:
+                display_message('Aucun contrat trouvé avec ce numero. Retour au menu.', True, True, 2)
         else:
             display_message('Retour au menu...', True, True, 2)

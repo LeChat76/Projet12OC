@@ -38,6 +38,7 @@ class EmployeeModel(Base):
     department_id = Column(Integer(), ForeignKey('department.id'), nullable=False)
     department = relationship("DepartmentModel", back_populates="employee")
     customer = relationship("CustomerModel", back_populates="employee")
+    contract = relationship("ContractModel", back_populates="employee")
     event = relationship("EventModel", back_populates="employee")
 
     def __repr__(self):
@@ -49,7 +50,6 @@ class EmployeeModel(Base):
         try:
             session = self.db.get_session()
             employee = session.query(EmployeeModel).filter_by(username=input_username).first()
-            employee = employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(username=input_username).first()
             return employee
         except Exception as e:
             display_message(f"Erreur lors de la recherche employee : {str(e)}", True, True, 3)
@@ -57,7 +57,23 @@ class EmployeeModel(Base):
         finally:
             session.close()
         
-    
+    def create_employee_object(self, employee_id):
+        """
+        method to select an customer in the database
+        INPUT : employee id
+        OUTPUT : employee object """
+
+        try:
+            session = self.db.get_session()
+            employee = session.query(EmployeeModel).filter_by(id=employee_id).first()
+            return employee
+        except Exception as e:
+            display_message(f"Erreur lors de la creation de l'objet employee : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+
     def check_password(self, input_password):
         """
         method to check password with the entered one
@@ -71,30 +87,46 @@ class EmployeeModel(Base):
         else:
             return None
     
-    def check_permission_menu(self, department, employee):
+    def check_permission_menu(self, department, employee_id):
         """
         check authorization of the employee to access to a specific menu
         INPUT : type of menu (customer, contract or event) and employee object
         OUPUT : True or False
         """
 
-        if department == employee.department.name or employee.department.name == 'superadmin':
-            return True
-        else:
-            return False
+        try:
+            session = self.db.get_session()
+            employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
+            if department == employee.department.name or employee.department.name == 'superadmin':
+                return True
+            else:
+                return False
+        except Exception as e:
+            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
 
-    def check_permission_customer(self, customer, employee):
+    def check_permission_customer(self, customer, employee_id):
         """
         function to check authorization of an employee on a customer
         (check if customer.employee_id == employee.id)
-        INPUT : customer object + employee object
+        INPUT : customer object + employee id
         OUTPUT : True of False
         """
 
-        if customer.employee_id == employee.id or employee.department.name == 'superadmin':
-            return True
-        else:
-            return False
+        try:
+            session = self.db.get_session()
+            employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
+            if customer.employee_id == employee.id or employee.department.name == 'superadmin':
+                return True
+            else:
+                return False
+        except Exception as e:
+            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
 
 class DepartmentModel(Base):
     """ Department class """
@@ -231,13 +263,14 @@ class CustomerModel(Base):
 class ContractModel(Base):
     """ Contract class """
     
-    def __init__(self, customer_info, price, due, status, customer):
+    def __init__(self, customer_info, price, due, status, customer, employee_id):
         self.db = Database(DB_URL)
         self.customer_info = customer_info
         self.price = price
         self.due = due
         self.status = status
         self.customer = customer
+        self.employee_id = employee_id
     
     __tablename__ = 'contract'
     id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -248,10 +281,13 @@ class ContractModel(Base):
     status = Column(String(10), nullable=False, server_default='NOT-SIGNED')
     customer_id = Column(Integer(), ForeignKey('customer.id'), nullable=False)
     customer = relationship("CustomerModel", back_populates="contract")
+    employee_id = Column(Integer(), ForeignKey('employee.id'), nullable=False)
+    employee = relationship("EmployeeModel", back_populates="contract")
     event = relationship("EventModel", uselist=False, back_populates="contract")
 
     def __repr__(self):
-        return f"Contrat numero: '{self.id}' pour la société: '{self.customer.company}'"
+        status_text = "OUI" if self.status == "SIGNED" else "NON"
+        return f"Contrat numero '{self.id}' pour le client '{self.customer.name}' de la société '{self.customer.company}', signé : '{status_text}."
 
     def add_contract(self, new_contract):
         """
@@ -268,6 +304,89 @@ class ContractModel(Base):
         except Exception as e:
             session.rollback()
             display_message(f"Erreur lors de l'ajout du contrat : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def create_contract_object(self, contract_id):
+        """
+        method to create contract object
+        INPUT : contract id
+        OUTPUT : contract object """
+
+        try:
+            session = self.db.get_session()
+            contract_obj = session.query(ContractModel).options(joinedload(ContractModel.customer)).filter_by(id=contract_id).first()
+            return contract_obj
+        except Exception as e:
+            display_message(f"Erreur lors de la creation de l'objet contrat: {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def check_permission_contract(self, employee_id):
+        """
+        function to check authorization of an employee on a customer
+        (check if customer.employee_id == employee.id)
+        INPUT : customer object & employee id
+        OUTPUT : True of False
+        """
+
+        try:
+            session = self.db.get_session()
+            employee_obj = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
+            if employee_obj.department.name == "management" or employee_obj.department.name == 'superadmin':
+                return True
+            else:
+                return False
+        except Exception as e:
+            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def search_all_contracts(self):
+        """ method to select all contracts """
+
+        try:
+            session = self.db.get_session()
+            contracts_list = session.query(ContractModel).options(joinedload(ContractModel.customer)).all()
+            return contracts_list
+        except Exception as e:
+            display_message(f"Erreur lors de la recherche des contrats : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def check_signature(self, contract_obj):
+        """
+        check if contract is signed 
+        INPUT : contract object
+        OUTPUT : True or False
+        """
+
+        if contract_obj.status == "SIGNED":
+            return True
+        else:
+            return False
+    def update_contract(self, updated_contract):
+        """
+        method to update contract in database
+        INPUT : contract object
+        RESULT : update contract un database
+        """
+
+        try:
+            session = self.db.get_session()
+            contract = session.query(ContractModel).filter_by(id=updated_contract.id).first()
+            contract.customer_info = updated_contract.customer_info
+            contract.price = updated_contract.price
+            contract.due = updated_contract.due
+            contract.status = updated_contract.status
+            session.commit()
+            display_message(f"Contrat '{updated_contract.id}' mis à jour avec succès!", True, True, 3)
+        except Exception as e:
+            display_message(f"Erreur lors de la modification du contrat : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()

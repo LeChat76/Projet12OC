@@ -8,6 +8,7 @@ from constants.base_menu import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MEN
 from constants.database_config import DB_URL
 from controllers.customer_controller import CustomerController
 from controllers.contract_controller import ContractController
+from views.utils_view import display_message
 
 
 class epicEvents:
@@ -41,21 +42,21 @@ class epicEvents:
                 password_valid = EmployeeModel.check_password(employee, input_password)
                 if password_valid:
                     authentication = True
-                    self.main_menu(employee)
+                    self.main_menu(employee.id)
                 else:
-                    print('\nPassword incorrect! Merci de resaisir.\n')
+                    display_message('Password incorrect! Merci de resaisir.', True, True, 0)
             else:
-                print('\nUtilisateur inexistant.\n')
+                display_message('Utilisateur inexistant.', True, True, 0)
 
-    def main_menu(self, employee):
+    def main_menu(self, employee_id):
         """ main menu """
 
         while True:
             choice = self.main_menu_view.main_menu()
             if choice == MENU_CUSTOMERS:
-                self.customer_controller.menu_customer(employee)
+                self.customer_controller.menu_customer(employee_id)
             if choice == MENU_CONTRACTS:
-                self.contract_controller.menu_customer(employee)
+                self.contract_controller.menu_customer(employee_id)
             if choice == MENU_EVENTS:
                 pass
             elif choice == MENU_EXIT:
