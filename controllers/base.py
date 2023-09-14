@@ -16,11 +16,8 @@ class epicEvents:
     def __init__(self):
         self.db = Database(DB_URL)
         if not self.db.tables_exist():
-            print('TOP')
-            input()
             try:
                 self.db.create_tables()
-                self.db.create_superadmin()
             except Exception as e:
                 print(f"Une erreur s'est produite lors de l'initialisation de la base de données : {e}")
                 sys.exit()

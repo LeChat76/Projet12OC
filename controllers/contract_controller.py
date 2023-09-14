@@ -1,7 +1,7 @@
 from views.contract_view import ContractView
-from models.models import ContractModel
+from models.models import ContractModel, EmployeeModel
 from constants.contract_menu import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_EXIT
-from models.utils_model import check_permission_menu, check_permission_customer
+# from models.utils_model import check_permission_menu, check_permission_customer
 from views.utils_view import display_message
 
 
@@ -11,6 +11,7 @@ class ContractController:
     def __init__(self, db):
         self.db = db
         self.contract_view = ContractView()
+        self.employee_model = EmployeeModel() 
         self.contract_model = ContractModel(None, None, None, None, None) 
 
     def menu_customer(self, employee):
@@ -31,7 +32,7 @@ class ContractController:
         """ creation of contract method """
 
         # check permission of the logged employee to access to this menu
-        permission = check_permission_menu('management', employee)
+        permission = self.employee_model.check_permission_menu('management', employee)
         if permission:
             new_contract = self.contract_view.add_contract()
             if new_contract == 'q':
@@ -51,7 +52,7 @@ class ContractController:
             contract = self.customer_model.create_customer_object(contract_choice)
             if contract:
                 # check permission to modify customer by the logged employee...
-                permission = check_permission_customer(contract, employee)
+                permission = self.employee_model.check_permission_customer(contract, employee)
                 if permission:
                     #.... if permit : display customer modification menu
                     self.customer_view.modify_customer(contract)

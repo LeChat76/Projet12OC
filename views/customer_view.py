@@ -65,7 +65,7 @@ class CustomerView:
         while not customer_company:
             customer_company = input("Nom de l'entreprise (obligatoire, max 255 caractères): ")
         
-        new_customer = CustomerModel(customer_name, customer_email, customer_phone, customer_company, employee.id)
+        new_customer = CustomerModel(customer_name, customer_email, customer_phone, customer_company, employee)
 
         return new_customer
     

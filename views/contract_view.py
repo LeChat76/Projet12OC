@@ -9,8 +9,8 @@ class ContractView:
     """ Customer view class """
 
     def __init__(self):
-        self.contract_model = ContractModel(None, None, None, None, None)
         self.customer_view = CustomerView()
+        self.contract_model = ContractModel(None, None, None, None, None)
         self.customer_model = CustomerModel(None, None, None, None, None)
 
     def contract_menu(self):
@@ -90,5 +90,5 @@ class ContractView:
                 break
             else:
                 customer = self.customer_model.create_customer_object(customer_choice)
-                new_contract = ContractModel(customer_info, price, due, status, customer.id)
+                new_contract = ContractModel(customer_info, price, due, status, customer)
                 return new_contract

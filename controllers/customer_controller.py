@@ -1,7 +1,7 @@
 import time
-from models.models import CustomerModel
+from models.models import CustomerModel, EmployeeModel
 from views.customer_view import CustomerView
-from models.utils_model import check_permission_menu, check_permission_customer
+# from models.utils_model import check_permission_menu, check_permission_customer
 from views.utils_view import display_message, input_message	
 from constants.customer_menu import MENU_CUSTOMER_CREATION, MENU_CUSTOMER_UPDATE, MENU_CUSTOMER_DELETE, MENU_CUSTOMER_EXIT
 
@@ -12,7 +12,8 @@ class CustomerController:
     def __init__(self, db):
         self.db = db
         self.customer_view = CustomerView()
-        self.customer_model = CustomerModel(None, None, None, None, None) 
+        self.employee_model = EmployeeModel()
+        self.customer_model = CustomerModel(None, None, None, None, None)
 
     def menu_customer(self, employee):
         """ Customer menu """
@@ -32,7 +33,7 @@ class CustomerController:
         """ creation of customer method """
 
         # check permission of the logged employee to access to this menu
-        permission = check_permission_menu('commercial', employee)
+        permission = self.employee_model.check_permission_menu('commercial', employee)
         if permission:
             new_customer = self.customer_view.add_customer(employee)
             self.customer_model.add_customer(new_customer)
@@ -49,7 +50,7 @@ class CustomerController:
             customer = self.customer_model.create_customer_object(customer_choice)
             if customer:
                 # check permission to modify customer by the logged employee...
-                permission = check_permission_customer(customer, employee)
+                permission = self.employee_model.check_permission_customer(customer, employee)
                 if permission:
                     #.... if permit : display customer modification menu
                     self.customer_view.modify_customer(customer)
@@ -66,7 +67,7 @@ class CustomerController:
 
         choice = ''
         # check permission to access to this menu
-        permission = check_permission_menu('commercial', employee)
+        permission = self.employee_model.check_permission_menu('commercial', employee)
         if not permission:
             print("Vous n'avez pas la permission de suppression des clients.")
             time.sleep(2)

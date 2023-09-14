@@ -1,12 +1,29 @@
 from sqlalchemy import Column, Integer, String, TIMESTAMP, Float, Enum, ForeignKey, text, create_engine, inspect
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship, sessionmaker, joinedload
+from sqlalchemy.exc import IntegrityError
 from constants.database_config import DB_URL
 from views.utils_view import display_message
 import bcrypt
 
 
 Base = declarative_base()
+
+class EventModel(Base):
+    """ Event class """
+
+    __tablename__ = 'event'
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+    customer_contact = Column(String(255), nullable=False)
+    date_start = Column(TIMESTAMP, nullable=False)
+    date_end = Column(TIMESTAMP, nullable=False)
+    location = Column(String(255), nullable=False)
+    attendees = Column(Integer(), nullable=False, default=0)
+    notes = Column(String(1000), nullable=True)
+    employee_id = Column(Integer(), ForeignKey('employee.id'), nullable=False)
+    employee = relationship("EmployeeModel", back_populates="event")
+    contract_id = Column(Integer(), ForeignKey('contract.id'), nullable=False)
+    contract = relationship("ContractModel", uselist=False, back_populates="event")
 
 class EmployeeModel(Base):
 
@@ -17,26 +34,29 @@ class EmployeeModel(Base):
     id = Column(Integer(), primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
-    department = Column(Enum('management', 'support', 'commercial', 'superadmin'), nullable=False)
     status = Column(String(7), nullable=False, server_default='ENABLE')
-    customers = relationship("CustomerModel", back_populates="employee")
+    department_id = Column(Integer(), ForeignKey('department.id'), nullable=False)
+    department = relationship("DepartmentModel", back_populates="employee")
+    customer = relationship("CustomerModel", back_populates="employee")
+    event = relationship("EventModel", back_populates="employee")
 
     def __repr__(self):
         return f"Employe '{self.username}', department '{self.department}'."
-   
+    
     def search_employee(self, input_username):
-        """ 
-        method to search employee
-        INPUT : entered username
-        OUTPUT : employee object
-        """
+        """ method to search employee """
 
-        session = self.db.get_session()
-        employee = session.query(EmployeeModel).filter_by(username=input_username).first()
-        if employee:
+        try:
+            session = self.db.get_session()
+            employee = session.query(EmployeeModel).filter_by(username=input_username).first()
+            employee = employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(username=input_username).first()
             return employee
-        else:
+        except Exception as e:
+            display_message(f"Erreur lors de la recherche employee : {str(e)}", True, True, 3)
             return None
+        finally:
+            session.close()
+        
     
     def check_password(self, input_password):
         """
@@ -50,17 +70,51 @@ class EmployeeModel(Base):
             return True
         else:
             return None
+    
+    def check_permission_menu(self, department, employee):
+        """
+        check authorization of the employee to access to a specific menu
+        INPUT : type of menu (customer, contract or event) and employee object
+        OUPUT : True or False
+        """
+
+        if department == employee.department.name or employee.department.name == 'superadmin':
+            return True
+        else:
+            return False
+
+    def check_permission_customer(self, customer, employee):
+        """
+        function to check authorization of an employee on a customer
+        (check if customer.employee_id == employee.id)
+        INPUT : customer object + employee object
+        OUTPUT : True of False
+        """
+
+        if customer.employee_id == employee.id or employee.department.name == 'superadmin':
+            return True
+        else:
+            return False
+
+class DepartmentModel(Base):
+    """ Department class """
+
+    __tablename__ = 'department'
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+    name = Column(String(50), nullable=False, unique=True)
+    description = Column(String(255), nullable=True)
+    employee = relationship("EmployeeModel", back_populates="department")
 
 class CustomerModel(Base):
     """ Customer class """
     
-    def __init__(self, name, email, phone, company, employee_id):
+    def __init__(self, name, email, phone, company, employee):
         self.db = Database(DB_URL)
         self.name = name
         self.email = email
         self.phone = phone
         self.company = company
-        self.employee_id = employee_id
+        self.employee = employee
     
     __tablename__ = 'customer'
     id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -71,8 +125,8 @@ class CustomerModel(Base):
     date_creation = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'), nullable=False)
     date_update = Column(TIMESTAMP, onupdate=text('CURRENT_TIMESTAMP'), nullable=True)
     employee_id = Column(Integer(), ForeignKey('employee.id'), nullable=False)
-    employee = relationship("EmployeeModel", back_populates="customers")
-    contracts = relationship("ContractModel", back_populates="customer")
+    employee = relationship("EmployeeModel", back_populates="customer")
+    contract = relationship("ContractModel", back_populates="customer")
 
     def __repr__(self):
         return f'Client "{self.name}", email "{self.email}", telephone "{self.phone}" de la société "{self.company}".'
@@ -89,9 +143,14 @@ class CustomerModel(Base):
             session.add(new_customer)
             session.commit()
             display_message("Client ajouté avec succès !", True, True, 2)
+        except IntegrityError as e:
+            session.rollback()
+            display_message("Erreur lors de l'ajout du client : l'email est déjà associé à un autre client.", True, False, 0)
+            display_message("Retour au menu....", False, False, 3)
+            return None
         except Exception as e:
             session.rollback()
-            display_message(f"Erreur lors de l'ajout du client : {str(e)}", True, True, 2 )
+            display_message(f"Erreur lors de l'ajout du client : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
@@ -104,7 +163,7 @@ class CustomerModel(Base):
             customers_list = session.query(CustomerModel).all()
             return customers_list
         except Exception as e:
-            display_message(f"Erreur lors de l'ajout du client : {str(e)}", True, True, 2)
+            display_message(f"Erreur lors de la recherche des clients : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
@@ -123,7 +182,7 @@ class CustomerModel(Base):
                 customer = session.query(CustomerModel).filter_by(name = choice).first()
             return customer
         except Exception as e:
-            display_message(f"Erreur lors de l'ajout du client : {str(e)}", True, True, 2)
+            display_message(f"Erreur lors de la creation de l'objet client : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
@@ -143,9 +202,9 @@ class CustomerModel(Base):
             customer.phone = updated_customer.phone
             customer.company = updated_customer.company
             session.commit()
-            display_message(f"Client '{updated_customer.name}' mis à jour avec succès!", True, True, 2)
+            display_message(f"Client '{updated_customer.name}' mis à jour avec succès!", True, True, 3)
         except Exception as e:
-            display_message(f"Erreur lors de l'ajout du client : {str(e)}", True, True, 2)
+            display_message(f"Erreur lors de la modification du client : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
@@ -162,35 +221,23 @@ class CustomerModel(Base):
             customer_to_delete = session.query(CustomerModel).filter_by(id=customer.id).first()
             session.delete(customer_to_delete)
             session.commit()
-            display_message(f"Client '{customer_to_delete.name}' supprimé avec succès!", True, True, 2)
+            display_message(f"Client '{customer_to_delete.name}' supprimé avec succès!", True, True, 3)
         except Exception as e:
-            display_message(f"Erreur lors de la suppresion du client : {str(e)}", True, True, 2)
+            display_message(f"Erreur lors de la suppresion du client : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
 
-class Event(Base):
-    __tablename__ = 'event'
-    id = Column(Integer(), primary_key=True, autoincrement=True)
-    customer_contact = Column(String(255), nullable=False)
-    date_start = Column(TIMESTAMP, nullable=False)
-    date_end = Column(TIMESTAMP, nullable=False)
-    location = Column(String(255), nullable=False)
-    attendees = Column(Integer(), nullable=False, default=0)
-    notes = Column(String(1000), nullable=True)
-    employee_id = Column(Integer(), ForeignKey('employee.id'), nullable=False)
-    employee = relationship("EmployeeModel")
-
 class ContractModel(Base):
-    """ Cotnract class """
+    """ Contract class """
     
-    def __init__(self, customer_info, price, due, status, customer_id):
+    def __init__(self, customer_info, price, due, status, customer):
         self.db = Database(DB_URL)
         self.customer_info = customer_info
         self.price = price
         self.due = due
         self.status = status
-        self.customer_id = customer_id
+        self.customer = customer
     
     __tablename__ = 'contract'
     id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -200,12 +247,11 @@ class ContractModel(Base):
     date_creation = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'), nullable=False)
     status = Column(String(10), nullable=False, server_default='NOT-SIGNED')
     customer_id = Column(Integer(), ForeignKey('customer.id'), nullable=False)
-    event_id = Column(Integer(), ForeignKey('event.id'), nullable=True)
-    customer = relationship("CustomerModel", back_populates="contracts")
-    event = relationship("Event")
+    customer = relationship("CustomerModel", back_populates="contract")
+    event = relationship("EventModel", uselist=False, back_populates="contract")
 
     def __repr__(self):
-        return f"Contract numero: '{self.id}' pour la société: '{self.customer.company}'"
+        return f"Contrat numero: '{self.id}' pour la société: '{self.customer.company}'"
 
     def add_contract(self, new_contract):
         """
@@ -218,33 +264,23 @@ class ContractModel(Base):
             session = self.db.get_session()
             session.add(new_contract)
             session.commit()
-            display_message(str(new_contract) + ' créé avec succes. Retour au menu...', True, True, 2)
+            display_message(str(new_contract) + ' créé avec succes. Retour au menu...', True, True, 3)
         except Exception as e:
             session.rollback()
-            display_message(f"Erreur lors de l'ajout du contrat : {str(e)}", True, True, 2)
+            display_message(f"Erreur lors de l'ajout du contrat : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
 
 class Database:
+    """ Database class """
+
     def __init__(self, db_url):
         self.engine = create_engine(db_url)
         self.Session = sessionmaker(bind=self.engine)
 
     def create_tables(self):
-        print('CREATE TABLE')
         Base.metadata.create_all(self.engine)
-
-    def create_superadmin(self):
-        session = self.get_session()
-        superadmin = EmployeeModel(
-            username='cedric',
-            department='superadmin',
-            password=bcrypt.hashpw('Toto1234!'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-        )
-        session.add(superadmin)
-        session.commit()
-        session.close()
 
     def tables_exist(self):
         inspector = inspect(self.engine)
