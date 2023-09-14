@@ -1,8 +1,5 @@
 # Projet12OC
 
-
-Lancer l'application avec `python main.py`
-
 * Page de login (user de test : cedric / Toto1234!)
 
 * Menu 1 - 1 : creation client
@@ -14,7 +11,7 @@ Lancer l'application avec `python main.py`
 
 c'est tout pour le moment
 
-CONFIGURATION:
+## CONFIGURATION:
 
 * créer table epicevents sur mysql
    => `CREATE DATABASE epicevents;`
@@ -26,6 +23,6 @@ CONFIGURATION:
 
    => `INSERT INTO epicevents.employee (username,password,`department_id`,status) VALUES ('cedric','$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i','1','ENABLE');`
 
-EXECUTION:
+## EXECUTION:
 
 * lancer l'application avec `python main.py`
