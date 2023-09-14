@@ -1,7 +1,5 @@
 # Projet12OC
 
-* Page de login (user de test : cedric / Toto1234!)
-
 * Menu 1 - 1 : creation client
 * Menu 1 - 2 : vue/modification client
 * Menu 1 - 3 : suppression client
@@ -25,4 +23,4 @@ c'est tout pour le moment
 
 ## EXECUTION:
 
-* lancer l'application avec `python main.py`
+* lancer l'application avec `python main.py` et au menu faire ENTRER + ENTRER (login automatique le temps de developpement  ;-) )
