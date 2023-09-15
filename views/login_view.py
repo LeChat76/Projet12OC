@@ -1,4 +1,5 @@
 from getpass_asterisk.getpass_asterisk import getpass_asterisk
+from constants.department import SUPERADMIN
 import time
 
 
@@ -29,7 +30,7 @@ class LoginMenu:
         username = input("Nom d'utilisateur : ")
         if not username:
             # A SUPPRIMER
-            username = "cedric"
+            username = SUPERADMIN
         password = getpass_asterisk("Mot de passe : ")
         if not password:
             # A SUPPRIMER

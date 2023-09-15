@@ -142,6 +142,9 @@ class DepartmentModel(Base):
     description = Column(String(255), nullable=True)
     employee = relationship("EmployeeModel", back_populates="department")
 
+    def __repr__(self):
+        return f"Department '{self.name}', {self.description.lower()}."
+
 class CustomerModel(Base):
     """ Customer class """
     
@@ -301,7 +304,7 @@ class ContractModel(Base):
 
     def __repr__(self):
         status_text = "OUI" if self.status == "SIGNED" else "NON"
-        return f"Contrat numero '{self.id}' pour le client '{self.customer.name}' de la société '{self.customer.company}', signé : '{status_text}."
+        return f"Contrat numero '{self.id}' pour le client '{self.customer.name}' de la société '{self.customer.company}', signé : '{status_text.capitalize()}'."
 
     def add_contract(self, new_contract_obj):
         """
@@ -339,7 +342,7 @@ class ContractModel(Base):
         finally:
             session.close()
 
-    def check_permission_contract(self, employee_id):
+    def check_permission(self, employee_id):
         """
         function to check authorization to access to the contract signature menu (dept management or superadmin)
         INPUT : employee id
@@ -408,6 +411,26 @@ class ContractModel(Base):
         finally:
             session.close()
 
+    def delete_contract(self, contract_obj):
+        """
+        method to delete contract from database
+        INPUT : contract obj
+        RESULT : deletion of the contract in the database
+        """
+
+        try:
+            session = self.db.get_session()
+            contract_to_delete = session.query(ContractModel).filter_by(id=contract_obj.id).first()
+            session.delete(contract_to_delete)
+            session.commit()
+            display_message(f"Contrat némro '{contract_to_delete.id}' supprimé avec succès!", True, True, 3)
+        except Exception as e:
+            session.rollback()
+            display_message(f"Erreur lors de la suppresion du contrat : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
 class Database:
     """ Database class """
 
@@ -416,9 +439,58 @@ class Database:
         self.Session = sessionmaker(bind=self.engine)
 
     def create_tables(self):
+        """ method to create tables + superadmin account """
         Base.metadata.create_all(self.engine)
+        self.create_departments_entries()
+        self.create_super_admin()
+    
+    def create_departments_entries(self):
+        """ method to create base departments entries for creation of the superadmin account """
+
+        session = self.get_session()    
+
+        department_data = [
+            {"name": COMMERCIAL, "description": "Service commercial"},
+            {"name": SUPPORT, "description": "Service support"},
+            {"name": MANAGEMENT, "description": "Service gestion"},
+            {"name": SUPERADMIN, "description": "Service super administrateur"}
+        ]
+
+        for data in department_data:
+            department = DepartmentModel()
+            department.name = data["name"]
+            department.description = data["description"]
+            session.add(department)
+
+        session.commit()
+        session.close()
+
+
+    def create_super_admin(self):
+        """ method to create superadmin account """
+
+        session = self.get_session()
+
+        employee_data = [
+            {"username": SUPERADMIN, "department_id": 4, "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
+            {"username": SUPPORT, "department_id": 2, "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
+            {"username": MANAGEMENT, "department_id": 3, "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
+            {"username": COMMERCIAL, "department_id": 1, "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
+        ]
+
+        for data in employee_data:
+            employee = EmployeeModel()
+            employee.username = data["username"]
+            employee.password = data["password"]
+            employee.department_id = (session.query(DepartmentModel).filter_by(name=data["username"]).first()).id
+            session.add(employee)
+
+        session.commit()
+        session.close()
 
     def tables_exist(self):
+        """ method to check if tables already exists """
+
         inspector = inspect(self.engine)
         table_names = inspector.get_table_names()
         required_tables = ["customer", "employee", "contract", "event"]

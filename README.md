@@ -14,13 +14,6 @@ c'est tout pour le moment
 * créer table epicevents sur mysql
    => `CREATE DATABASE epicevents;`
 
-* créer groupe avec requete sql:
-   => `INSERT INTO epicevents.department (name) VALUES ('superadmin'), ('management'), ('commercial'), ('support');`
-
-* créer compte superadmin avec requete sql : 
-
-   => `INSERT INTO epicevents.employee (username,password,`department_id`,status) VALUES ('cedric','$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i','1','ENABLE');`
-
 ## EXECUTION:
 
-* lancer l'application avec `python main.py` et au menu faire ENTRER + ENTRER (login automatique le temps de developpement  ;-) )
+* lancer l'application avec `python main.py` et au menu faire ENTRER + ENTRER (login automatique avec superadmin le temps du developpement  ;-) )

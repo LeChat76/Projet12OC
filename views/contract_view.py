@@ -98,7 +98,6 @@ class ContractView:
 
         while True:
             contract_number = input("\nQuel est le numero du contrat ([ENTRER] pour afficher une liste)? ")
-            print()
             if not contract_number:
                 contract = self.select_contract_by_list()
                 return contract
@@ -136,7 +135,6 @@ class ContractView:
 
             if not choice_made_boolean:
                 choice = input("\nFin de liste atteinte. Faites un choix, [ENTRER] pour relancer ou (q)uitter? ")
-                # print()
                 if choice.lower() == "q":
                     return choice
                 elif choice:
@@ -156,7 +154,7 @@ class ContractView:
         customer_info = None
         modification_state_boolean = False
 
-        print(f"Information actuelle sur le client et son evenement :\n {contract_obj.customer_info}\n")
+        print(f"Information actuelle sur le client et son evenement:\n{contract_obj.customer_info}\n")
         customer_info = input("Modifier ([ENTRER] pour conserver information actuelle)? ")
         if customer_info:
             modification_state_boolean = True
