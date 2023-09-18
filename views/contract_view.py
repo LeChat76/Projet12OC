@@ -1,8 +1,6 @@
 import time
 from views.utils_view import clear_screen
-from models.models import ContractModel
 from views.customer_view import CustomerView
-from models.models import CustomerModel, EmployeeModel
 from constants.contract import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_EXIT
 
 
@@ -11,9 +9,6 @@ class ContractView:
 
     def __init__(self):
         self.customer_view = CustomerView()
-        self.employee_model = EmployeeModel()
-        self.contract_model = ContractModel(None, None, None, None, None, None)
-        self.customer_model = CustomerModel(None, None, None, None, None)
 
     def contract_menu(self):
         """ Menu 2 - CONTRAT """
@@ -42,7 +37,7 @@ class ContractView:
 
         return choice
 
-    def add_contract(self, employee_id):
+    def add_contract(self):
         """ ask informations about new contract to add """
 
         clear_screen()
@@ -85,65 +80,62 @@ class ContractView:
                     status = "SIGNED"
                     break
             
-            customer_choice = self.customer_view.select_customer_by_entry()
-            if customer_choice.lower() == "q":
-                return "q"
-            else:
-                customer_obj = self.customer_model.create_customer_object(customer_choice)
-                new_contract_obj = ContractModel(customer_info, price, due, status, customer_obj, employee_id)
-                return new_contract_obj
+            return customer_info, price, due, status
 
     def select_contract_by_entry(self):
         """ selection of a contract by typing """
 
         while True:
             contract_number = input("\nQuel est le numero du contrat ([ENTRER] pour afficher une liste)? ")
+            print()
             if not contract_number:
-                contract = self.select_contract_by_list()
-                return contract
+                return None
             elif not contract_number.isnumeric():
                 print("\nMerci de saisir un chiffre.\n")
             else:
+                print()
                 return contract_number
     
-    def select_contract_by_list(self):
+    def select_contract_by_list(self, contracts_list):
         """ selection of a contract by list """
 
         # display list of contracts
-        list_contracts = self.contract_model.search_all_contracts()
         while True:
             counter_int = 1
             contract_id_list = []
-            choice_made_boolean = False
 
-            for contract in list_contracts:
+            for contract in contracts_list:
                 print(" - " + str(contract))
                 contract_id_list.append(contract.id)
                 counter_int += 1
                 time.sleep(0.1)
                 if counter_int %5 == 0:
-                    choice = input ("\nAvez vous fait un choix [ENTRER] pour continuer ou (q)uitter? ")
-                    print()
+                    choice = input("\nQuel est votre choix ([ENTRER] pour continuer ou (q)uitter)? ")
                     if choice.lower() == "q":
-                        choice_made_boolean = True
-                        break
-                    elif choice:
-                        choice_made_boolean = True
-                        break
+                        return choice
+                    elif choice.isalpha():
+                        print("Merci de saisir un chiffre/nombre\n")
+                    elif choice.isnumeric():
+                        if int(choice) not in contract_id_list:
+                            print("Ce choix ne fait pas parti de la liste...\n")
+                        else:
+                            return choice
                     else:
                         print()
 
-            if not choice_made_boolean:
-                choice = input("\nFin de liste atteinte. Faites un choix, [ENTRER] pour relancer ou (q)uitter? ")
-                if choice.lower() == "q":
-                    return choice
-                elif choice:
-                    choice_made_boolean = True
-                    return choice
-            else:
+            choice = input("\nFin de liste atteinte. Faites un choix ou [ENTRER] pour relancer ou (q)uitter: ")
+            print()
+            if choice.lower() == "q":
                 return choice
+            elif choice.isalpha():
+                print("Merci de saisir un chiffre/nombre\n")
+            elif choice.isnumeric():
+                if int(choice) not in contract_id_list:
+                    print("Ce choix ne fait pas parti de la liste...\n")
+                else:
+                    return choice
         
-    def modify_contract(self, contract_obj):
+    def update_contract(self, contract_obj):
         """ modifications input for a contract """    
 
         clear_screen()
@@ -197,11 +189,9 @@ class ContractView:
                 break
         
         if modification_state_boolean:
-            #record modifications in database
-            self.contract_model.update_contract(contract_obj)
+            return contract_obj
         else:
-            print("\nAucune modification apportée au contrat, retour au menu.\n")
-            time.sleep(3)
+            return None
 
     def sign_contract(self, contract_obj):
         """

@@ -2,14 +2,10 @@ import re
 import time
 from views.utils_view import clear_screen
 from constants.customer import MENU_CUSTOMER_CREATION, MENU_CUSTOMER_UPDATE, MENU_CUSTOMER_DELETE, MENU_CUSTOMER_EXIT
-from models.models import CustomerModel
 
 
 class CustomerView:
     """ Customer view class """
-
-    def __init__(self):
-        self.customer_model = CustomerModel(None, None, None, None, None)
 
     def customer_menu(self):
         """ Menu 1 - CLIENT """
@@ -36,7 +32,7 @@ class CustomerView:
 
         return choice
     
-    def add_customer(self, employee_obj):
+    def add_customer(self):
         """ ask informations about new customer to add """
 
         customer_name, customer_email, customer_phone, customer_company = None, None, None, None
@@ -65,33 +61,27 @@ class CustomerView:
         while not customer_company:
             customer_company = input("Nom de l'entreprise (obligatoire, max 255 caractères): ")
         
-        new_customer_obj = CustomerModel(customer_name, customer_email, customer_phone, customer_company, employee_obj)
+        return customer_name, customer_email, customer_phone, customer_company
 
-        return new_customer_obj
-    
     def select_customer_by_entry(self):
         """ selection of a customer by typing """
 
         while True:
             customer_name = input("\nQuel est le nom du client [ENTRER pour afficher une liste]? ")
-            print()
-            if not customer_name:
-                customer = self.select_customer_by_list()
-                return customer
-            elif any(char.isalpha() for char in customer_name) and any(char.isdigit() for char in customer_name):
+            if any(char.isalpha() for char in customer_name) and any(char.isdigit() for char in customer_name):
                 return customer_name
             elif any(char.isalpha() for char in customer_name):
                 return customer_name                
+            else:
+                print()
+                return customer_name
     
-    def select_customer_by_list(self):
+    def select_customer_by_list(self, customers_list):
         """ selection of a customer by list """
 
-        # display list of customers
-        customers_list = self.customer_model.search_all_customers()
         while True:
             counter_int = 1
             customer_id_list = []
-            choice_made_boolean = False
 
             for customer in customers_list:
                 print(str(counter_int) + ' - ' + str(customer))
@@ -99,28 +89,26 @@ class CustomerView:
                 counter_int += 1
                 time.sleep(0.1)
                 if counter_int %5 == 0:
-                    choice = input ("\nSaisir numero de ligne ou [ENTRER] pour continuer ou (q)uitter? ")
+                    choice = input ("\nSaisir numero de ligne ([ENTRER] pour continuer ou (q)uitter)? ")
                     if choice.lower() == "q":
-                        choice_made_boolean = True
-                        break
-                    elif choice:
-                        choice_made_boolean = True
-                        break
+                        return choice
+                    elif choice.isalpha():
+                        print("\nMerci de saisir un chiffre.\n")
+                    elif choice.isnumeric():
+                        return choice
                     else:
                         print()
 
-            if not choice_made_boolean:
-                choice = input("\nFin de liste atteinte. Faites un choix, [ENTRER] pour relancer ou (q)uitter? ")
-                print()
-                if choice.lower() == "q":
-                    return choice
-                elif choice:
-                    choice_made_boolean = True
-                    return choice
-            else:
+            choice = input("\nFin de liste atteinte. Faites un choix ou [ENTRER] pour relancer ou (q)uitter: ")
+            print()
+            if choice.lower() == "q":
+                return choice
+            elif choice.isalpha():
+                print("\nMerci de saisir un chiffre.\n")
+            elif choice.isnumeric():
                 return choice
         
-    def modify_customer(self, customer):
+    def update_customer(self, customer):
         """ modifications input for a customer """    
 
         clear_screen()
@@ -172,11 +160,9 @@ class CustomerView:
                 break
         
         if modification_state_boolean:
-            #record modifications in database
-            self.customer_model.update_customer(customer)
+            return customer
         else:
-            print("\nAucune modification apportée au client, retour au menu.\n")
-            time.sleep(3)
+            return None
 
     def display_customer_informations(self, customer):
         """
