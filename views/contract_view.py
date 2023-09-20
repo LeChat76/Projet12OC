@@ -18,15 +18,15 @@ class ContractView:
             choice != MENU_CONTRACT_DELETE and choice != MENU_CONTRACT_EXIT and\
             choice != MENU_CONTRACT_SIGNATURE:
             clear_screen()
-            print("+-------------------------------+")
-            print("|          MENU CONTRAT         |")
-            print("+-------------------------------+")
-            print("| 1 - création d'un contrat     |")
-            print("| 2 - voir/modifier un contrat  |")
-            print("| 3 - suppression d'un contrat  |")
-            print("| 4 - signer un contrat         |")
-            print("| 5 - revenir au menu principal |")
-            print("+-------------------------------+")
+            print("+--------------------------------+")
+            print("|          MENU CONTRAT          |")
+            print("+--------------------------------+")
+            print("| 1 - création d'un contrat      |")
+            print("| 2 - voir/modifier un contrat   |")
+            print("| 3 - suppression d'un contrat   |")
+            print("| 4 - signer un contrat          |")
+            print("| 5 - revenir au menu principal  |")
+            print("+--------------------------------+")
 
             choice = input("Quel est votre choix : ")
             if not choice.isnumeric():
@@ -116,8 +116,8 @@ class ContractView:
                     elif choice.isalpha():
                         print("Merci de saisir un chiffre/nombre\n")
                     elif choice.isnumeric():
-                        if int(choice) not in contract_id_list:
-                            print("Ce choix ne fait pas parti de la liste...\n")
+                        if int(choice) >= counter_int:
+                            print("\nCe choix ne fait pas parti de la liste...\n")
                         else:
                             return choice
                     else:
@@ -130,8 +130,8 @@ class ContractView:
             elif choice.isalpha():
                 print("Merci de saisir un chiffre/nombre\n")
             elif choice.isnumeric():
-                if int(choice) not in contract_id_list:
-                    print("Ce choix ne fait pas parti de la liste...\n")
+                if int(choice) >= counter_int:
+                    print("\nCe choix ne fait pas parti de la liste...\n")
                 else:
                     return choice
         

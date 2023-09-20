@@ -14,14 +14,14 @@ class CustomerView:
         while choice !=  MENU_CUSTOMER_CREATION and choice != MENU_CUSTOMER_UPDATE and\
             choice != MENU_CUSTOMER_DELETE and choice != MENU_CUSTOMER_EXIT:
             clear_screen()
-            print("+-------------------------------+")
-            print("|          MENU JOUEUR          |")
-            print("+-------------------------------+")
-            print("| 1 - création d'un client      |")
-            print("| 2 - voir/modifier un client   |")
-            print("| 3 - suppression d'un client   |")
-            print("| 4 - revenir au menu principal |")
-            print("+-------------------------------+")
+            print("+--------------------------------+")
+            print("|          MENU JOUEUR           |")
+            print("+--------------------------------+")
+            print("| 1 - création d'un client       |")
+            print("| 2 - voir/modifier un client    |")
+            print("| 3 - suppression d'un client    |")
+            print("| 4 - revenir au menu principal  |")
+            print("+--------------------------------+")
 
             choice = input("Quel est votre choix : ")
             if not choice.isnumeric():
@@ -95,7 +95,10 @@ class CustomerView:
                     elif choice.isalpha():
                         print("\nMerci de saisir un chiffre.\n")
                     elif choice.isnumeric():
-                        return choice
+                        if int(choice) >= counter_int:
+                            print("\nCe choix ne fait pas parti de la liste...\n")
+                        else:
+                            return choice
                     else:
                         print()
 
@@ -106,7 +109,10 @@ class CustomerView:
             elif choice.isalpha():
                 print("\nMerci de saisir un chiffre.\n")
             elif choice.isnumeric():
-                return choice
+                if int(choice) >= counter_int:
+                    print("\nCe choix ne fait pas parti de la liste...\n")
+                else:
+                    return choice
         
     def update_customer(self, customer):
         """ modifications input for a customer """    

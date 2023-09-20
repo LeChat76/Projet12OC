@@ -8,6 +8,7 @@ from constants.base import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EXI
 from constants.database import DB_URL
 from controllers.customer_controller import CustomerController
 from controllers.contract_controller import ContractController
+from controllers.event_controller import EventController
 from views.utils_view import display_message
 
 
@@ -26,6 +27,7 @@ class epicEvents:
         self.main_menu_view = MainMenu()
         self.customer_controller = CustomerController(self.db)
         self.contract_controller = ContractController(self.db)
+        self.event_controller = EventController(self.db)
         self.employee_model = EmployeeModel()
 
     def login_menu(self):
@@ -55,9 +57,9 @@ class epicEvents:
             choice = self.main_menu_view.main_menu()
             if choice == MENU_CUSTOMERS:
                 self.customer_controller.menu_customer(employee_id)
-            if choice == MENU_CONTRACTS:
+            elif choice == MENU_CONTRACTS:
                 self.contract_controller.menu_customer(employee_id)
-            if choice == MENU_EVENTS:
-                pass
+            elif choice == MENU_EVENTS:
+                self.event_controller.menu_event(employee_id)
             elif choice == MENU_EXIT:
                 self.login_menu()

@@ -1,7 +1,6 @@
 from views.contract_view import ContractView, CustomerView
-from models.models import ContractModel, EmployeeModel, CustomerModel
+from models.models import ContractModel, CustomerModel
 from constants.contract import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_DELETE, MENU_CONTRACT_EXIT
-from constants.department import MANAGEMENT
 from views.utils_view import display_message, input_message	
 
 
@@ -12,7 +11,6 @@ class ContractController:
         self.db = db
         self.contract_view = ContractView()
         self.customer_view = CustomerView()
-        self.employee_model = EmployeeModel() 
         self.customer_model = CustomerModel(None, None, None, None, None)
         self.contract_model = ContractModel(None, None, None, None, None, None) 
 

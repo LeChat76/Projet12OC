@@ -9,7 +9,8 @@
 * Menu 2 - 3 : suppression contrat
 * Menu 2 - 4 : signer contrat
 -------------- EVENTS ----------------
-* Menu 1 - 1 : 
+* Menu 3 - 1 : creation d'un evenement
+* Menu 3 - 2 : assignation d'un evenement
 
 c'est tout pour le moment
 

@@ -1,4 +1,4 @@
-from models.models import CustomerModel, EmployeeModel
+from models.models import CustomerModel
 from views.customer_view import CustomerView
 from views.utils_view import display_message, input_message	
 from constants.customer import MENU_CUSTOMER_CREATION, MENU_CUSTOMER_UPDATE, MENU_CUSTOMER_DELETE, MENU_CUSTOMER_EXIT
@@ -10,21 +10,20 @@ class CustomerController:
     def __init__(self, db):
         self.db = db
         self.customer_view = CustomerView()
-        self.employee_model = EmployeeModel()
         self.customer_model = CustomerModel(None, None, None, None, None)
 
     def menu_customer(self, employee_id):
         """ Customer menu """
         
         while True:
-            choix = self.customer_view.customer_menu()
-            if choix == MENU_CUSTOMER_CREATION:
+            choice = self.customer_view.customer_menu()
+            if choice == MENU_CUSTOMER_CREATION:
                 self.add_customer(employee_id)
-            if choix == MENU_CUSTOMER_UPDATE:
+            elif choice == MENU_CUSTOMER_UPDATE:
                 self.update_customer(employee_id)
-            elif choix == MENU_CUSTOMER_DELETE:
+            elif choice == MENU_CUSTOMER_DELETE:
                 self.delete_customer(employee_id)
-            elif choix == MENU_CUSTOMER_EXIT:
+            elif choice == MENU_CUSTOMER_EXIT:
                 break
     
     def add_customer(self, employee_id):
@@ -33,7 +32,6 @@ class CustomerController:
         # check permission of the logged employee to access to this menu
         permission = self.customer_model.check_permission_customer_menu(employee_id)
         if permission:
-            # employee_obj = self.employee_model.create_employee_object(employee_id)
             new_customer_tuple = self.customer_view.add_customer()
             new_customer_obj = CustomerModel(
                 new_customer_tuple[0],
@@ -45,7 +43,7 @@ class CustomerController:
             self.customer_model.add_customer(new_customer_obj)
 
         else:
-            display_message("Vous n'avez pas les authorisations necessaire pour la creation de clients.\nRetour au menu...", True, True, 2)
+            display_message("Vous n'avez pas les authorisations necessaire pour la creation de clients.\nRetour au menu...", True, True, 3)
     
     def update_customer(self, employee_id):
         """ update customer method """

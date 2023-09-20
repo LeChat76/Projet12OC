@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, TIMESTAMP, Float, ForeignKey, text, create_engine, inspect
+from sqlalchemy import Column, Integer, String, TIMESTAMP, Float, ForeignKey, text, create_engine, inspect, or_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, joinedload
 from sqlalchemy.exc import IntegrityError
@@ -13,18 +13,151 @@ Base = declarative_base()
 class EventModel(Base):
     """ Event class """
 
+    def __init__(self):
+        self.db = Database(DB_URL)
+
     __tablename__ = "event"
     id = Column(Integer(), primary_key=True, autoincrement=True)
-    customer_contact = Column(String(255), nullable=False)
     date_start = Column(TIMESTAMP, nullable=False)
     date_end = Column(TIMESTAMP, nullable=False)
     location = Column(String(255), nullable=False)
     attendees = Column(Integer(), nullable=False, default=0)
     notes = Column(String(1000), nullable=True)
-    employee_id = Column(Integer(), ForeignKey("employee.id"), nullable=False)
+    employee_id = Column(Integer(), ForeignKey("employee.id"), nullable=True)
     employee = relationship("EmployeeModel", back_populates="event")
     contract_id = Column(Integer(), ForeignKey("contract.id"), nullable=False)
     contract = relationship("ContractModel", uselist=False, back_populates="event")
+
+    def __repr__(self):
+        return f"Evenement '{self.id}' associé au contrat numero '{self.contract_id}'."
+
+    def add_event(self, new_event):
+        """
+        method to add customer in the database
+        INPUT : event object
+        RESULT : record of the new event in the database
+        """
+        
+        try:
+            session = self.db.get_session()
+            session.add(new_event)
+            session.commit()
+            display_message("Evenement ajouté avec succès !", True, True, 3)
+        except Exception as e:
+            session.rollback()
+            display_message(f"Erreur lors de l'ajout de l'evenement : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def create_event_object(self, choice):
+        """
+        method to create an event object
+        INPUT : event id 
+        OUTPUT : event object
+        """
+
+        try:
+            session = self.db.get_session()
+            event_obj = session.query(EventModel).options(joinedload(EventModel.employee)).get(choice)
+            return event_obj
+        except Exception as e:
+            display_message(f"Erreur lors de la creation de l'objet evenement : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def check_permission_event_creation(self, employee_id):
+        """
+        check authorization of the logged-in employee to access to the event creation menu
+        INPUT : employee id
+        OUPUT : True or False
+        """
+
+        try:
+            session = self.db.get_session()
+            employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
+            if employee.department.name == COMMERCIAL or employee.department.name == SUPERADMIN:
+                return True
+            else:
+                return False
+        except Exception as e:
+            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+    
+    def check_permission_event_assignation(self, employee_id):
+        """
+        check authorization of the logged-in employee to associate an event with an support employee
+        INPUT : employee id
+        OUPUT : True or False
+        """
+
+        try:
+            session = self.db.get_session()
+            employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
+            if employee.department.name == MANAGEMENT or employee.department.name == SUPERADMIN:
+                return True
+            else:
+                return False
+        except Exception as e:
+            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def select_unassigned_event(self):
+        """ method to search unassigned events  """
+
+        try:
+            session = self.db.get_session()
+            unassigned_event = session.query(EventModel) \
+                .filter(EventModel.employee_id.is_(None)) \
+                .all()
+            return unassigned_event
+        except Exception as e:
+            display_message(f"Erreur lors de la recherche d'evenements non assignés : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def search_event(self, event_number):
+        """
+        method to search event
+        INPUT : event number entried by user
+        OUPUT : event object or None
+        """
+
+        try:
+            session = self.db.get_session()
+            event = session.query(EventModel).get(event_number)
+            return event
+        except Exception as e:
+            display_message(f"Erreur lors de la recherche de l'evenement : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def assign_event(self, event_obj, employee_obj):
+        """
+        method to assign employee to an event
+        INPUT : event_obj, employee obj
+        RESULT : update event in the dataabse to fill field employee_id
+        """
+
+        try:
+            session = self.db.get_session()
+            event = session.query(EventModel).get(event_obj.id)
+            event.employee_id = employee_obj.id
+            session.commit()
+            display_message(f"Evenement assigné à {employee_obj.username} avec succès...", True, True, 3)
+        except Exception as e:
+            session.rollback()
+            display_message(f"Erreur lors de la mise à jour de l'evenement : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
 
 class EmployeeModel(Base):
 
@@ -43,37 +176,45 @@ class EmployeeModel(Base):
     event = relationship("EventModel", back_populates="employee")
 
     def __repr__(self):
-        return f"Employe '{self.username}', department '{self.department}'."
+        return f"Employe '{self.username}', department '{self.department.name}'."
     
+    def __eq__(self, other):
+        if isinstance(other, EmployeeModel):
+            return self.id == other.id
+        return False
+
     def search_employee(self, input_username):
         """ method to search employee """
 
         try:
             session = self.db.get_session()
-            employee = session.query(EmployeeModel).filter_by(username=input_username).first()
+            employee = session.query(EmployeeModel) \
+                .options(joinedload(EmployeeModel.department)) \
+                .filter_by(username=input_username) \
+                .first()
             return employee
         except Exception as e:
             display_message(f"Erreur lors de la recherche employee : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
-        
-    def create_employee_object(self, employee_id):
-        """
-        method to select an customer in the database
-        INPUT : employee id
-        OUTPUT : employee object """
+    
+    def select_support_employee(self):
+        """ method to select support employees """
 
         try:
             session = self.db.get_session()
-            employee = session.query(EmployeeModel).filter_by(id=employee_id).first()
-            return employee
+            support_employee = session.query(EmployeeModel) \
+                .join(DepartmentModel) \
+                .options(joinedload(EmployeeModel.department)) \
+                .filter(or_(DepartmentModel.name == SUPPORT, DepartmentModel.name == SUPERADMIN)) \
+                .all()
+            return support_employee
         except Exception as e:
-            display_message(f"Erreur lors de la creation de l'objet employee : {str(e)}", True, True, 3)
+            display_message(f"Erreur lors de la recherche employee : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
-
 
     def check_password(self, input_password):
         """
@@ -128,7 +269,7 @@ class CustomerModel(Base):
 
     def check_permission_customer(self, employee_id):
         """
-        function to check authorization of an employee on a customer
+        function to check authorization of an logged-in employee to modify a customer
         (check if employee.department.name department is 'superadmin' or 'management')
         INPUT : employee id
         OUTPUT : True of False
@@ -149,8 +290,8 @@ class CustomerModel(Base):
 
     def check_permission_customer_menu(self, employee_id):
         """
-        check authorization of the employee to access to a specific menu
-        INPUT : employee object
+        check authorization of the logged-in employee to access to the creation/deletion menu
+        INPUT : employee id
         OUPUT : True or False
         """
 
@@ -479,6 +620,22 @@ class ContractModel(Base):
         finally:
             session.close()
 
+    def select_unassociated_contrats(self):
+        """ method to select all contracts not associated to an event """
+
+        try:
+            session = self.db.get_session()
+            contracts_without_event = session.query(ContractModel) \
+                .outerjoin(EventModel, ContractModel.id == EventModel.contract_id) \
+                .options(joinedload(ContractModel.customer)) \
+                .filter(EventModel.id.is_(None)) \
+                .all()
+            return contracts_without_event
+        except Exception as e:
+            display_message(f"Erreur lors de la selection des contrats sans evenements associés : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
 
 class Database:
     """ Database class """
