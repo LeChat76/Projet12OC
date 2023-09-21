@@ -90,6 +90,30 @@ class EventModel(Base):
         finally:
             session.close()
     
+    def check_permission_event_update(self, employee_id, event_obj):
+        """
+        check authorization of the logged-in employee to update an event
+        INPUT : employee id + event object
+        OUPUT : True or False
+        """
+
+        try:
+            session = self.db.get_session()
+            employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
+            if employee.department.name == SUPERADMIN:
+                return True
+            elif employee.department.name == SUPPORT:
+                if employee.id == event_obj.employee_id:
+                    return True
+            else:
+                return False
+        except Exception as e:
+            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    
     def check_permission_event_assignation(self, employee_id):
         """
         check authorization of the logged-in employee to associate an event with an support employee
@@ -355,7 +379,7 @@ class CustomerModel(Base):
     def __repr__(self):
         return f"Client '{self.name}', email '{self.email}', telephone '{self.phone}' de la société '{self.company}'."
 
-    def check_permission_customer(self, employee_id):
+    def check_permission_customer(self, employee_id, customer_obj):
         """
         function to check authorization of an logged-in employee to modify a customer
         (check if employee.department.name department is 'superadmin' or 'management')
@@ -366,8 +390,11 @@ class CustomerModel(Base):
         try:
             session = self.db.get_session()
             employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
-            if employee.department.name == COMMERCIAL or employee.department.name == SUPERADMIN:
+            if employee.department.name == SUPERADMIN:
                 return True
+            elif employee.department.name == COMMERCIAL:
+                if customer_obj.employee_id == employee_id:
+                    return True
             else:
                 return False
         except Exception as e:
@@ -597,6 +624,34 @@ class ContractModel(Base):
             employee_obj = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
             if employee_obj.department.name == MANAGEMENT or employee_obj.department.name == SUPERADMIN:
                 return True
+            else:
+                return False
+        except Exception as e:
+            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+    
+    def check_permission_on_contract(self, employee_id, contract_obj):
+        """
+        function to check authorization to access to the contract (for delete or update). Only customer owner + commercial employee can do.
+        INPUT : employee id + contract object
+        OUTPUT : True of False
+        """
+
+        try:
+            session = self.db.get_session()
+            employee_obj = session.query(EmployeeModel) \
+                .options(joinedload(EmployeeModel.department)) \
+                .filter_by(id=employee_id).first()
+            if employee_obj.department.name == MANAGEMENT or employee_obj.department.name == SUPERADMIN:
+                return True
+            if employee_obj.department.name == COMMERCIAL:
+                customer_obj = session.query(CustomerModel) \
+                .options(joinedload(CustomerModel.employee)) \
+                .filter_by(id=contract_obj.customer_id).first()
+                if customer_obj.employee_id == employee_obj.id:
+                    return True
             else:
                 return False
         except Exception as e:

@@ -58,7 +58,7 @@ class CustomerController:
             customer_obj = self.customer_model.create_customer_object(customer_choice)
             if customer_obj:
                 # check permission to modify customer by the logged employee...
-                permission = self.customer_model.check_permission_customer(employee_id)
+                permission = self.customer_model.check_permission_customer(employee_id, customer_obj)
                 if permission:
                     #.... if permit : display customer modification menu
                     customer_to_update_obj = self.customer_view.update_customer(customer_obj)

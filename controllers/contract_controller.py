@@ -108,7 +108,7 @@ class ContractController:
             contract_obj = self.contract_model.create_contract_object(contract_choice)
             if contract_obj:
                 # check permission to modify customer by the logged employee...
-                permission = self.contract_model.check_permission(employee_id)
+                permission = self.contract_model.check_permission_on_contract(employee_id, contract_obj)
                 contract_signed_boolean = self.contract_model.check_signature(contract_obj)
                 if permission:
                     if not contract_signed_boolean:

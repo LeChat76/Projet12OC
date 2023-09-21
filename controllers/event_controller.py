@@ -161,9 +161,6 @@ class EventController:
                         break
                     else:
                         event_obj = self.event_model.create_event_object(event_choice)
-                        break
-                else:
-                    break
             else:
                 event_choice = self.event_view.select_event_by_list(all_events)
                 if event_choice == "q":
@@ -171,22 +168,25 @@ class EventController:
                     break
                 else:
                     event_obj = self.event_model.create_event_object(event_choice)
-                    break
         
-        contract_obj = self.contract_model.create_contract_object(event_obj.contract_id)
-        customer_obj = self.customer_model.create_customer_object_with_id(contract_obj.customer_id)
-        employee_obj = self.employee_model.create_employee_object(event_obj.employee_id)
+            if not event_choice=="q":
+                contract_obj = self.contract_model.create_contract_object(event_obj.contract_id)
+                customer_obj = self.customer_model.create_customer_object_with_id(contract_obj.customer_id)
+                employee_obj = self.employee_model.create_employee_object(event_obj.employee_id)
 
-        # check permission
-        permission = self.event_model.check_permission_event(employee_id)
-        if not permission:
-            self.event_view.display_event_informations(event_obj, customer_obj, employee_obj)
-        else:
-            event_to_update = self.event_view.update_event(event_obj)
-            if event_to_update:
-                self.event_model.update_event(event_to_update)
-            else:
-                display_message("Aucune modification apportée à l'evenement, retour au menu.", True, True, 3)
+                # check permission
+                permission = self.event_model.check_permission_event_update(employee_id, event_obj)
+                if not permission:
+                    self.event_view.display_event_informations(event_obj, customer_obj, employee_obj)
+                    break
+                else:
+                    event_to_update = self.event_view.update_event(event_obj)
+                    if event_to_update:
+                        self.event_model.update_event(event_to_update)
+                        break
+                    else:
+                        display_message("Aucune modification apportée à l'evenement, retour au menu.", True, True, 3)
+                        break
 
     def delete_event(self, employee_id):
         """ method to delete an event """
