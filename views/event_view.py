@@ -49,9 +49,10 @@ class EventView:
             # =============================
             try:
                 datetime.strptime(date_start, date_format)
+                date_start = datetime.strptime(date_start, date_format)
                 break
             except ValueError:
-                print("\nFormat de date incorrect. Merci de resaisir.")
+                print("\nFormat de date incorrect. Merci de resaisir.\n")
         
         while True:
             date_end = input("\nQuel est la date de fin de l'évènement (exemple 04/06/23 13:00)? ")
@@ -61,12 +62,13 @@ class EventView:
             # =============================
             try:
                 datetime.strptime(date_end, date_format)
+                date_end = datetime.strptime(date_end, date_format)
                 if date_end <= date_start:
                     print("\nLa date de fin doit être forcement supérieure à la date de début. Merci de resaisir.")
                 else:
                     break
             except ValueError:
-                print("\nFormat de date incorrect. Merci de resaisir.")
+                print("\nFormat de date incorrect. Merci de resaisir.\n")
         
         while True:
             location = input("\nQuel est le lieu de l'évènement (exemple : 97 Allée des Platanes, 76520, Boos)? ")
@@ -147,6 +149,111 @@ class EventView:
                     print("\nCe choix ne fait pas parti de la liste...\n")
                 else:
                     return choice
+
+    def display_event_informations(self, event_obj, customer_obj, employee_obj):
+        """
+        display event informations
+        INPUT : event object + customer object + employee_obj
+        RESULT : display event informations
+        """
+
+        print("\nVos droits ne vous donne accès qu'en lecture.\n")
+        if event_obj.contract_id:
+            print(f"* Contrat          : {event_obj.contract_id}")
+        print(f"* Client           : {customer_obj.name}")
+        print(f"* Email            : {customer_obj.email}")
+        if customer_obj.phone:
+            print(f"* Telephone        : {customer_obj.phone}")
+        print(f"* Début            : {event_obj.date_start}")
+        print(f"* Fin              : {event_obj.date_end}")
+        if employee_obj:
+            assigned_employee = employee_obj.username
+        else:
+            assigned_employee = "pas encore assigné"
+        print(f"* Assigné à        : {assigned_employee}")
+        print(f"* Adresse          : {event_obj.location}")
+        print(f"* Information      : {event_obj.notes}")
+        input("\n[ENTRER] pour retourner au menu.\n")
+
+    def update_event(self, event_obj):
+        """ ask informations for update existing event """
+
+        clear_screen()
+        print("\nEvenement selectionné :", event_obj)
+        print()
+
+        modification_state_boolean = False
+        date_format = "%d/%m/%y %H:%M"
+        location_pattern = r'^\s*[A-Za-zÀ-ÿ0-9\s]*\s*,\s*[0-9]{5}\s*,\s*[A-Za-zÀ-ÿ\s]*\s*$'
+        notes = None
+
+        while True:
+            date_start = input(f"\nDate de depart actuelle '{event_obj.date_start.strftime(date_format)}' ([ENTRER] pour conserver): ")
+            if not date_start:
+                break
+            else:
+                try:
+                    datetime.strptime(date_start, date_format)
+                    event_obj.date_start = date_start
+                    break
+                except ValueError:
+                    print("\nFormat de date incorrect. Merci de resaisir.\n")
+        
+        while True:
+            event_date_start = event_obj.date_start
+            date_end = input(f"\nDate de fin actuelle '{event_obj.date_end.strftime(date_format)}' ([ENTRER] pour conserver): ")
+            if not date_end:
+                break
+            else:
+                try:
+                    datetime.strptime(date_end, date_format)
+                    if date_end <= event_date_start:
+                        print("\nLa date de fin doit être forcement supérieure à la date de début. Merci de resaisir.")
+                    else:
+                        modification_state_boolean = True
+                        event_obj.end_date = date_end
+                        break
+                except ValueError:
+                    print("\nFormat de date incorrect. Merci de resaisir.\n")
+        
+        while True:
+            location = input(f"\nLieu actuel '{event_obj.location}' ? ([ENTRER] pour conserver): ")
+            if not location:
+                break
+            elif re.match(location_pattern, location):
+                modification_state_boolean = True
+                event_obj.location = location
+                break
+            else:
+                print("\nFormat d'adresse incorrect, merci de suivre le format : [rue], [code_postal], [ville].")
+        
+        while True:
+            attendees = input(f"\nNombre d'invités actuel '{event_obj.attendees}' ([ENTRER] pour conserver): ")
+            if not attendees:
+                break
+            elif not attendees.isnumeric():
+                print("\nMerci de préciser un nombre.")
+            else:
+                if int(attendees)==0:
+                    print("\nLe nombre d'invités doit être supérieur à 0.")
+                else:
+                    modification_state_boolean = True
+                    event_obj.attendees = attendees
+                    break
+        
+        while True:
+            notes = input(f"\nNotes actuelles '{event_obj.notes}' ([ENTRER] pour conserver): ")
+            if notes:
+                modification_state_boolean = True
+                event_obj.notes = notes
+                break
+            else:
+                break
+
+        if modification_state_boolean:
+            return event_obj
+        else:
+            return None
 
 
 

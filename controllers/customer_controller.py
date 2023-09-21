@@ -78,6 +78,7 @@ class CustomerController:
         """ delete customer method"""
 
         choice = ""
+        
         # check permission to access to this menu
         permission = self.customer_model.check_permission_customer_menu(employee_id)
         if not permission:

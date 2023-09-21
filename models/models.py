@@ -52,14 +52,17 @@ class EventModel(Base):
 
     def create_event_object(self, choice):
         """
-        method to create an event object
-        INPUT : event id 
+        method to create an event object by offset
+        INPUT : event choice from list
         OUTPUT : event object
         """
 
         try:
             session = self.db.get_session()
-            event_obj = session.query(EventModel).options(joinedload(EventModel.employee)).get(choice)
+            event_obj = session.query(EventModel) \
+                .options(joinedload(EventModel.employee)) \
+                .options(joinedload(EventModel.contract)) \
+                .offset(int(choice) - 1).first()
             return event_obj
         except Exception as e:
             display_message(f"Erreur lors de la creation de l'objet evenement : {str(e)}", True, True, 3)
@@ -67,7 +70,7 @@ class EventModel(Base):
         finally:
             session.close()
 
-    def check_permission_event_creation(self, employee_id):
+    def check_permission_event(self, employee_id):
         """
         check authorization of the logged-in employee to access to the event creation menu
         INPUT : employee id
@@ -125,13 +128,16 @@ class EventModel(Base):
     def search_event(self, event_number):
         """
         method to search event
-        INPUT : event number entried by user
+        INPUT : event ID entered by user
         OUPUT : event object or None
         """
 
         try:
             session = self.db.get_session()
-            event = session.query(EventModel).get(event_number)
+            event = session.query(EventModel) \
+                .options(joinedload(EventModel.employee)) \
+                .options(joinedload(EventModel.contract)) \
+                .filter_by(id=event_number).first()
             return event
         except Exception as e:
             display_message(f"Erreur lors de la recherche de l'evenement : {str(e)}", True, True, 3)
@@ -155,6 +161,67 @@ class EventModel(Base):
         except Exception as e:
             session.rollback()
             display_message(f"Erreur lors de la mise à jour de l'evenement : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def select_all_events(self):
+        """
+        method to select all events
+        OUTPUT : list of event object
+        """
+
+        try:
+            session = self.db.get_session()
+            event = session.query(EventModel).all()
+            return event
+        except Exception as e:
+            session.rollback()
+            display_message(f"Erreur lors de la recherche dans la table event : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def update_event(self, event_to_update):
+        """
+        method to update event in database
+        INPUT : event object
+        RESULT : update event un database
+        """
+
+        try:
+            session = self.db.get_session()
+            event = session.query(EventModel).get(event_to_update.id)
+            event.date_start = event_to_update.date_start
+            event.date_end = event_to_update.date_end
+            event.location = event_to_update.location
+            event.attendees = event_to_update.attendees
+            event.notes = event_to_update.notes
+            session.commit()
+            display_message(f"Evenement '{event_to_update.id}' mis à jour avec succès!", True, True, 3)
+        except Exception as e:
+            session.rollback()
+            display_message(f"Erreur lors de la mise à jour de l'evenement : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def delete_event(self, event_obj):
+        """
+        method to delete event from database
+        INPUT : event object
+        RESULT : deletion of the event in the database
+        """
+
+        try:
+            session = self.db.get_session()
+            event_to_delete = session.query(EventModel).filter_by(id=event_obj.id).first()
+            session.delete(event_to_delete)
+            session.commit()
+            display_message(f"Evenement numero '{event_to_delete.id}' supprimé avec succès!", True, True, 3)
+        except Exception as e:
+            session.rollback()
+            display_message(f"Erreur lors de la suppresion de l'evenement : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
@@ -228,6 +295,27 @@ class EmployeeModel(Base):
             return True
         else:
             return None
+
+    def create_employee_object(self, employee_id):
+        """
+        method to create employee object from employee ID
+        INPUT : employee ID
+        OUTPUT : employee object
+        """
+
+        try:
+            session = self.db.get_session()
+            employee = session.query(EmployeeModel) \
+                .options(joinedload(EmployeeModel.contract)) \
+                .options(joinedload(EmployeeModel.department)) \
+                .filter_by(id=employee_id).first()
+            return employee
+        except Exception as e:
+            display_message(f"Erreur lors de la creation de l'objet employee : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
 
 class DepartmentModel(Base):
     """ Department class """
@@ -348,9 +436,10 @@ class CustomerModel(Base):
     
     def create_customer_object(self, choice):
         """
-        method to select an customer in the database
+        method to create customer object from index (list)
         INPUT : choice (int or str) entered by employee
-        OUTPUT : customer object """
+        OUTPUT : customer object
+        """
 
         try:
             session = self.db.get_session()
@@ -365,10 +454,28 @@ class CustomerModel(Base):
         finally:
             session.close()
     
+    def create_customer_object_with_id(self, customer_id):
+        """
+        method to create customer object ID
+        INPUT : ID of the customer
+        OUTPUT : customer object
+        """
+
+        try:
+            session = self.db.get_session()
+            customer = session.query(CustomerModel).get(customer_id)
+            return customer
+        except Exception as e:
+            display_message(f"Erreur lors de la creation de l'objet client : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+
     def update_customer(self, customer_to_update):
         """
         method to update customer in database
-        INPUT : customers objects (original customer and new customer values)
+        INPUT : customers object
         RESULT : update customer un database
         """
 
@@ -462,7 +569,7 @@ class ContractModel(Base):
         finally:
             session.close()
 
-    def create_contract_object(self, contract_id):
+    def create_contract_object(self, choice):
         """
         method to create contract object with contract id
         INPUT : contract id
@@ -470,7 +577,7 @@ class ContractModel(Base):
 
         try:
             session = self.db.get_session()
-            contract_obj = session.query(ContractModel).options(joinedload(ContractModel.customer)).filter_by(id=contract_id).first()
+            contract_obj = session.query(ContractModel).options(joinedload(ContractModel.customer)).offset(int(choice) - 1).first()
             return contract_obj
         except Exception as e:
             display_message(f"Erreur lors de la creation de l'objet contrat: {str(e)}", True, True, 3)
@@ -620,8 +727,8 @@ class ContractModel(Base):
         finally:
             session.close()
 
-    def select_unassociated_contrats(self):
-        """ method to select all contracts not associated to an event """
+    def select_available_contracts(self):
+        """ method to select all contracts not associated to an event AND signed """
 
         try:
             session = self.db.get_session()
@@ -629,6 +736,7 @@ class ContractModel(Base):
                 .outerjoin(EventModel, ContractModel.id == EventModel.contract_id) \
                 .options(joinedload(ContractModel.customer)) \
                 .filter(EventModel.id.is_(None)) \
+                .filter(ContractModel.status=="SIGNED") \
                 .all()
             return contracts_without_event
         except Exception as e:

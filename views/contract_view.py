@@ -105,7 +105,7 @@ class ContractView:
             contract_id_list = []
 
             for contract in contracts_list:
-                print(" - " + str(contract))
+                print(str(counter_int) + " - " + str(contract))
                 contract_id_list.append(contract.id)
                 counter_int += 1
                 time.sleep(0.1)

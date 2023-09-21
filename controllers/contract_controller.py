@@ -56,6 +56,8 @@ class ContractController:
     def delete_contract(self, employee_id):
         """ method to delete contract """
 
+        choice = ""
+
         # check permission to access to this menu
         permission = self.contract_model.check_permission(employee_id)
         if not permission:
