@@ -4,11 +4,12 @@ from models.models import Database
 from models.models import EmployeeModel
 from views.login_view import LoginMenu
 from views.main_menu import MainMenu
-from constants.base import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EXIT
+from constants.base import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EMPLOYEES, MENU_EXIT
 from constants.database import DB_URL
 from controllers.customer_controller import CustomerController
 from controllers.contract_controller import ContractController
 from controllers.event_controller import EventController
+from controllers.employee_controller import EmployeeController
 from views.utils_view import display_message
 
 
@@ -28,6 +29,7 @@ class epicEvents:
         self.customer_controller = CustomerController(self.db)
         self.contract_controller = ContractController(self.db)
         self.event_controller = EventController(self.db)
+        self.employee_controller = EmployeeController()
         self.employee_model = EmployeeModel()
 
     def login_menu(self):
@@ -61,5 +63,7 @@ class epicEvents:
                 self.contract_controller.menu_customer(employee_id)
             elif choice == MENU_EVENTS:
                 self.event_controller.menu_event(employee_id)
+            elif choice == MENU_EMPLOYEES:
+                self.employee_controller.menu_employee(employee_id)
             elif choice == MENU_EXIT:
                 self.login_menu()

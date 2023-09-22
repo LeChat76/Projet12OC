@@ -102,11 +102,9 @@ class ContractView:
         # display list of contracts
         while True:
             counter_int = 1
-            contract_id_list = []
 
             for contract in contracts_list:
                 print(str(counter_int) + " - " + str(contract))
-                contract_id_list.append(contract.id)
                 counter_int += 1
                 time.sleep(0.1)
                 if counter_int %5 == 0:

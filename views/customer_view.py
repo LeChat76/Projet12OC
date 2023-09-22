@@ -81,11 +81,9 @@ class CustomerView:
 
         while True:
             counter_int = 1
-            customer_id_list = []
 
             for customer in customers_list:
                 print(str(counter_int) + ' - ' + str(customer))
-                customer_id_list.append(customer.id)
                 counter_int += 1
                 time.sleep(0.1)
                 if counter_int %5 == 0:

@@ -118,11 +118,9 @@ class EventView:
 
         while True:
             counter_int = 1
-            event_id_list = []
 
             for event in events_list:
                 print(str(counter_int) + ' - ' + str(event))
-                event_id_list.append(event.id)
                 counter_int += 1
                 time.sleep(0.1)
                 if counter_int %5 == 0:

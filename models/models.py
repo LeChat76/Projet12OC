@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, TIMESTAMP, Float, ForeignKey, text, create_engine, inspect, or_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, joinedload
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, DataError
 from constants.database import DB_URL
 from constants.department import MANAGEMENT, SUPPORT, SUPERADMIN, COMMERCIAL
 from views.utils_view import display_message
@@ -259,6 +259,7 @@ class EmployeeModel(Base):
     id = Column(Integer(), primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False, unique=True)
     status = Column(String(7), nullable=False, server_default="ENABLE")
     department_id = Column(Integer(), ForeignKey("department.id"), nullable=False)
     department = relationship("DepartmentModel", back_populates="employee")
@@ -307,6 +308,21 @@ class EmployeeModel(Base):
         finally:
             session.close()
 
+    def select_all_employee(self):
+        """ method to select support employees """
+
+        try:
+            session = self.db.get_session()
+            support_employee = session.query(EmployeeModel) \
+                .options(joinedload(EmployeeModel.department)) \
+                .all()
+            return support_employee
+        except Exception as e:
+            display_message(f"Erreur lors de la recherche d'employee : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
     def check_password(self, input_password):
         """
         method to check password with the entered one
@@ -339,10 +355,93 @@ class EmployeeModel(Base):
             return None
         finally:
             session.close()
+    
+    def check_permission_employee(self, employee_id):
+        """
+        method to check if logged in user has permission to add employee
+        INPUT : employee id of the logged in user
+        OUTPUT : True of False 
+        """
 
+        try:
+            session = self.db.get_session()
+            employee = session.query(EmployeeModel) \
+                .options(joinedload(EmployeeModel.department)) \
+                .filter_by(id=employee_id).first()
+            if employee.department.name == MANAGEMENT or employee.department.name == SUPERADMIN:
+                return True
+            else:
+                return False
+        except Exception as e:
+            display_message(f"Erreur lors de la vérification du departement de l'utilisateur : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def add_employee(self, new_employee_obj):
+        """
+        method to add employee in the database
+        INPUT : employee_obj
+        RESULT : record of the new employee in the database
+        """
+        
+        try:
+            session = self.db.get_session()
+            session.add(new_employee_obj)
+            session.commit()
+            display_message("Employé ajouté avec succès !", True, True, 2)
+        except IntegrityError as e:
+            session.rollback()
+            display_message("Erreur de la creation : nom d'utilisateur ou email deja utilisé.\nRetour au menu...", True, True, 3)
+            return None
+        except Exception as e:
+            display_message(f"Erreur lors de la selection de l'employé : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def create_employee_object_from_list(self, choice):
+        """
+        method to create employee object from index
+        INPUT : index of list entried by user from a list
+        OUTPUT : employee object
+        """
+
+        try:
+            session = self.db.get_session()
+            employee_obj = session.query(EmployeeModel).offset(int(choice) - 1).first()
+            return employee_obj
+        except Exception as e:
+            display_message(f"Erreur lors de la selection de l'employé : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def delete_employee(self, employee_obj):
+        """
+        method to delete employee from database
+        INPUT : employee object
+        RESULT : deletion of the employee in the database
+        """
+
+        try:
+            session = self.db.get_session()
+            employee_to_delete = session.query(EmployeeModel).filter_by(id=employee_obj.id).first()
+            session.delete(employee_to_delete)
+            session.commit()
+            display_message(f"Employé '{employee_to_delete.username}' supprimé avec succès!", True, True, 3)
+        except Exception as e:
+            session.rollback()
+            display_message(f"Erreur lors de la suppresion de l'employé : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
 
 class DepartmentModel(Base):
     """ Department class """
+
+    def __init__(self):
+        self.db = Database(DB_URL)
 
     __tablename__ = "department"
     id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -352,6 +451,39 @@ class DepartmentModel(Base):
 
     def __repr__(self):
         return f"Department '{self.name}', {self.description.lower()}."
+    
+    def select_all_department(self):
+        """
+        method to select all department
+        OUPUT : department obj list
+        """
+
+        try:
+            session = self.db.get_session()
+            department_obj_list = session.query(DepartmentModel).all()
+            return department_obj_list
+        except Exception as e:
+            display_message(f"Erreur lors de la selection des departements : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+    
+    def create_department_object_from_list(self, choice):
+        """
+        method to create department object from index
+        INPUT : index of list entried by user
+        OUTPUT : department object
+        """
+
+        try:
+            session = self.db.get_session()
+            department_obj = session.query(DepartmentModel).offset(int(choice) - 1).first()
+            return department_obj
+        except Exception as e:
+            display_message(f"Erreur lors de la selection du departement : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
 
 class CustomerModel(Base):
     """ Customer class """
@@ -841,16 +973,17 @@ class Database:
         session = self.get_session()
 
         employee_data = [
-            {"username": SUPERADMIN, "department_id": 4, "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
-            {"username": SUPPORT, "department_id": 2, "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
-            {"username": MANAGEMENT, "department_id": 3, "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
-            {"username": COMMERCIAL, "department_id": 1, "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
+            {"username": SUPERADMIN, "department_id": 4, "email": "superadmin@epicevents.com", "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
+            {"username": SUPPORT, "department_id": 2, "email": "support@epicevents.com", "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
+            {"username": MANAGEMENT, "department_id": 3, "email": "management@epicevents.com", "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
+            {"username": COMMERCIAL, "department_id": 1, "email": "commercial@epicevents.com", "password": "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"},
         ]
 
         for data in employee_data:
             employee = EmployeeModel()
             employee.username = data["username"]
             employee.password = data["password"]
+            employee.email = data["email"]
             employee.department_id = (session.query(DepartmentModel).filter_by(name=data["username"]).first()).id
             session.add(employee)
 

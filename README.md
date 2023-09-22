@@ -21,9 +21,9 @@ For this project I used MySql 8.0.34 and Python 3.11.5
     * DB_USER     : the username for accessing to your SQL database
     * DB_PASSWORD : the password associated to the DB_USER
     * DB_HOST     : the IP Address of the SQL server (if on your own computer, your can use `localhost`)
-    * DB_NAME     : the name of the database you have to create on your SQL server (for example : `CREATE DATABASE epicevents;`)
+    * DB_NAME     : the name of the database you created on your SQL server (for example : `CREATE DATABASE epicevents;`)
 
-See bellow all menus available
+See bellow all menus available:
   
 --------------- CUSTOMERS ------------------
 * 1 - 1 : creation of customers

@@ -97,6 +97,7 @@ class CustomerController:
                         choice = input_message(f"\nEtes vous sure de vouloir supprimer le client '{customer_obj.name}' (o/N)? ")
                         if choice.lower() == "o":
                             self.customer_model.delete_customer(customer_obj)
+                            break
                         elif choice.lower() == "n" or choice.lower() == "":
                             display_message("Annulation de la suppression. Retour au menu.", True, True, 3)
                             break
