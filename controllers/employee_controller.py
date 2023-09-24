@@ -1,4 +1,5 @@
-from models.models import EmployeeModel, DepartmentModel
+from models.employee_model import EmployeeModel
+from models.department_model import DepartmentModel
 from views.employee_view import EmployeeView
 from views.utils_view import display_message, input_message
 from constants.employee import MENU_EMPLOYEE_CREATION, MENU_EMPLOYEE_UPDATE, MENU_EMPLOYEE_DELETE, MENU_EMPLOYEE_EXIT

@@ -1,5 +1,7 @@
-from views.contract_view import ContractView, CustomerView
-from models.models import ContractModel, CustomerModel
+from views.contract_view import ContractView
+from views.customer_view import CustomerView
+from models.contract_model import ContractModel
+from models.customer_model import CustomerModel
 from constants.contract import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_DELETE, MENU_CONTRACT_EXIT
 from views.utils_view import display_message, input_message	
 

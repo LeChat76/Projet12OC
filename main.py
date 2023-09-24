@@ -1,12 +1,12 @@
 from controllers.base import epicEvents
-from models.models import Database
+from models.database_model import DatabaseModel
 from constants.database import DB_URL
 
 
 def main():
     """ Launching start here """
 
-    db = Database(DB_URL)
+    db = DatabaseModel(DB_URL)
     epicevents = epicEvents()
 
     try:

@@ -2,7 +2,10 @@ from views.utils_view import display_message, input_message
 from views.event_view import EventView
 from views.contract_view import ContractView
 from views.employee_view import EmployeeView
-from models.models import EventModel, ContractModel, EmployeeModel, CustomerModel
+from models.event_model import EventModel
+from models.contract_model import ContractModel
+from models.employee_model import EmployeeModel
+from models.customer_model import CustomerModel
 from constants.event import MENU_EVENT_CREATION, MENU_EVENT_ASSIGNATION, MENU_EVENT_UPDATE, MENU_EVENT_DELETE, MENU_EVENT_EXIT
 
 

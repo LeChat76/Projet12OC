@@ -1,7 +1,7 @@
 import sys
 from views.utils_view import clear_screen
-from models.models import Database
-from models.models import EmployeeModel
+from models.database_model import DatabaseModel
+from models.employee_model import EmployeeModel
 from views.login_view import LoginMenu
 from views.main_menu import MainMenu
 from constants.base import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EMPLOYEES, MENU_EXIT
@@ -11,16 +11,19 @@ from controllers.contract_controller import ContractController
 from controllers.event_controller import EventController
 from controllers.employee_controller import EmployeeController
 from views.utils_view import display_message
+from models.utils_temp import create_departments, create_super_admin
 
 
 class epicEvents:
     """ Epic Events class """
 
     def __init__(self):
-        self.db = Database(DB_URL)
+        self.db = DatabaseModel(DB_URL)
         if not self.db.tables_exist():
             try:
                 self.db.create_tables()
+                create_departments(DB_URL)
+                create_super_admin(DB_URL)
             except Exception as e:
                 print(f"Une erreur s'est produite lors de l'initialisation de la base de données : {e}")
                 sys.exit()

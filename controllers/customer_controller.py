@@ -1,4 +1,4 @@
-from models.models import CustomerModel
+from models.customer_model import CustomerModel
 from views.customer_view import CustomerView
 from views.utils_view import display_message, input_message	
 from constants.customer import MENU_CUSTOMER_CREATION, MENU_CUSTOMER_UPDATE, MENU_CUSTOMER_DELETE, MENU_CUSTOMER_EXIT
