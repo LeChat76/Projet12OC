@@ -1,5 +1,6 @@
 from views.utils_view import clear_screen
-from constants.event import MENU_EVENT_CREATION, MENU_EVENT_ASSIGNATION,MENU_EVENT_UPDATE,MENU_EVENT_DELETE, MENU_EVENT_EXIT
+from constants.event import MENU_EVENT_CREATION, MENU_EVENT_ASSIGNATION,MENU_EVENT_UPDATE,MENU_EVENT_DELETE, MENU_EVENT_FILTER, MENU_EVENT_EXIT
+from constants.event import MENU_EVENT_FILTER_NOT_ASSIGNED, MENU_EVENT_FILTER_IN_PROGRESS, MENU_EVENT_FILTER_ASSIGNED, MENU_EVENT_FILTER_EXIT
 from datetime import datetime
 import re, time
 
@@ -13,7 +14,7 @@ class EventView:
         choice = None
         while choice !=  MENU_EVENT_CREATION and choice != MENU_EVENT_UPDATE and\
             choice != MENU_EVENT_DELETE and choice != MENU_EVENT_EXIT and\
-            choice != MENU_EVENT_ASSIGNATION:
+            choice != MENU_EVENT_ASSIGNATION and choice != MENU_EVENT_FILTER:
             clear_screen()
             print("+--------------------------------+")
             print("|        MENU EVENEMENT          |")
@@ -22,12 +23,40 @@ class EventView:
             print("| 2 - assignation d'un evenement |")
             print("| 3 - voir/modifier un evenement |")
             print("| 4 - suppression d'un evenement |")
-            print("| 5 - revenir au menu principal  |")
+            print("| 5 - filtrer evenements         |")
+            print("|--------------------------------|")
+            print("| 6 - revenir au menu principal  |")
             print("+--------------------------------+")
 
-            choice = input("Quel est votre choix : ")
+            choice = input("\nQuel est votre choix : ")
             if not choice.isnumeric():
-                print("Merci de préciser un choix numérique.")
+                choice = None
+            else:
+                choice = int(choice)
+
+        return choice
+
+    def event_menu_filter(self):
+        """ Menu 3 - 5 events filter """
+
+        choice = None
+        while choice !=  MENU_EVENT_FILTER_NOT_ASSIGNED and choice != MENU_EVENT_FILTER_EXIT and\
+            choice != MENU_EVENT_FILTER_IN_PROGRESS and choice != MENU_EVENT_FILTER_ASSIGNED:
+            clear_screen()
+            print("+--------------------------------+")
+            print("|      MENU FILTER EVENEMENT     |")
+            print("+--------------------------------+")
+            print("| 1 - evenements non assignés    |")
+            print("| 2 - evenement a venir/en cours |")
+            print("| 3 - events qui me sont assignés|")
+            print("|                                |")
+            print("|                                |")                                                
+            print("|--------------------------------|")
+            print("| 6 - revenir au menu principal  |")
+            print("+--------------------------------+")
+
+            choice = input("\nQuel est votre choix : ")
+            if not choice.isnumeric():
                 choice = None
             else:
                 choice = int(choice)
@@ -253,6 +282,37 @@ class EventView:
         else:
             return None
 
+    def display_events_by_list(self, events_obj_list):
+        """
+        method to display events by list
+        INPUT : events objects list
+        OUPUT : displaying events by list
+        """
+
+        choice = ""
+
+        while True:
+            counter_int = 1
+            print()
+
+            for event in events_obj_list:
+                print(" - " + str(event))
+                counter_int += 1
+                time.sleep(0.1)
+                if counter_int %5 == 0:
+                    choice = input("\nAppuyez sur [ENTRER] pour continuer ou (q)uitter)? ")
+                    if choice.lower() == "q":
+                        break
+                    else:
+                        print()
+
+            if choice.lower() == "q":
+                print("\nRetour au menu...")
+                time.sleep(3)
+                break
+
+            input("\nFin de liste atteinte. Appuyez sur [ENTRER] pour retourner au menu...")
+            break
 
 
 

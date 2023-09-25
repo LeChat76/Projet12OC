@@ -37,7 +37,11 @@ class EmployeeModel(Base):
         return False
 
     def search_employee(self, input_username):
-        """ method to search employee """
+        """
+        method to search employee
+        INPUT : user name intried
+        OUPUT : employee obj or None
+        """
 
         try:
             session = self.db.get_session()
@@ -57,12 +61,12 @@ class EmployeeModel(Base):
 
         try:
             session = self.db.get_session()
-            support_employee = session.query(EmployeeModel) \
+            support_employees = session.query(EmployeeModel) \
                 .join(DepartmentModel) \
                 .options(joinedload(EmployeeModel.department)) \
                 .filter(or_(DepartmentModel.name == SUPPORT, DepartmentModel.name == SUPERADMIN)) \
                 .all()
-            return support_employee
+            return support_employees
         except Exception as e:
             display_message(f"Erreur lors de la recherche employee : {str(e)}", True, True, 3)
             return None
@@ -74,10 +78,10 @@ class EmployeeModel(Base):
 
         try:
             session = self.db.get_session()
-            support_employee = session.query(EmployeeModel) \
+            employees = session.query(EmployeeModel) \
                 .options(joinedload(EmployeeModel.department)) \
                 .all()
-            return support_employee
+            return employees
         except Exception as e:
             display_message(f"Erreur lors de la recherche d'employee : {str(e)}", True, True, 3)
             return None
@@ -170,7 +174,9 @@ class EmployeeModel(Base):
 
         try:
             session = self.db.get_session()
-            employee_obj = session.query(EmployeeModel).offset(int(choice) - 1).first()
+            employee_obj = session.query(EmployeeModel) \
+                .options(joinedload(EmployeeModel.department)) \
+                .offset(int(choice) - 1).first()
             return employee_obj
         except Exception as e:
             display_message(f"Erreur lors de la selection de l'employé : {str(e)}", True, True, 3)
@@ -194,6 +200,35 @@ class EmployeeModel(Base):
         except Exception as e:
             session.rollback()
             display_message(f"Erreur lors de la suppresion de l'employé : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def update_employee(self, employee_to_update):
+        """
+        method to update employee in database
+        INPUT : employee object
+        RESULT : update employee un database
+        """
+
+        try:
+            session = self.db.get_session()
+            employee = session.query(EmployeeModel).get(employee_to_update.id)
+            employee.username = employee_to_update.username
+            employee.password = employee_to_update.password
+            employee.email = employee_to_update.email
+            employee.department_id = employee_to_update.department_id
+            employee.status = employee_to_update.status
+            session.commit()
+            display_message(f"Client '{employee_to_update.username}' mis à jour avec succès!", True, True, 3)
+        except IntegrityError as e:
+            session.rollback()
+            display_message("Erreur lors de la modification de l'employee : l'email est déjà associé à un autre employee.", True, False, 0)
+            display_message("Retour au menu....", False, False, 3)
+            return None
+        except Exception as e:
+            session.rollback()
+            display_message(f"Erreur lors de la modification de l'employee : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()

@@ -11,7 +11,8 @@ from controllers.contract_controller import ContractController
 from controllers.event_controller import EventController
 from controllers.employee_controller import EmployeeController
 from views.utils_view import display_message
-from models.utils_temp import create_departments, create_super_admin
+from models.utils_database import create_departments, create_super_admin
+
 
 
 class epicEvents:

@@ -179,7 +179,7 @@ class CustomerModel(Base):
             return None
         except Exception as e:
             session.rollback()
-            display_message(f"Erreur lors de l'ajout du client : {str(e)}", True, True, 3)
+            display_message(f"Erreur lors de la modification du client : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()

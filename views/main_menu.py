@@ -14,17 +14,18 @@ class MainMenu:
                 and choice != MENU_EMPLOYEES:
             clear_screen()
             print("+--------------------------------+")
-            print("|             MENU               |")
+            print("|        MENU PRINCIPAL          |")
             print("+--------------------------------+")
             print("| 1 - clients                    |")
             print("| 2 - contrats                   |")
             print("| 3 - evenements                 |")
             print("| 4 - employees                  |")
-            print("| 5 - quitter                    |")
+            print("|                                |")
+            print("|--------------------------------|")
+            print("| 6 - quitter                    |")
             print("+--------------------------------+")
-            choice = input("Quel est votre choix : ")
+            choice = input("\nQuel est votre choix : ")
             if not choice.isnumeric():
-                print("Merci de préciser un choix numérique.")
                 choice = None
             else:
                 choice = int(choice)

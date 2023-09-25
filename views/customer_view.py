@@ -15,17 +15,19 @@ class CustomerView:
             choice != MENU_CUSTOMER_DELETE and choice != MENU_CUSTOMER_EXIT:
             clear_screen()
             print("+--------------------------------+")
-            print("|          MENU JOUEUR           |")
+            print("|          MENU CLIENT           |")
             print("+--------------------------------+")
             print("| 1 - création d'un client       |")
             print("| 2 - voir/modifier un client    |")
             print("| 3 - suppression d'un client    |")
-            print("| 4 - revenir au menu principal  |")
+            print("|                                |")
+            print("|                                |")
+            print("|--------------------------------|")
+            print("| 6 - revenir au menu principal  |")
             print("+--------------------------------+")
 
-            choice = input("Quel est votre choix : ")
+            choice = input("\nQuel est votre choix : ")
             if not choice.isnumeric():
-                print("Merci de préciser un choix numérique.")
                 choice = None
             else:
                 choice = int(choice)

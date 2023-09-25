@@ -93,6 +93,26 @@ class ContractModel(Base):
         finally:
             session.close()
     
+    def check_permission_filter_menu(self, employee_id):
+        """
+        function to check authorization to access to the filter menu (dept commercial or superadmin authorized only)
+        INPUT : employee id
+        OUTPUT : True of False
+        """
+
+        try:
+            session = self.db.get_session()
+            employee_obj = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
+            if employee_obj.department.name == COMMERCIAL or employee_obj.department.name == SUPERADMIN:
+                return True
+            else:
+                return False
+        except Exception as e:
+            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
     def check_permission_on_contract(self, employee_id, contract_obj):
         """
         function to check authorization to access to the contract (for delete or update). Only customer owner + commercial employee can do.
@@ -146,6 +166,22 @@ class ContractModel(Base):
             return not_signed_contracts_list
         except Exception as e:
             display_message(f"Erreur lors de la recherche des contrats nons signés : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
+    def select_not_fully_payed_contracts(self):
+        """
+        method to select not fully payed contracts
+        OUPUT : list of not fully payed contracts
+        """
+
+        try:
+            session = self.db.get_session()
+            not_fully_payed_contracts_list = session.query(ContractModel).options(joinedload(ContractModel.customer)).filter(ContractModel.due != 0).all()
+            return not_fully_payed_contracts_list
+        except Exception as e:
+            display_message(f"Erreur lors de la recherche des contrats nons totalement payés : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()

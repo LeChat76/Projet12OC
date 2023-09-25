@@ -6,7 +6,8 @@ from models.event_model import EventModel
 from models.contract_model import ContractModel
 from models.employee_model import EmployeeModel
 from models.customer_model import CustomerModel
-from constants.event import MENU_EVENT_CREATION, MENU_EVENT_ASSIGNATION, MENU_EVENT_UPDATE, MENU_EVENT_DELETE, MENU_EVENT_EXIT
+from constants.event import MENU_EVENT_CREATION, MENU_EVENT_ASSIGNATION, MENU_EVENT_UPDATE, MENU_EVENT_DELETE, MENU_EVENT_FILTER, MENU_EVENT_EXIT
+from constants.event import MENU_EVENT_FILTER_NOT_ASSIGNED, MENU_EVENT_FILTER_IN_PROGRESS, MENU_EVENT_FILTER_ASSIGNED, MENU_EVENT_FILTER_EXIT
 
 
 class EventController:
@@ -33,6 +34,29 @@ class EventController:
                 self.assign_event(employee_id)
             elif choice == MENU_EVENT_UPDATE:
                 self.update_event(employee_id)
+            elif choice == MENU_EVENT_FILTER:
+                permission_management = self.event_model.check_permission_event_assignation(employee_id)
+                permission_support = self.event_model.check_permission_menu_filter_event(employee_id)
+                while True:
+                    filter_choice = self.event_view.event_menu_filter()
+                    if filter_choice == MENU_EVENT_FILTER_NOT_ASSIGNED:
+                        if permission_management:
+                            self.filter_event_not_assigned()
+                        else:
+                            display_message("Vous n'êtes pas autorisé à accéder à ce menu...", True, True, 3)
+                    elif filter_choice == MENU_EVENT_FILTER_IN_PROGRESS:
+                        if permission_management:
+                            self.filter_event_in_progress()
+                        else:
+                            display_message("Vous n'êtes pas autorisé à accéder à ce menu...", True, True, 3)
+                    elif filter_choice == MENU_EVENT_FILTER_ASSIGNED:
+                        if permission_support:
+                            self.filter_event_assigned(employee_id)
+                        else:
+                            display_message("Vous n'êtes pas autorisé à accéder à ce menu...", True, True, 3)
+                    elif filter_choice == MENU_EVENT_FILTER_EXIT:
+                        break
+              
             elif choice == MENU_EVENT_DELETE:
                 self.delete_event(employee_id)
             elif choice == MENU_EVENT_EXIT:
@@ -151,6 +175,7 @@ class EventController:
             all_events = self.event_model.select_all_events()
             if not all_events:
                 display_message("Aucun evenement, retour au menu...", True, True, 3)
+                break
 
             event_choice = self.event_view.select_event_by_entry()
             
@@ -240,3 +265,34 @@ class EventController:
                         elif choice.lower() == "n" or choice.lower() == "":
                             display_message("Annulation de la suppression. Retour au menu.", True, True, 3)
                             break
+
+    def filter_event_not_assigned(self):
+        """ method to display events not assigned to support employee """
+
+        events_obj_list = self.event_model.select_unassigned_event()
+               
+        if events_obj_list:
+            self.event_view.display_events_by_list(events_obj_list)
+        else:
+            display_message("Tous les évènements sont assignés. Retour au menu...", True, True, 3)
+    
+    def filter_event_in_progress(self):
+        """ method to display event not yet finished """
+
+        events_obj_list = self.event_model.select_in_progress_event()
+
+        if events_obj_list:
+            self.event_view.display_events_by_list(events_obj_list)
+        else:
+            display_message("Aucun évènement en cours. Retour au menu...", True, True, 3)
+    
+    def filter_event_assigned(self, employee_id):
+        """ method to display assigned events """
+
+        events_obj_list = self.event_model.select_assigned_events(employee_id)
+
+        if events_obj_list:
+            self.event_view.display_events_by_list(events_obj_list)
+        else:
+            display_message("Vous n'avez aucun évènement assigné. Retour au menu...", True, True, 3)
+    

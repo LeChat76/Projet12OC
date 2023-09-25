@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey
 from sqlalchemy.orm import relationship, joinedload
 from models.database_model import Base
@@ -87,6 +88,26 @@ class EventModel(Base):
             return None
         finally:
             session.close()
+
+    def check_permission_menu_filter_event(self, employee_id):
+        """
+        check authorization of the logged-in employee to access to the event filter menu
+        INPUT : employee id
+        OUPUT : True or False
+        """
+
+        try:
+            session = self.db.get_session()
+            employee = session.query(EmployeeModel).filter_by(id=employee_id).first()
+            if employee.department.name == SUPPORT or employee.department.name == SUPERADMIN:
+                return True
+            else:
+                return False
+        except Exception as e:
+            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
     
     def check_permission_event_update(self, employee_id, event_obj):
         """
@@ -147,6 +168,21 @@ class EventModel(Base):
         finally:
             session.close()
 
+    def select_in_progress_event(self):
+        """ method to select events where date has not passed """
+
+        try:
+            session = self.db.get_session()
+            unassigned_event = session.query(EventModel) \
+                .filter(EventModel.date_end > datetime.now()) \
+                .all()
+            return unassigned_event
+        except Exception as e:
+            display_message(f"Erreur lors de la recherche d'evenements pas encore terminés : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
     def search_event(self, event_number):
         """
         method to search event
@@ -203,6 +239,27 @@ class EventModel(Base):
             return None
         finally:
             session.close()
+
+    def select_assigned_events(self, employee_id):
+        """
+        method to select events assigned to the logged-in employee
+        INPUT : employee id
+        OUPUT : events object list
+        """
+
+        try:
+            session = self.db.get_session()
+            event = session.query(EventModel) \
+                .filter(EventModel.employee_id == employee_id) \
+                .all()
+            return event
+        except Exception as e:
+            session.rollback()
+            display_message(f"Erreur lors de la recherche des evenements assignés : {str(e)}", True, True, 3)
+            return None
+        finally:
+            session.close()
+
 
     def update_event(self, event_to_update):
         """

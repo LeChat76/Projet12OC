@@ -48,60 +48,66 @@ class CustomerController:
     def update_customer(self, employee_id):
         """ update customer method """
         
-        # display choice selection (by input or list)
-        customer_choice = self.customer_view.select_customer_by_entry()
-        if not customer_choice:
-            customers_list = self.customer_model.search_all_customers()
-            customer_choice = self.customer_view.select_customer_by_list(customers_list)
-        if not customer_choice.lower() == "q":
-            # if valid choice : convert choice to object
-            customer_obj = self.customer_model.create_customer_object(customer_choice)
-            if customer_obj:
-                # check permission to modify customer by the logged employee...
-                permission = self.customer_model.check_permission_customer(employee_id, customer_obj)
-                if permission:
-                    #.... if permit : display customer modification menu
-                    customer_to_update_obj = self.customer_view.update_customer(customer_obj)
-                    if customer_to_update_obj:
-                        self.customer_model.update_customer(customer_to_update_obj) 
-                    else:
-                        display_message("Aucune modification apportée au client, retour au menu.", True, True, 3)
-                else:
-                    #... if not permit : display customer info
-                    self.customer_view.display_customer_informations(customer_obj)
-            else:
-                display_message("Aucun client trouvé avec ce nom. Retour au menu.", True, True, 3)
-        else:
-            display_message("Retour au menu...", True, True, 3)
-    
-    def delete_customer(self, employee_id):
-        """ delete customer method"""
-
-        choice = ""
-        
-        # check permission to access to this menu
-        permission = self.customer_model.check_permission_customer_menu(employee_id)
-        if not permission:
-            display_message("Vous n'avez pas la permission de supprimer des clients. Retour au menu...", True, False, 3)
-        else:
-            # display choice selection (bye input or list)
+        customers_list = self.customer_model.search_all_customers()
+        if customers_list:
+            # display choice selection (by input or list)
             customer_choice = self.customer_view.select_customer_by_entry()
             if not customer_choice:
-                customers_list = self.customer_model.search_all_customers()
                 customer_choice = self.customer_view.select_customer_by_list(customers_list)
             if not customer_choice.lower() == "q":
-                # if valid choice : convert choice in object
+                # if valid choice : convert choice to object
                 customer_obj = self.customer_model.create_customer_object(customer_choice)
                 if customer_obj:
-                    while choice.lower() != "o" and choice.lower() != "n":
-                        choice = input_message(f"\nEtes vous sure de vouloir supprimer le client '{customer_obj.name}' (o/N)? ")
-                        if choice.lower() == "o":
-                            self.customer_model.delete_customer(customer_obj)
-                            break
-                        elif choice.lower() == "n" or choice.lower() == "":
-                            display_message("Annulation de la suppression. Retour au menu.", True, True, 3)
-                            break
+                    # check permission to modify customer by the logged employee...
+                    permission = self.customer_model.check_permission_customer(employee_id, customer_obj)
+                    if permission:
+                        #.... if permit : display customer modification menu
+                        customer_to_update_obj = self.customer_view.update_customer(customer_obj)
+                        if customer_to_update_obj:
+                            self.customer_model.update_customer(customer_to_update_obj) 
+                        else:
+                            display_message("Aucune modification apportée au client, retour au menu.", True, True, 3)
+                    else:
+                        #... if not permit : display customer info
+                        self.customer_view.display_customer_informations(customer_obj)
                 else:
                     display_message("Aucun client trouvé avec ce nom. Retour au menu.", True, True, 3)
             else:
-                display_message("Retour au menu...", True, False, 3)
+                display_message("Retour au menu...", True, True, 3)
+        else:
+            display_message("Aucun client. Retour au menu...", True, True, 3)
+
+    def delete_customer(self, employee_id):
+        """ delete customer method"""
+
+        customers_list = self.customer_model.search_all_customers()
+        if customers_list:
+            choice = ""
+            # check permission to access to this menu
+            permission = self.customer_model.check_permission_customer_menu(employee_id)
+            if not permission:
+                display_message("Vous n'avez pas la permission de supprimer des clients. Retour au menu...", True, False, 3)
+            else:
+                # display choice selection (bye input or list)
+                customer_choice = self.customer_view.select_customer_by_entry()
+                if not customer_choice:
+                    customers_list = self.customer_model.search_all_customers()
+                    customer_choice = self.customer_view.select_customer_by_list(customers_list)
+                if not customer_choice.lower() == "q":
+                    # if valid choice : convert choice in object
+                    customer_obj = self.customer_model.create_customer_object(customer_choice)
+                    if customer_obj:
+                        while choice.lower() != "o" and choice.lower() != "n":
+                            choice = input_message(f"\nEtes vous sure de vouloir supprimer le client '{customer_obj.name}' (o/N)? ")
+                            if choice.lower() == "o":
+                                self.customer_model.delete_customer(customer_obj)
+                                break
+                            elif choice.lower() == "n" or choice.lower() == "":
+                                display_message("Annulation de la suppression. Retour au menu.", True, True, 3)
+                                break
+                    else:
+                        display_message("Aucun client trouvé avec ce nom. Retour au menu.", True, True, 3)
+                else:
+                    display_message("Retour au menu...", True, False, 3)
+        else:
+            display_message("Aucun client. Retour au menu...", True, True, 3)

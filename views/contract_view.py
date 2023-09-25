@@ -1,7 +1,8 @@
 import time
 from views.utils_view import clear_screen
 from views.customer_view import CustomerView
-from constants.contract import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_EXIT
+from constants.contract import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_FILTER, MENU_CONTRACT_EXIT
+from constants.contract import MENU_CONTRACT_FILTER_BY_SIGNATURE, MENU_CONTRACT_FILTER_NOT_FULLY_PAYED, MENU_CONTRACT_FILTER_EXIT
 
 
 class ContractView:
@@ -16,7 +17,7 @@ class ContractView:
         choice = None
         while choice !=  MENU_CONTRACT_CREATION and choice != MENU_CONTRACT_UPDATE and\
             choice != MENU_CONTRACT_DELETE and choice != MENU_CONTRACT_EXIT and\
-            choice != MENU_CONTRACT_SIGNATURE:
+            choice != MENU_CONTRACT_SIGNATURE and choice !=MENU_CONTRACT_FILTER:
             clear_screen()
             print("+--------------------------------+")
             print("|          MENU CONTRAT          |")
@@ -25,17 +26,48 @@ class ContractView:
             print("| 2 - voir/modifier un contrat   |")
             print("| 3 - suppression d'un contrat   |")
             print("| 4 - signer un contrat          |")
-            print("| 5 - revenir au menu principal  |")
+            print("| 5 - filtrer contrats           |")
+            print("|                                |")
+            print("|--------------------------------|")
+            print("| 6 - revenir au menu principal  |")
             print("+--------------------------------+")
 
-            choice = input("Quel est votre choix : ")
+            choice = input("\nQuel est votre choix : ")
             if not choice.isnumeric():
-                print("Merci de préciser un choix numérique.")
+                print("\nMerci de préciser un choix numérique.")
                 choice = None
             else:
                 choice = int(choice)
 
         return choice
+
+    def contract_menu_filter(self):
+        """ Menu 2 - 5 contracts filter """
+
+        choice = None
+        while choice !=  MENU_CONTRACT_FILTER_BY_SIGNATURE and choice != MENU_CONTRACT_FILTER_NOT_FULLY_PAYED and\
+            choice != MENU_CONTRACT_FILTER_EXIT:
+            clear_screen()
+            print("+--------------------------------+")
+            print("|      MENU FILTER CONTRAT       |")
+            print("+--------------------------------+")
+            print("| 1 - contrats non signés        |")
+            print("| 2 - contrats non payés         |")
+            print("|                                |")
+            print("|                                |")
+            print("|                                |")
+            print("|--------------------------------|")
+            print("| 6 - revenir au menu principal  |")
+            print("+--------------------------------+")
+
+            choice = input("\nQuel est votre choix : ")
+            if not choice.isnumeric():
+                choice = None
+            else:
+                choice = int(choice)
+
+        return choice
+
 
     def add_contract(self):
         """ ask informations about new contract to add """
@@ -231,3 +263,32 @@ class ContractView:
         print(f"* Information      : {contract_obj.customer_info}")
         input("\n[ENTRER] pour retourner au menu.\n")
     
+    def display_contracts_by_list(self, contracts_obj_list):
+        """
+        method to display contracts by list
+        INPUT : contracts objects list
+        OUPUT : displaying contracts by list
+        """
+
+        while True:
+            counter_int = 1
+            print()
+
+            for contract in contracts_obj_list:
+                print(" - " + str(contract))
+                counter_int += 1
+                time.sleep(0.1)
+                if counter_int %5 == 0:
+                    choice = input("\nAppuyez sur [ENTRER] pour continuer ou (q)uitter)? ")
+                    if choice.lower() == "q":
+                        break
+                    else:
+                        print()
+
+            if choice.lower() == "q":
+                print("\nRetour au menu...")
+                time.sleep(3)
+                break
+
+            input("\nFin de liste atteinte. Appuyez sur [ENTRER] pour retourner au menu...")
+            break
