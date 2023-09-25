@@ -7,6 +7,7 @@ from models.employee_model import EmployeeModel
 from constants.department import COMMERCIAL, SUPERADMIN
 from models.database_model import Base
 from models.database_model import DatabaseModel
+import sentry_sdk
 
 
 class CustomerModel(Base):
@@ -37,7 +38,7 @@ class CustomerModel(Base):
 
     def check_permission_customer(self, employee_id, customer_obj):
         """
-        function to check authorization of an logged-in employee to modify a customer
+        function to check authorization of the logged-in employee to modify a customer
         (check if employee.department.name department is 'superadmin' or 'management')
         INPUT : employee id
         OUTPUT : True of False
@@ -54,6 +55,8 @@ class CustomerModel(Base):
             else:
                 return False
         except Exception as e:
+            sentry_sdk.set_tag("customer", "permission")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
             return None
         finally:
@@ -74,6 +77,8 @@ class CustomerModel(Base):
             else:
                 return False
         except Exception as e:
+            sentry_sdk.set_tag("customer", "permission")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
             return None
         finally:
@@ -83,7 +88,7 @@ class CustomerModel(Base):
     def add_customer(self, new_customer):
         """
         method to add customer in the database
-        INPUT : entered values for a new customer
+        INPUT : customer object
         RESULT : record of the new customer in the database
         """
         
@@ -94,11 +99,15 @@ class CustomerModel(Base):
             display_message("Client ajouté avec succès !", True, True, 2)
         except IntegrityError as e:
             session.rollback()
+            sentry_sdk.set_tag("customer", "creation")
+            sentry_sdk.capture_exception(e)
             display_message("Erreur lors de l'ajout du client : l'email est déjà associé à un autre client.", True, False, 0)
             display_message("Retour au menu....", False, False, 3)
             return None
         except Exception as e:
             session.rollback()
+            sentry_sdk.set_tag("customer", "customer_creation")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de l'ajout du client : {str(e)}", True, True, 3)
             return None
         finally:
@@ -112,6 +121,8 @@ class CustomerModel(Base):
             customers_list = session.query(CustomerModel).all()
             return customers_list
         except Exception as e:
+            sentry_sdk.set_tag("customer", "select")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la recherche des clients : {str(e)}", True, True, 3)
             return None
         finally:
@@ -132,6 +143,8 @@ class CustomerModel(Base):
                 customer = session.query(CustomerModel).filter_by(name = choice).first()
             return customer
         except Exception as e:
+            sentry_sdk.set_tag("customer", "creation")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la creation de l'objet client : {str(e)}", True, True, 3)
             return None
         finally:
@@ -139,7 +152,7 @@ class CustomerModel(Base):
     
     def create_customer_object_with_id(self, customer_id):
         """
-        method to create customer object ID
+        method to create customer object
         INPUT : ID of the customer
         OUTPUT : customer object
         """
@@ -149,6 +162,8 @@ class CustomerModel(Base):
             customer = session.query(CustomerModel).get(customer_id)
             return customer
         except Exception as e:
+            sentry_sdk.set_tag("customer", "creation")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la creation de l'objet client : {str(e)}", True, True, 3)
             return None
         finally:
@@ -174,11 +189,15 @@ class CustomerModel(Base):
             display_message(f"Client '{customer_to_update.name}' mis à jour avec succès!", True, True, 3)
         except IntegrityError as e:
             session.rollback()
+            sentry_sdk.set_tag("customer", "update")
+            sentry_sdk.capture_exception(e)
             display_message("Erreur lors de la modification du client : l'email est déjà associé à un autre client.", True, False, 0)
             display_message("Retour au menu....", False, False, 3)
             return None
         except Exception as e:
             session.rollback()
+            sentry_sdk.set_tag("customer", "update")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la modification du client : {str(e)}", True, True, 3)
             return None
         finally:
@@ -199,6 +218,8 @@ class CustomerModel(Base):
             display_message(f"Client '{customer_to_delete.name}' supprimé avec succès!", True, True, 3)
         except Exception as e:
             session.rollback()
+            sentry_sdk.set_tag("customer", "delete")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la suppresion du client : {str(e)}", True, True, 3)
             return None
         finally:

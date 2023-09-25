@@ -8,6 +8,7 @@ from models.department_model import DepartmentModel
 from models.database_model import Base
 from models.database_model import DatabaseModel
 import bcrypt
+import sentry_sdk
 
 
 class EmployeeModel(Base):
@@ -51,6 +52,8 @@ class EmployeeModel(Base):
                 .first()
             return employee
         except Exception as e:
+            sentry_sdk.set_tag("employee", "search")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la recherche employee : {str(e)}", True, True, 3)
             return None
         finally:
@@ -68,13 +71,15 @@ class EmployeeModel(Base):
                 .all()
             return support_employees
         except Exception as e:
-            display_message(f"Erreur lors de la recherche employee : {str(e)}", True, True, 3)
+            sentry_sdk.set_tag("employee", "search")
+            sentry_sdk.capture_exception(e)
+            display_message(f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
 
     def select_all_employee(self):
-        """ method to select support employees """
+        """ method to select all employees """
 
         try:
             session = self.db.get_session()
@@ -83,7 +88,9 @@ class EmployeeModel(Base):
                 .all()
             return employees
         except Exception as e:
-            display_message(f"Erreur lors de la recherche d'employee : {str(e)}", True, True, 3)
+            sentry_sdk.set_tag("employee", "search")
+            sentry_sdk.capture_exception(e)
+            display_message(f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
@@ -116,6 +123,8 @@ class EmployeeModel(Base):
                 .filter_by(id=employee_id).first()
             return employee
         except Exception as e:
+            sentry_sdk.set_tag("employee", "creation")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la creation de l'objet employee : {str(e)}", True, True, 3)
             return None
         finally:
@@ -123,8 +132,8 @@ class EmployeeModel(Base):
     
     def check_permission_employee(self, employee_id):
         """
-        method to check if logged in user has permission to add employee
-        INPUT : employee id of the logged in user
+        method to check if logged-in user has permission to add employee
+        INPUT : employee id of the logged-in employee
         OUTPUT : True of False 
         """
 
@@ -138,6 +147,8 @@ class EmployeeModel(Base):
             else:
                 return False
         except Exception as e:
+            sentry_sdk.set_tag("employee", "permission")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la vérification du departement de l'utilisateur : {str(e)}", True, True, 3)
             return None
         finally:
@@ -157,10 +168,15 @@ class EmployeeModel(Base):
             display_message("Employé ajouté avec succès !", True, True, 2)
         except IntegrityError as e:
             session.rollback()
+            sentry_sdk.set_tag("employee", "creation")
+            sentry_sdk.capture_exception(e)
             display_message("Erreur de la creation : nom d'utilisateur ou email deja utilisé.\nRetour au menu...", True, True, 3)
             return None
         except Exception as e:
-            display_message(f"Erreur lors de la selection de l'employé : {str(e)}", True, True, 3)
+            session.rollback()
+            sentry_sdk.set_tag("employee", "creation")
+            sentry_sdk.capture_exception(e)
+            display_message(f"Erreur lors de la creation de l'employé : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
@@ -179,6 +195,8 @@ class EmployeeModel(Base):
                 .offset(int(choice) - 1).first()
             return employee_obj
         except Exception as e:
+            sentry_sdk.set_tag("employee", "creation")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la selection de l'employé : {str(e)}", True, True, 3)
             return None
         finally:
@@ -199,6 +217,8 @@ class EmployeeModel(Base):
             display_message(f"Employé '{employee_to_delete.username}' supprimé avec succès!", True, True, 3)
         except Exception as e:
             session.rollback()
+            sentry_sdk.set_tag("employee", "delete")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la suppresion de l'employé : {str(e)}", True, True, 3)
             return None
         finally:
@@ -223,11 +243,15 @@ class EmployeeModel(Base):
             display_message(f"Client '{employee_to_update.username}' mis à jour avec succès!", True, True, 3)
         except IntegrityError as e:
             session.rollback()
+            sentry_sdk.set_tag("employee", "update")
+            sentry_sdk.capture_exception(e)
             display_message("Erreur lors de la modification de l'employee : l'email est déjà associé à un autre employee.", True, False, 0)
             display_message("Retour au menu....", False, False, 3)
             return None
         except Exception as e:
             session.rollback()
+            sentry_sdk.set_tag("employee", "update")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la modification de l'employee : {str(e)}", True, True, 3)
             return None
         finally:

@@ -7,6 +7,7 @@ from constants.database import DB_URL
 from constants.department import COMMERCIAL, SUPERADMIN, SUPPORT, MANAGEMENT
 from models.employee_model import EmployeeModel
 from models.database_model import DatabaseModel
+import sentry_sdk
 
 
 class EventModel(Base):
@@ -32,7 +33,7 @@ class EventModel(Base):
 
     def add_event(self, new_event):
         """
-        method to add customer in the database
+        method to add event in the database
         INPUT : event object
         RESULT : record of the new event in the database
         """
@@ -44,6 +45,8 @@ class EventModel(Base):
             display_message("Evenement ajouté avec succès !", True, True, 3)
         except Exception as e:
             session.rollback()
+            sentry_sdk.set_tag("event", "creation")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de l'ajout de l'evenement : {str(e)}", True, True, 3)
             return None
         finally:
@@ -64,6 +67,8 @@ class EventModel(Base):
                 .offset(int(choice) - 1).first()
             return event_obj
         except Exception as e:
+            sentry_sdk.set_tag("event", "creation")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la creation de l'objet evenement : {str(e)}", True, True, 3)
             return None
         finally:
@@ -84,6 +89,8 @@ class EventModel(Base):
             else:
                 return False
         except Exception as e:
+            sentry_sdk.set_tag("event", "permission")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
             return None
         finally:
@@ -104,6 +111,8 @@ class EventModel(Base):
             else:
                 return False
         except Exception as e:
+            sentry_sdk.set_tag("event", "permission")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
             return None
         finally:
@@ -127,6 +136,8 @@ class EventModel(Base):
             else:
                 return False
         except Exception as e:
+            sentry_sdk.set_tag("event", "permission")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
             return None
         finally:
@@ -148,6 +159,8 @@ class EventModel(Base):
             else:
                 return False
         except Exception as e:
+            sentry_sdk.set_tag("event", "permission")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
             return None
         finally:
@@ -163,6 +176,8 @@ class EventModel(Base):
                 .all()
             return unassigned_event
         except Exception as e:
+            sentry_sdk.set_tag("event", "search")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la recherche d'evenements non assignés : {str(e)}", True, True, 3)
             return None
         finally:
@@ -178,7 +193,9 @@ class EventModel(Base):
                 .all()
             return unassigned_event
         except Exception as e:
-            display_message(f"Erreur lors de la recherche d'evenements pas encore terminés : {str(e)}", True, True, 3)
+            sentry_sdk.set_tag("event", "search")
+            sentry_sdk.capture_exception(e)
+            display_message(f"Erreur lors de la recherche d'evenements non terminés : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
@@ -198,6 +215,8 @@ class EventModel(Base):
                 .filter_by(id=event_number).first()
             return event
         except Exception as e:
+            sentry_sdk.set_tag("event", "search")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la recherche de l'evenement : {str(e)}", True, True, 3)
             return None
         finally:
@@ -207,7 +226,7 @@ class EventModel(Base):
         """
         method to assign employee to an event
         INPUT : event_obj, employee obj
-        RESULT : update event in the dataabse to fill field employee_id
+        RESULT : update event in the database to fill field employee_id
         """
 
         try:
@@ -218,7 +237,9 @@ class EventModel(Base):
             display_message(f"Evenement assigné à {employee_obj.username} avec succès...", True, True, 3)
         except Exception as e:
             session.rollback()
-            display_message(f"Erreur lors de la mise à jour de l'evenement : {str(e)}", True, True, 3)
+            sentry_sdk.set_tag("event", "update")
+            sentry_sdk.capture_exception(e)
+            display_message(f"Erreur lors de l'assignation de l'evenement : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()
@@ -234,7 +255,8 @@ class EventModel(Base):
             event = session.query(EventModel).all()
             return event
         except Exception as e:
-            session.rollback()
+            sentry_sdk.set_tag("event", "search")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la recherche dans la table event : {str(e)}", True, True, 3)
             return None
         finally:
@@ -254,7 +276,8 @@ class EventModel(Base):
                 .all()
             return event
         except Exception as e:
-            session.rollback()
+            sentry_sdk.set_tag("event", "search")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la recherche des evenements assignés : {str(e)}", True, True, 3)
             return None
         finally:
@@ -263,7 +286,7 @@ class EventModel(Base):
 
     def update_event(self, event_to_update):
         """
-        method to update event in database
+        method to update an event in database
         INPUT : event object
         RESULT : update event un database
         """
@@ -280,6 +303,8 @@ class EventModel(Base):
             display_message(f"Evenement '{event_to_update.id}' mis à jour avec succès!", True, True, 3)
         except Exception as e:
             session.rollback()
+            sentry_sdk.set_tag("event", "update")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la mise à jour de l'evenement : {str(e)}", True, True, 3)
             return None
         finally:
@@ -287,7 +312,7 @@ class EventModel(Base):
 
     def delete_event(self, event_obj):
         """
-        method to delete event from database
+        method to delete an event from database
         INPUT : event object
         RESULT : deletion of the event in the database
         """
@@ -300,6 +325,8 @@ class EventModel(Base):
             display_message(f"Evenement numero '{event_to_delete.id}' supprimé avec succès!", True, True, 3)
         except Exception as e:
             session.rollback()
+            sentry_sdk.set_tag("event", "delete")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la suppresion de l'evenement : {str(e)}", True, True, 3)
             return None
         finally:

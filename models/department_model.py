@@ -4,6 +4,7 @@ from views.utils_view import display_message
 from models.database_model import DatabaseModel
 from constants.database import DB_URL
 from models.database_model import Base
+import sentry_sdk
 
 
 class DepartmentModel(Base):
@@ -32,6 +33,8 @@ class DepartmentModel(Base):
             department_obj_list = session.query(DepartmentModel).all()
             return department_obj_list
         except Exception as e:
+            sentry_sdk.set_tag("department", "search")
+            sentry_sdk.capture_exception(e)
             display_message(f"Erreur lors de la selection des departements : {str(e)}", True, True, 3)
             return None
         finally:
@@ -49,7 +52,9 @@ class DepartmentModel(Base):
             department_obj = session.query(DepartmentModel).offset(int(choice) - 1).first()
             return department_obj
         except Exception as e:
-            display_message(f"Erreur lors de la selection du departement : {str(e)}", True, True, 3)
+            sentry_sdk.set_tag("department", "creation")
+            sentry_sdk.capture_exception(e)
+            display_message(f"Erreur lors de la creation de l'object departement : {str(e)}", True, True, 3)
             return None
         finally:
             session.close()

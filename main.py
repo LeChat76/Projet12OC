@@ -9,13 +9,7 @@ def main():
 
     sentry_sdk.init(
         dsn="https://6053c93c03077056f53f0034deed18fb@o4505942102638592.ingest.sentry.io/4505942105915392",
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for performance monitoring.
         traces_sample_rate=1.0,
-        # Set profiles_sample_rate to 1.0 to profile 100%
-        # of sampled transactions.
-        # We recommend adjusting this value in production.
-        profiles_sample_rate=1.0,
     )
 
     db = DatabaseModel(DB_URL)
@@ -23,7 +17,9 @@ def main():
 
     try:
         epicevents.login_menu()
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as e:
+        sentry_sdk.set_tag("application", "interrupt")
+        sentry_sdk.capture_exception(e)
         print("\n\nFin du script par l'utilisateur.\n")
     finally:
         if db:
