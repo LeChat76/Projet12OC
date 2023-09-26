@@ -66,7 +66,11 @@ class ContractController:
             due = new_contract_values[2]
             status = new_contract_values[3]
             new_contract_obj = ContractModel(customer_info, price, due, status, customer_obj, employee_id)
-            self.contract_model.add_contract(new_contract_obj)
+            result = self.contract_model.add_contract(new_contract_obj)
+            if result:
+                display_message(str(new_contract_obj) + " créé avec succes. Retour au menu...", True, True, 3)
+            else:
+                display_message("Erreur lors de l'ajout du contrat.\nVoir log Sentry.", True, True, 3)
         else:
             display_message("Vous n'êtes pas autorisé à créer des contrats. Retour au menu...", True, True, 3)
     
@@ -97,7 +101,11 @@ class ContractController:
                             while choice.lower() != "o" and choice.lower() != "n":
                                 choice = input_message(f"\nEtes vous sure de vouloir supprimer le contrat '{contract_obj.id} (o/N)? ")
                                 if choice.lower() == "o":
-                                    self.contract_model.delete_contract(contract_obj)
+                                    result = self.contract_model.delete_contract(contract_obj.id)
+                                    if result:
+                                        display_message(f"Contrat némro '{contract_obj.id}' supprimé avec succès!", True, True, 3)
+                                    else:
+                                        display_message("Erreur lors de la suppresion du contrat.\nVoir logs Sentry.", True, True, 3)
                                 elif choice.lower() == "n" or choice.lower() == "":
                                     display_message("Annulation de la suppression. Retour au menu.", True, True, 3)
                                     break

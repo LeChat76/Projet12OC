@@ -40,7 +40,11 @@ class CustomerController:
                 new_customer_tuple[3],
                 employee_id
             )
-            self.customer_model.add_customer(new_customer_obj)
+            result = self.customer_model.add_customer(new_customer_obj)
+            if result:
+                display_message("Client ajouté avec succès !", True, True, 2)
+            else:
+                display_message(f"Erreur lors de l'ajout du client.\nVoir logs Sentry", True, True, 3)
 
         else:
             display_message("Vous n'avez pas les authorisations necessaire pour la creation de clients.\nRetour au menu...", True, True, 3)
@@ -100,7 +104,11 @@ class CustomerController:
                         while choice.lower() != "o" and choice.lower() != "n":
                             choice = input_message(f"\nEtes vous sure de vouloir supprimer le client '{customer_obj.name}' (o/N)? ")
                             if choice.lower() == "o":
-                                self.customer_model.delete_customer(customer_obj)
+                                result = self.customer_model.delete_customer(customer_obj.id)
+                                if result:
+                                    display_message("Client '{customer_obj.name}' supprimé avec succès!", True, True, 3)
+                                else:
+                                    display_message("Erreur lors de la suppresion du client.\nVoir los Sentry.", True, True, 3)
                                 break
                             elif choice.lower() == "n" or choice.lower() == "":
                                 display_message("Annulation de la suppression. Retour au menu.", True, True, 3)

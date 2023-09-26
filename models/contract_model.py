@@ -47,23 +47,24 @@ class ContractModel(Base):
         RESULT : record of the new customer in the database
         """
         
+        result = True
+
         try:
             session = self.db.get_session()
             session.add(new_contract_obj)
             session.commit()
-            display_message(str(new_contract_obj) + " créé avec succes. Retour au menu...", True, True, 3)
         except Exception as e:
             session.rollback()
             send_to_sentry("contract", "creation", e)
-            display_message(f"Erreur lors de l'ajout du contrat : {str(e)}", True, True, 3)
-            return None
+            result = None
         finally:
             session.close()
+            return result
 
     def create_contract_object(self, choice):
         """
-        method to create contract object with contract id
-        INPUT : contract id
+        method to create contract object from choice in list
+        INPUT : str(choice in list)
         OUTPUT : contract object
         """
 
@@ -257,26 +258,27 @@ class ContractModel(Base):
         finally:
             session.close()
 
-    def delete_contract(self, contract_obj):
+    def delete_contract(self, contract_id):
         """
         method to delete contract from database
-        INPUT : contract obj
+        INPUT : contract id
         RESULT : deletion of the contract in the database
         """
 
+        result = True
+
         try:
             session = self.db.get_session()
-            contract_to_delete = session.query(ContractModel).filter_by(id=contract_obj.id).first()
+            contract_to_delete = session.query(ContractModel).filter_by(id=contract_id).first()
             session.delete(contract_to_delete)
             session.commit()
-            display_message(f"Contrat némro '{contract_to_delete.id}' supprimé avec succès!", True, True, 3)
         except Exception as e:
             session.rollback()
             send_to_sentry("contract", "delete", e)
-            display_message(f"Erreur lors de la suppresion du contrat : {str(e)}", True, True, 3)
-            return None
+            result = None
         finally:
             session.close()
+            return result
     
     def check_if_contract_exists(self, contract_id):
         """
@@ -284,19 +286,21 @@ class ContractModel(Base):
         INPUT = contract id
         OUPUT : True of False
         """
+
+        result = True
+
         try:
             session = self.db.get_session()
-            contract = session.query(ContractModel).filter_by(id=contract_id).first()
-            if contract:
-                return True
-            else:
-                return False
+            contract = session.get(ContractModel, contract_id)
+            if not contract:
+                result = False
         except Exception as e:
             send_to_sentry("contract", "search", e)
             display_message(f"Erreur lors de la recherche d'un contrat : {str(e)}", True, True, 3)
-            return None
+            result =  None
         finally:
             session.close()
+            return result
 
     def select_available_contracts(self):
         """ method to select all contracts not associated to an event AND signed """

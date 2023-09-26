@@ -20,16 +20,35 @@ class TestEvent(unittest.TestCase):
     def test_permission_for_authorized_employee(self):
         # Test permission for authorized employee (COMMERCIAL or SUPERADMIN department)
 
-        employee_id = 4
+        employee_id = 4 # commercial employee (authorized employee)
 
         self.assertTrue(self.event.check_permission_event(employee_id))
     
+    def test_check_permission_menu_filter_event(self):
+        # Test permission for event update menu
+
+        employee_id = 2 # support employee (authorized employee)
+
+        self.assertTrue(self.event.check_permission_menu_filter_event(employee_id))
+
     def test_permission_for_unauthorized_employee(self):
         # Test permission for unauthorized employee (not COMMERCIAL or SUPERADMIN department)
 
-        employee_id = 2
+        employee_id = 2 # support employee (unauthorized employee)
 
         self.assertFalse(self.event.check_permission_event(employee_id))
+    
+    def test_check_permission_event_assignation(self):
+        # Test permission for access to the event assignation menu
+
+        employee_id = 3 # support employee (authorized employee)
+
+        self.assertTrue(self.event.check_permission_event_assignation(employee_id))
+
+    def test_select_in_progress_event(self):
+        # Test of selection of in progress event
+
+        self.assertTrue(self.event.select_in_progress_event())
 
     def test_select_unassigned_event(self):
         # Test of selection of unassigned events
@@ -67,6 +86,19 @@ class TestEvent(unittest.TestCase):
         event_obj.notes = ""
         event_obj.contract_id = "1"
         self.assertTrue(self.event.add_event(event_obj))
+
+    # def test_update_event(self):
+    #     # Test update an event
+    #     event_obj = EventModel()
+    #     event_obj.id = 1000000
+    #     event_obj.date_start = "16/07/24 01:00"
+    #     event_obj.date_end = "16/07/24 23:00"
+    #     event_obj.location = "97 Allée des Platanes, 76520, Boos"
+    #     event_obj.attendees = "10"
+    #     event_obj.notes = "Test de modification de note"
+    #     event_obj.contract_id = "1"
+
+    #     self.assertTrue(self.event.update_event(event_obj))
 
     def test_delete_event_in_database(self):
         # Test of deletion of an event in the database

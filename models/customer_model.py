@@ -90,23 +90,19 @@ class CustomerModel(Base):
         RESULT : record of the new customer in the database
         """
         
+        result = True
+
         try:
             session = self.db.get_session()
             session.add(new_customer)
             session.commit()
-            display_message("Client ajouté avec succès !", True, True, 2)
-        except IntegrityError as e:
-            session.rollback()
-            send_to_sentry("customer", "creation", e)
-            display_message("Erreur lors de l'ajout du client : l'email est déjà associé à un autre client.\nRetour au menu...", True, False, 3)
-            return None
         except Exception as e:
             session.rollback()
             send_to_sentry("customer", "customer_creation", e)
-            display_message(f"Erreur lors de l'ajout du client : {str(e)}", True, True, 3)
-            return None
+            result = None
         finally:
             session.close()
+            return result
     
     def search_all_customers(self):
         """ method to select all customers """
@@ -156,7 +152,7 @@ class CustomerModel(Base):
 
         try:
             session = self.db.get_session()
-            customer = session.query(CustomerModel).get(customer_id)
+            customer = session.get(CustomerModel, customer_id)
         except Exception as e:
             send_to_sentry("customer", "creation", e)
             display_message(f"Erreur lors de la creation de l'objet client : {str(e)}", True, True, 3)
@@ -175,7 +171,9 @@ class CustomerModel(Base):
 
         try:
             session = self.db.get_session()
-            customer = session.query(CustomerModel).filter_by(CustomerModel.name==customer_name).first()
+            customer = session.query(CustomerModel) \
+                .filter(CustomerModel.name==customer_name) \
+                .first()
         except Exception as e:
             send_to_sentry("customer", "creation", e)
             display_message(f"Erreur lors de la creation de l'objet client : {str(e)}", True, True, 3)
@@ -214,23 +212,24 @@ class CustomerModel(Base):
         finally:
             session.close()
 
-    def delete_customer(self, customer_obj):
+    def delete_customer(self, customer_id):
         """
         method to delete customer from database
-        INPUT : customer object
+        INPUT : customer id
         RESULT : deletion of the customer in the database
         """
 
+        result = True
+
         try:
             session = self.db.get_session()
-            customer_to_delete = session.query(CustomerModel).filter_by(id=customer_obj.id).first()
+            customer_to_delete = session.query(CustomerModel).filter_by(id=customer_id).first()
             session.delete(customer_to_delete)
             session.commit()
-            display_message(f"Client '{customer_to_delete.name}' supprimé avec succès!", True, True, 3)
         except Exception as e:
             session.rollback()
             send_to_sentry("customer", "delete", e)
-            display_message(f"Erreur lors de la suppresion du client : {str(e)}", True, True, 3)
-            return None
+            result = None
         finally:
             session.close()
+            return result

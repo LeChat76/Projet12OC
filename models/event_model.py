@@ -289,7 +289,7 @@ class EventModel(Base):
 
         try:
             session = self.db.get_session()
-            event = session.query(EventModel).get(event_to_update_obj.id)
+            event = session.get(EventModel, event_to_update_obj.id)
             event.date_start = event_to_update_obj.date_start
             event.date_end = event_to_update_obj.date_end
             event.location = event_to_update_obj.location
@@ -315,7 +315,7 @@ class EventModel(Base):
 
         try:
             session = self.db.get_session()
-            event_to_delete = session.query(EventModel).filter_by(id=event_id).first()
+            event_to_delete = session.get(EventModel, event_id)
             session.delete(event_to_delete)
             session.commit()
         except Exception as e:
