@@ -1,4 +1,4 @@
-from views.utils_view import display_message, input_message
+from utils.utils_view import display_message, input_message
 from views.event_view import EventView
 from views.contract_view import ContractView
 from views.employee_view import EmployeeView
@@ -73,28 +73,39 @@ class EventController:
             if not available_contracts:
                 display_message("Aucun contrat disponibles. Retour au menu...", True, True, 3)
             else:
-                contract_choice = self.contract_view.select_contract_by_entry()
-                if contract_choice:
-                    check_if_contract_exists_boolean = self.contract_model.check_if_contract_exists(contract_choice)
-                    if not check_if_contract_exists_boolean:
-                        display_message("Ce numéro de contrat n'est pas repertorié dans la base de donnée.\nVeuillez en choisir un dans la liste :", False, True, 2)
-                        contracts_list = self.contract_model.search_all_contracts()
-                        contract_choice = self.contract_view.select_contract_by_list(contracts_list)
-                else:
-                    contract_choice = self.contract_view.select_contract_by_list(available_contracts)
-                if not contract_choice.lower() == "q":
-                    contract_obj = self.contract_model.create_contract_object(contract_choice)
-                    new_event_tuple = self.event_view.add_event()
-                    new_event_obj = EventModel()
-                    new_event_obj.date_start = new_event_tuple[0]
-                    new_event_obj.date_end = new_event_tuple[1]
-                    new_event_obj.location = new_event_tuple[2]
-                    new_event_obj.attendees = new_event_tuple[3]
-                    new_event_obj.notes = new_event_tuple[4]
-                    new_event_obj.contract_id = contract_obj.id
-                    self.event_model.add_event(new_event_obj)
-                else:
-                    display_message("Retour au menu...", True, True, 3)
+                while True:
+                    contract_choice = self.contract_view.select_contract_by_entry()
+                    if contract_choice:
+                        check_if_contract_exists_boolean = self.contract_model.check_if_contract_exists(contract_choice)
+                        if not check_if_contract_exists_boolean:
+                            display_message("Ce numéro de contrat n'est pas repertorié dans la base de donnée.\nVeuillez en choisir un dans la liste :", False, True, 2)
+                            contracts_list = self.contract_model.search_all_contracts()
+                            contract_choice = self.contract_view.select_contract_by_list(contracts_list)
+                    else:
+                        contract_choice = self.contract_view.select_contract_by_list(available_contracts)
+                    if not contract_choice.lower() == "q":
+                        contract_obj = self.contract_model.create_contract_object(contract_choice)
+                        permission = self.contract_model.check_if_contract_associated_to_employee(employee_id, contract_obj)
+                        if permission:
+                            new_event_tuple = self.event_view.add_event()
+                            new_event_obj = EventModel()
+                            new_event_obj.date_start = new_event_tuple[0]
+                            new_event_obj.date_end = new_event_tuple[1]
+                            new_event_obj.location = new_event_tuple[2]
+                            new_event_obj.attendees = new_event_tuple[3]
+                            new_event_obj.notes = new_event_tuple[4]
+                            new_event_obj.contract_id = contract_obj.id
+                            result = self.event_model.add_event(new_event_obj)
+                            if result:
+                                display_message("Evenement ajouté avec succès !", True, True, 3)
+                            else:
+                                display_message(f"Erreur lors de l'ajout de l'evenement.\nVoir logs Sentry pour plus d'informations.", True, True, 3)
+                            break
+                        else:
+                            display_message("Le client associé à ce contrat ne vous appartient pas. Recommencez...", True, True, 3)
+                    else:
+                        display_message("Retour au menu...", True, True, 3)
+                        break
         else:
             display_message("Vous n'avez pas les authorisations necessaire pour la creation d'évenements.\nRetour au menu...", True, True, 3)
 
@@ -210,7 +221,11 @@ class EventController:
                 else:
                     event_to_update = self.event_view.update_event(event_obj)
                     if event_to_update:
-                        self.event_model.update_event(event_to_update)
+                        result = self.event_model.update_event(event_to_update)
+                        if result:
+                            display_message(f"Evenement '{event_to_update.id}' mis à jour avec succès!", True, True, 3)
+                        else:
+                            display_message("Erreur lors de la mise à jour de l'evenement.\nVoir logs Sentry.", True, True, 3)
                         break
                     else:
                         display_message("Aucune modification apportée à l'evenement, retour au menu.", True, True, 3)
@@ -260,7 +275,11 @@ class EventController:
                     while choice.lower() != "o" and choice.lower() != "n":
                         choice = input_message(f"\nEtes vous sure de vouloir supprimer l'evenement numéro '{event_obj.id} (o/N)? ")
                         if choice.lower() == "o":
-                            self.event_model.delete_event(event_obj)
+                            result = self.event_model.delete_event(event_obj.id)
+                            if result:
+                                display_message(f"Evenement numero '{event_obj.id}' supprimé avec succès!", True, True, 3)
+                            else:
+                                display_message(f"Erreur lors de la suppresion de l'evenement.\n(voir logs Sentry pour plus de détails).", True, True, 3)
                             break
                         elif choice.lower() == "n" or choice.lower() == "":
                             display_message("Annulation de la suppression. Retour au menu.", True, True, 3)

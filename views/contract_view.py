@@ -1,5 +1,5 @@
 import time
-from views.utils_view import clear_screen
+from utils.utils_view import clear_screen
 from views.customer_view import CustomerView
 from constants.contract import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_FILTER, MENU_CONTRACT_EXIT
 from constants.contract import MENU_CONTRACT_FILTER_BY_SIGNATURE, MENU_CONTRACT_FILTER_NOT_FULLY_PAYED, MENU_CONTRACT_FILTER_EXIT
@@ -27,7 +27,6 @@ class ContractView:
             print("| 3 - suppression d'un contrat   |")
             print("| 4 - signer un contrat          |")
             print("| 5 - filtrer contrats           |")
-            print("|                                |")
             print("|--------------------------------|")
             print("| 6 - revenir au menu principal  |")
             print("+--------------------------------+")
@@ -269,6 +268,8 @@ class ContractView:
         INPUT : contracts objects list
         OUPUT : displaying contracts by list
         """
+
+        choice = ""
 
         while True:
             counter_int = 1

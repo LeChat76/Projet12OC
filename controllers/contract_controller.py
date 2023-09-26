@@ -4,7 +4,7 @@ from models.contract_model import ContractModel
 from models.customer_model import CustomerModel
 from constants.contract import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_DELETE, MENU_CONTRACT_FILTER, MENU_CONTRACT_EXIT
 from constants.contract import MENU_CONTRACT_FILTER_BY_SIGNATURE, MENU_CONTRACT_FILTER_NOT_FULLY_PAYED, MENU_CONTRACT_FILTER_EXIT
-from views.utils_view import display_message, input_message	
+from utils.utils_view import display_message, input_message	
 
 
 class ContractController:
@@ -145,7 +145,7 @@ class ContractController:
                             #... if not permit : display contract info
                             self.contract_view.display_contract_informations(contract_obj)
             else:
-                display_message("Modification d'un contrat abandonnée. Retour au menu...", True, True, 3) 
+                display_message("Retour au menu...", True, True, 3) 
         else:
             display_message("Aucun contrat dans la base de donnée. Retour au menu...", True, True, 3)
 

@@ -1,5 +1,5 @@
 import sys
-from views.utils_view import clear_screen
+from utils.utils_view import clear_screen
 from models.database_model import DatabaseModel
 from models.employee_model import EmployeeModel
 from views.login_view import LoginMenu
@@ -10,8 +10,8 @@ from controllers.customer_controller import CustomerController
 from controllers.contract_controller import ContractController
 from controllers.event_controller import EventController
 from controllers.employee_controller import EmployeeController
-from views.utils_view import display_message
-from models.utils_database import create_departments, create_super_admin
+from utils.utils_view import display_message
+from utils.utils_database import create_departments, create_super_admin
 
 
 
@@ -45,12 +45,12 @@ class epicEvents:
         while authentication == False:
             input_username, input_password = self.login_view.login_menu(show_title)
             show_title = False
-            employee = self.employee_model.search_employee(input_username)
-            if employee:
-                password_valid = EmployeeModel.check_password(employee, input_password)
+            employee_obj = self.employee_model.search_employee(input_username)
+            if employee_obj:
+                password_valid = self.employee_model.check_password(employee_obj.password, input_password)
                 if password_valid:
                     authentication = True
-                    self.main_menu(employee.id)
+                    self.main_menu(employee_obj.id)
                 else:
                     display_message("Password incorrect! Merci de resaisir.", True, True, 0)
             else:

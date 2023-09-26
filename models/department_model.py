@@ -1,10 +1,10 @@
 from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
-from views.utils_view import display_message
+from utils.utils_view import display_message
 from models.database_model import DatabaseModel
 from constants.database import DB_URL
 from models.database_model import Base
-import sentry_sdk
+from utils.utils_sentry import send_to_sentry
 
 
 class DepartmentModel(Base):
@@ -28,18 +28,18 @@ class DepartmentModel(Base):
         OUPUT : department obj list
         """
 
+        department_obj_list = None
+
         try:
             session = self.db.get_session()
             department_obj_list = session.query(DepartmentModel).all()
-            return department_obj_list
         except Exception as e:
-            sentry_sdk.set_tag("department", "search")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("department", "search", e)
             display_message(f"Erreur lors de la selection des departements : {str(e)}", True, True, 3)
-            return None
         finally:
             session.close()
-    
+            return department_obj_list
+
     def create_department_object_from_list(self, choice):
         """
         method to create department object from index
@@ -47,14 +47,14 @@ class DepartmentModel(Base):
         OUTPUT : department object
         """
 
+        department_obj = None
+
         try:
             session = self.db.get_session()
             department_obj = session.query(DepartmentModel).offset(int(choice) - 1).first()
-            return department_obj
         except Exception as e:
-            sentry_sdk.set_tag("department", "creation")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("department", "creation", e)
             display_message(f"Erreur lors de la creation de l'object departement : {str(e)}", True, True, 3)
-            return None
         finally:
             session.close()
+            return department_obj

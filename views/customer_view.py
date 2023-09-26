@@ -1,6 +1,6 @@
 import re
 import time
-from views.utils_view import clear_screen
+from utils.utils_view import clear_screen
 from constants.customer import MENU_CUSTOMER_CREATION, MENU_CUSTOMER_UPDATE, MENU_CUSTOMER_DELETE, MENU_CUSTOMER_EXIT
 
 

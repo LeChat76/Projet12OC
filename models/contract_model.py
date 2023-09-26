@@ -2,13 +2,13 @@ from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, text, Flo
 from sqlalchemy.orm import relationship, joinedload
 from models.database_model import Base
 from constants.database import DB_URL
-from views.utils_view import display_message
+from utils.utils_view import display_message
 from models.employee_model import EmployeeModel
 from models.customer_model import CustomerModel
 from models.database_model import DatabaseModel
 from models.event_model import EventModel
 from constants.department import MANAGEMENT, SUPERADMIN, COMMERCIAL
-import sentry_sdk
+from utils.utils_sentry import send_to_sentry
 
 
 class ContractModel(Base):
@@ -54,8 +54,7 @@ class ContractModel(Base):
             display_message(str(new_contract_obj) + " créé avec succes. Retour au menu...", True, True, 3)
         except Exception as e:
             session.rollback()
-            sentry_sdk.set_tag("contract", "creation")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "creation", e)
             display_message(f"Erreur lors de l'ajout du contrat : {str(e)}", True, True, 3)
             return None
         finally:
@@ -68,17 +67,17 @@ class ContractModel(Base):
         OUTPUT : contract object
         """
 
+        contract_obj = None
+
         try:
             session = self.db.get_session()
             contract_obj = session.query(ContractModel).options(joinedload(ContractModel.customer)).offset(int(choice) - 1).first()
-            return contract_obj
         except Exception as e:
-            sentry_sdk.set_tag("contract", "creation")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "creation", e)
             display_message(f"Erreur lors de la creation de l'objet contrat: {str(e)}", True, True, 3)
-            return None
         finally:
             session.close()
+            return contract_obj
 
     def check_permission(self, employee_id):
         """
@@ -95,8 +94,7 @@ class ContractModel(Base):
             else:
                 return False
         except Exception as e:
-            sentry_sdk.set_tag("contract", "permission")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "permission", e)
             display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
             return None
         finally:
@@ -117,8 +115,7 @@ class ContractModel(Base):
             else:
                 return False
         except Exception as e:
-            sentry_sdk.set_tag("contract", "permission")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "permission", e)
             display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
             return None
         finally:
@@ -147,8 +144,7 @@ class ContractModel(Base):
             else:
                 return False
         except Exception as e:
-            sentry_sdk.set_tag("contract", "permission")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "permission", e)
             display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
             return None
         finally:
@@ -157,17 +153,17 @@ class ContractModel(Base):
     def search_all_contracts(self):
         """ method to select all contracts """
 
+        contracts_list = None
+
         try:
             session = self.db.get_session()
             contracts_list = session.query(ContractModel).options(joinedload(ContractModel.customer)).all()
-            return contracts_list
         except Exception as e:
-            sentry_sdk.set_tag("contract", "search")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "search", e)
             display_message(f"Erreur lors de la recherche des contrats : {str(e)}", True, True, 3)
-            return None
         finally:
             session.close()
+            return contracts_list
 
     def select_not_signed_contract(self):
         """
@@ -175,17 +171,17 @@ class ContractModel(Base):
         OUPUT : list of non signed contracts
         """
 
+        not_signed_contracts_list = None
+
         try:
             session = self.db.get_session()
             not_signed_contracts_list = session.query(ContractModel).options(joinedload(ContractModel.customer)).filter_by(status="NOT-SIGNED").all()
-            return not_signed_contracts_list
         except Exception as e:
-            sentry_sdk.set_tag("contract", "search")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "search", e)
             display_message(f"Erreur lors de la recherche des contrats nons signés : {str(e)}", True, True, 3)
-            return None
         finally:
             session.close()
+            return not_signed_contracts_list
 
     def select_not_fully_payed_contracts(self):
         """
@@ -193,17 +189,17 @@ class ContractModel(Base):
         OUPUT : list of not fully payed contracts
         """
 
+        not_fully_payed_contracts_list = None
+
         try:
             session = self.db.get_session()
             not_fully_payed_contracts_list = session.query(ContractModel).options(joinedload(ContractModel.customer)).filter(ContractModel.due != 0).all()
-            return not_fully_payed_contracts_list
         except Exception as e:
-            sentry_sdk.set_tag("contract", "search")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "search", e)
             display_message(f"Erreur lors de la recherche des contrats nons totalement payés : {str(e)}", True, True, 3)
-            return None
         finally:
             session.close()
+            return not_fully_payed_contracts_list
 
     def check_signature(self, contract_obj):
         """
@@ -231,8 +227,7 @@ class ContractModel(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            sentry_sdk.set_tag("contract", "update")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "update", e)
             display_message(f"Erreur lors de la signature du contrat : {str(e)}", True, True, 3)
             return None
         finally:
@@ -256,8 +251,7 @@ class ContractModel(Base):
             display_message(f"Contrat '{contract_to_update_obj.id}' mis à jour avec succès!", True, True, 3)
         except Exception as e:
             session.rollback()
-            sentry_sdk.set_tag("contract", "update")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "update", e)
             display_message(f"Erreur lors de la modification du contrat : {str(e)}", True, True, 3)
             return None
         finally:
@@ -278,8 +272,7 @@ class ContractModel(Base):
             display_message(f"Contrat némro '{contract_to_delete.id}' supprimé avec succès!", True, True, 3)
         except Exception as e:
             session.rollback()
-            sentry_sdk.set_tag("contract", "delete")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "delete", e)
             display_message(f"Erreur lors de la suppresion du contrat : {str(e)}", True, True, 3)
             return None
         finally:
@@ -299,8 +292,7 @@ class ContractModel(Base):
             else:
                 return False
         except Exception as e:
-            sentry_sdk.set_tag("contract", "search")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "search", e)
             display_message(f"Erreur lors de la recherche d'un contrat : {str(e)}", True, True, 3)
             return None
         finally:
@@ -308,6 +300,8 @@ class ContractModel(Base):
 
     def select_available_contracts(self):
         """ method to select all contracts not associated to an event AND signed """
+
+        contracts_without_event = None
 
         try:
             session = self.db.get_session()
@@ -317,11 +311,22 @@ class ContractModel(Base):
                 .filter(EventModel.id.is_(None)) \
                 .filter(ContractModel.status=="SIGNED") \
                 .all()
-            return contracts_without_event
         except Exception as e:
-            sentry_sdk.set_tag("contract", "search")
-            sentry_sdk.capture_exception(e)
+            send_to_sentry("contract", "search", e)
             display_message(f"Erreur lors de la selection des contrats sans evenements associés : {str(e)}", True, True, 3)
-            return None
         finally:
             session.close()
+            return contracts_without_event
+
+    def check_if_contract_associated_to_employee(self, employee_id, contract_obj):
+        """
+        method to check if contract is associated to an customer associated to logged-in employee
+        INPUT : employee ID + contract_obj
+        OUPUT : True of False
+        """
+
+        customer = contract_obj.customer
+        if customer.employee_id == employee_id:
+            return True
+        else:
+            return False

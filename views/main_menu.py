@@ -1,4 +1,4 @@
-from views.utils_view import clear_screen
+from utils.utils_view import clear_screen
 from constants.base import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EMPLOYEES, MENU_EXIT
 
 

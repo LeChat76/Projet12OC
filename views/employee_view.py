@@ -1,7 +1,7 @@
 import time, re
 from getpass_asterisk.getpass_asterisk import getpass_asterisk
 from constants.employee import MENU_EMPLOYEE_CREATION, MENU_EMPLOYEE_UPDATE, MENU_EMPLOYEE_DELETE, MENU_EMPLOYEE_EXIT
-from views.utils_view import clear_screen
+from utils.utils_view import clear_screen
 from getpass_asterisk.getpass_asterisk import getpass_asterisk
 import bcrypt
 

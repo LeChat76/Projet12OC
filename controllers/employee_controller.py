@@ -1,7 +1,7 @@
 from models.employee_model import EmployeeModel
 from models.department_model import DepartmentModel
 from views.employee_view import EmployeeView
-from views.utils_view import display_message, input_message
+from utils.utils_view import display_message, input_message
 from constants.employee import MENU_EMPLOYEE_CREATION, MENU_EMPLOYEE_UPDATE, MENU_EMPLOYEE_DELETE, MENU_EMPLOYEE_EXIT
 import bcrypt
 
@@ -45,9 +45,13 @@ class EmployeeController:
             new_employee_obj.username = new_employee_values_tuple[0],
             new_employee_obj.password = bcrypt.hashpw(new_employee_values_tuple[1].encode('utf-8'), salt),
             new_employee_obj.email = new_employee_values_tuple[2],
-            new_employee_obj.department_id = department_obj.id,
+            new_employee_obj.department_id = department_obj.id
 
-            self.employee_model.add_employee(new_employee_obj)
+            result = self.employee_model.add_employee(new_employee_obj)
+            if result:
+                display_message("Employé ajouté avec succès !", True, True, 3)
+            else:
+                display_message("Erreur lors de la creation de l'employé.\nVoir log Sentry pour plus d'informations.", True, True, 3)
     
     def update_employee(self, employee_id):
         """ method to update an employee """
@@ -135,7 +139,11 @@ class EmployeeController:
                 while choice.lower() != "o" and choice.lower() != "n":
                     choice = input_message(f"\nEtes vous sure de vouloir supprimer l'employee '{employee_obj.username.capitalize()}' (o/N)? ")
                     if choice.lower() == "o":
-                        self.employee_model.delete_employee(employee_obj)
+                        result = self.employee_model.delete_employee(employee_obj.id)
+                        if result:
+                            display_message(f"Employé '{employee_obj.username}' supprimé avec succès!", True, True, 3)
+                        else:
+                            display_message("Erreur lors de la suppresion de l'employé.\nVoir log Sentry pour plus d'informations", True, True, 3)
                         break
                     elif choice.lower() == "n" or choice.lower() == "":
                         display_message("Annulation de la suppression. Retour au menu.", True, True, 3)

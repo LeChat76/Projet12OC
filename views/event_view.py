@@ -1,4 +1,4 @@
-from views.utils_view import clear_screen
+from utils.utils_view import clear_screen
 from constants.event import MENU_EVENT_CREATION, MENU_EVENT_ASSIGNATION,MENU_EVENT_UPDATE,MENU_EVENT_DELETE, MENU_EVENT_FILTER, MENU_EVENT_EXIT
 from constants.event import MENU_EVENT_FILTER_NOT_ASSIGNED, MENU_EVENT_FILTER_IN_PROGRESS, MENU_EVENT_FILTER_ASSIGNED, MENU_EVENT_FILTER_EXIT
 from datetime import datetime

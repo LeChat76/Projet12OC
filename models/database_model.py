@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from constants.department import SUPPORT, MANAGEMENT, COMMERCIAL, SUPERADMIN
-from views.utils_view import display_message
+from utils.utils_view import display_message
 
 Base = declarative_base()
 
