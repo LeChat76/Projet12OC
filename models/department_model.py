@@ -39,7 +39,7 @@ class DepartmentModel(Base):
                 f"Erreur lors de la selection des departements : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -65,7 +65,7 @@ class DepartmentModel(Base):
                 f"Erreur lors de la creation de l'object departement : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()

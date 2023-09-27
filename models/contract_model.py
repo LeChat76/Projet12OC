@@ -86,7 +86,7 @@ class ContractModel(Base):
                 f"Erreur lors de la creation de l'objet contrat: {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -120,7 +120,7 @@ class ContractModel(Base):
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
             return None
         finally:
@@ -154,7 +154,7 @@ class ContractModel(Base):
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
             return None
         finally:
@@ -197,7 +197,7 @@ class ContractModel(Base):
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
             return None
         finally:
@@ -218,7 +218,7 @@ class ContractModel(Base):
         except Exception as e:
             send_to_sentry("contract", "search", e)
             display_message(
-                f"Erreur lors de la recherche des contrats : {str(e)}", True, True, 3
+                f"Erreur lors de la recherche des contrats : {str(e)}", True, True, 2
             )
         finally:
             session.close()
@@ -246,7 +246,7 @@ class ContractModel(Base):
                 f"Erreur lors de la recherche des contrats nons signés : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -274,7 +274,7 @@ class ContractModel(Base):
                 f"Erreur lors de la recherche des contrats nons totalement payés : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -308,7 +308,7 @@ class ContractModel(Base):
             session.rollback()
             send_to_sentry("contract", "update", e)
             display_message(
-                f"Erreur lors de la signature du contrat : {str(e)}", True, True, 3
+                f"Erreur lors de la signature du contrat : {str(e)}", True, True, 2
             )
             return None
         finally:
@@ -332,13 +332,13 @@ class ContractModel(Base):
                 f"Contrat '{contract_to_update_obj.id}' mis à jour avec succès!",
                 True,
                 True,
-                3,
+                2,
             )
         except Exception as e:
             session.rollback()
             send_to_sentry("contract", "update", e)
             display_message(
-                f"Erreur lors de la modification du contrat : {str(e)}", True, True, 3
+                f"Erreur lors de la modification du contrat : {str(e)}", True, True, 2
             )
             return None
         finally:
@@ -385,7 +385,7 @@ class ContractModel(Base):
         except Exception as e:
             send_to_sentry("contract", "search", e)
             display_message(
-                f"Erreur lors de la recherche d'un contrat : {str(e)}", True, True, 3
+                f"Erreur lors de la recherche d'un contrat : {str(e)}", True, True, 2
             )
             result = None
         finally:
@@ -413,7 +413,7 @@ class ContractModel(Base):
                 f"Erreur lors de la selection des contrats sans evenements associés : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()

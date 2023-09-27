@@ -21,3 +21,6 @@ class TestDepartment(unittest.TestCase):
         # Test selection of all department
 
         self.assertTrue(self.department.select_all_department())
+
+if __name__ == "__main__":
+    unittest.main()

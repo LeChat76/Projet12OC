@@ -4,7 +4,6 @@ from utils.utils_view import clear_screen
 from constants.customer import (
     MENU_CUSTOMER_CREATION,
     MENU_CUSTOMER_UPDATE,
-    MENU_CUSTOMER_DELETE,
     MENU_CUSTOMER_EXIT,
 )
 
@@ -19,7 +18,6 @@ class CustomerView:
         while (
             choice != MENU_CUSTOMER_CREATION
             and choice != MENU_CUSTOMER_UPDATE
-            and choice != MENU_CUSTOMER_DELETE
             and choice != MENU_CUSTOMER_EXIT
         ):
             clear_screen()
@@ -28,7 +26,7 @@ class CustomerView:
             print("+--------------------------------+")
             print("| 1 - création d'un client       |")
             print("| 2 - voir/modifier un client    |")
-            print("| 3 - suppression d'un client    |")
+            print("|                                |")
             print("|                                |")
             print("|--------------------------------|")
             print("| 5 - revenir au menu principal  |")

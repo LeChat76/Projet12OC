@@ -4,7 +4,6 @@ from utils.utils_view import display_message, input_message
 from constants.customer import (
     MENU_CUSTOMER_CREATION,
     MENU_CUSTOMER_UPDATE,
-    MENU_CUSTOMER_DELETE,
     MENU_CUSTOMER_EXIT,
 )
 
@@ -26,8 +25,6 @@ class CustomerController:
                 self.add_customer(employee_id)
             elif choice == MENU_CUSTOMER_UPDATE:
                 self.update_customer(employee_id)
-            elif choice == MENU_CUSTOMER_DELETE:
-                self.delete_customer(employee_id)
             elif choice == MENU_CUSTOMER_EXIT:
                 break
 
@@ -53,7 +50,7 @@ class CustomerController:
                     f"Erreur lors de l'ajout du client.\nVoir logs Sentry",
                     True,
                     True,
-                    3,
+                    2,
                 )
 
         else:
@@ -61,7 +58,7 @@ class CustomerController:
                 "Vous n'avez pas les authorisations necessaire pour la creation de clients.\nRetour au menu...",
                 True,
                 True,
-                3,
+                2,
             )
 
     def update_customer(self, employee_id):
@@ -97,7 +94,7 @@ class CustomerController:
                                 "Aucune modification apportée au client, retour au menu.",
                                 True,
                                 True,
-                                3,
+                                2,
                             )
                     else:
                         # ... if not permit : display customer info
@@ -107,12 +104,12 @@ class CustomerController:
                         "Aucun client trouvé avec ce nom. Retour au menu.",
                         True,
                         True,
-                        3,
+                        2,
                     )
             else:
-                display_message("Retour au menu...", True, True, 3)
+                display_message("Retour au menu...", True, True, 2)
         else:
-            display_message("Aucun client. Retour au menu...", True, True, 3)
+            display_message("Aucun client. Retour au menu...", True, True, 2)
 
     def delete_customer(self, employee_id):
         """delete customer method"""
@@ -127,7 +124,7 @@ class CustomerController:
                     "Vous n'avez pas la permission de supprimer des clients. Retour au menu...",
                     True,
                     False,
-                    3,
+                    2,
                 )
             else:
                 # display choice selection (bye input or list)
@@ -155,14 +152,14 @@ class CustomerController:
                                         f"Client '{customer_obj.name}' supprimé avec succès!",
                                         True,
                                         True,
-                                        3,
+                                        2,
                                     )
                                 else:
                                     display_message(
                                         "Erreur lors de la suppresion du client.\nVoir los Sentry.",
                                         True,
                                         True,
-                                        3,
+                                        2,
                                     )
                                 break
                             elif choice.lower() == "n" or choice.lower() == "":
@@ -170,7 +167,7 @@ class CustomerController:
                                     "Annulation de la suppression. Retour au menu.",
                                     True,
                                     True,
-                                    3,
+                                    2,
                                 )
                                 break
                     else:
@@ -178,9 +175,9 @@ class CustomerController:
                             "Aucun client trouvé avec ce nom. Retour au menu.",
                             True,
                             True,
-                            3,
+                            2,
                         )
                 else:
-                    display_message("Retour au menu...", True, False, 3)
+                    display_message("Retour au menu...", True, True, 2)
         else:
-            display_message("Aucun client. Retour au menu...", True, True, 3)
+            display_message("Aucun client. Retour au menu...", True, True, 2)

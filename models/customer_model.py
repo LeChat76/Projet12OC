@@ -68,7 +68,7 @@ class CustomerModel(Base):
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
             return None
         finally:
@@ -102,7 +102,7 @@ class CustomerModel(Base):
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
             return None
         finally:
@@ -144,7 +144,7 @@ class CustomerModel(Base):
         except Exception as e:
             send_to_sentry("customer", "select", e)
             display_message(
-                f"Erreur lors de la recherche des clients : {str(e)}", True, True, 3
+                f"Erreur lors de la recherche des clients : {str(e)}", True, True, 2
             )
         finally:
             session.close()
@@ -164,14 +164,14 @@ class CustomerModel(Base):
             if isinstance(choice, str) and choice.isnumeric():
                 customer = session.query(CustomerModel).filter(CustomerModel.status != 'DISABLE').offset(int(choice) - 1).first()
             else:
-                customer = session.query(CustomerModel).filter_by(name=choice).first()
+                customer = session.query(CustomerModel).filter(CustomerModel.status != 'DISABLE').filter_by(name=choice).first()
         except Exception as e:
             send_to_sentry("customer", "creation", e)
             display_message(
                 f"Erreur lors de la creation de l'objet client : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -195,7 +195,7 @@ class CustomerModel(Base):
                 f"Erreur lors de la creation de l'objet client : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -223,7 +223,7 @@ class CustomerModel(Base):
                 f"Erreur lors de la creation de l'objet client : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -249,7 +249,7 @@ class CustomerModel(Base):
                 f"Client '{customer_to_update.name}' mis à jour avec succès!",
                 True,
                 True,
-                3,
+                2,
             )
         except IntegrityError as e:
             session.rollback()
@@ -260,13 +260,13 @@ class CustomerModel(Base):
                 False,
                 0,
             )
-            display_message("Retour au menu....", False, False, 3)
+            display_message("Retour au menu....", False, False, 2)
             return None
         except Exception as e:
             session.rollback()
             send_to_sentry("customer", "update", e)
             display_message(
-                f"Erreur lors de la modification du client : {str(e)}", True, True, 3
+                f"Erreur lors de la modification du client : {str(e)}", True, True, 2
             )
             return None
         finally:
@@ -291,6 +291,24 @@ class CustomerModel(Base):
         except Exception as e:
             session.rollback()
             send_to_sentry("customer", "delete", e)
+            result = None
+        finally:
+            session.close()
+            return result
+
+    def delete_last_customer(self):
+        """ method to delete last customer from database """
+
+        result = True
+
+        try:
+            session = self.db.get_session()
+            customer_to_delete = session.query(CustomerModel).order_by(CustomerModel.id.desc()).first()
+            session.delete(customer_to_delete)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            send_to_sentry("employee", "delete", e)
             result = None
         finally:
             session.close()

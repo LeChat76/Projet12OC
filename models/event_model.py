@@ -81,7 +81,7 @@ class EventModel(Base):
                 f"Erreur lors de la creation de l'objet evenement : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -115,7 +115,7 @@ class EventModel(Base):
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
             return None
         finally:
@@ -144,7 +144,7 @@ class EventModel(Base):
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
             return None
         finally:
@@ -178,7 +178,7 @@ class EventModel(Base):
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
             return None
         finally:
@@ -212,7 +212,7 @@ class EventModel(Base):
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
             return None
         finally:
@@ -234,7 +234,7 @@ class EventModel(Base):
                 f"Erreur lors de la recherche d'evenements non assignés : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -258,7 +258,7 @@ class EventModel(Base):
                 f"Erreur lors de la recherche d'evenements non terminés : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -285,7 +285,7 @@ class EventModel(Base):
         except Exception as e:
             send_to_sentry("event", "search", e)
             display_message(
-                f"Erreur lors de la recherche de l'evenement : {str(e)}", True, True, 3
+                f"Erreur lors de la recherche de l'evenement : {str(e)}", True, True, 2
             )
         finally:
             session.close()
@@ -304,16 +304,16 @@ class EventModel(Base):
             event.employee_id = employee_obj.id
             session.commit()
             display_message(
-                f"Evenement assigné à {employee_obj.username} avec succès...",
+                f"Evenement assigné à {employee_obj.username.capitalize()} avec succès...",
                 True,
                 True,
-                3,
+                2,
             )
         except Exception as e:
             session.rollback()
             send_to_sentry("event", "update", e)
             display_message(
-                f"Erreur lors de l'assignation de l'evenement : {str(e)}", True, True, 3
+                f"Erreur lors de l'assignation de l'evenement : {str(e)}", True, True, 2
             )
             return None
         finally:
@@ -338,7 +338,7 @@ class EventModel(Base):
                 f"Erreur lors de la recherche dans la table event : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -357,6 +357,7 @@ class EventModel(Base):
             session = self.db.get_session()
             event = (
                 session.query(EventModel)
+                .options(joinedload(EventModel.employee))
                 .filter(EventModel.employee_id == employee_id)
                 .all()
             )
@@ -366,7 +367,7 @@ class EventModel(Base):
                 f"Erreur lors de la recherche des evenements assignés : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()

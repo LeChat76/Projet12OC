@@ -35,7 +35,7 @@ class TestCustomer(unittest.TestCase):
     def test_delete_customer_in_database(self):
         # Test deletion of customer in the database
 
-        self.assertTrue(self.customer_obj.delete_customer(self.customer_obj.id))
+        self.assertTrue(self.customer_obj.delete_last_customer())
 
     def test_check_permission_customer_menu(self):
         # Test permission to access to customer menu
@@ -64,3 +64,6 @@ class TestCustomer(unittest.TestCase):
         customer_id = 1
 
         self.assertTrue(self.customer_obj.create_customer_object_with_id(customer_id))
+
+if __name__ == "__main__":
+    unittest.main()

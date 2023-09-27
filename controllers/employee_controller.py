@@ -45,7 +45,7 @@ class EmployeeController:
                 "Vous n'avez pas les autorisations necessaires pour créer des utilisateurs.\nRetour au menu",
                 True,
                 True,
-                3,
+                2,
             )
         else:
             department_obj_list = self.department_model.select_all_department()
@@ -65,13 +65,13 @@ class EmployeeController:
 
             result = self.employee_model.add_employee(new_employee_obj)
             if result:
-                display_message("Employé ajouté avec succès !", True, True, 3)
+                display_message("Employé ajouté avec succès !", True, True, 2)
             else:
                 display_message(
                     "Erreur lors de la creation de l'employé.\nVoir log Sentry pour plus d'informations.",
                     True,
                     True,
-                    3,
+                    2,
                 )
 
     def update_employee(self, employee_id):
@@ -82,7 +82,7 @@ class EmployeeController:
 
             all_employees = self.employee_model.select_all_employee()
             if not all_employees:
-                display_message("Aucun employee, retour au menu...", True, True, 3)
+                display_message("Aucun employee, retour au menu...", True, True, 2)
 
             employee_choice = self.employee_view.select_employee_by_entry()
 
@@ -99,7 +99,7 @@ class EmployeeController:
                         all_employees
                     )
                     if employee_choice == "q":
-                        display_message("Retour au menu...", True, True, 3)
+                        display_message("Retour au menu...", True, True, 2)
                         break
                     else:
                         employee_obj = (
@@ -112,7 +112,7 @@ class EmployeeController:
                     all_employees
                 )
                 if employee_choice == "q":
-                    display_message("Retour au menu...", True, True, 3)
+                    display_message("Retour au menu...", True, True, 2)
                     break
                 else:
                     employee_obj = self.employee_model.create_employee_object_from_list(
@@ -146,7 +146,7 @@ class EmployeeController:
                             "Aucune modification apportée à l'employee, retour au menu.",
                             True,
                             True,
-                            3,
+                            2,
                         )
                         break
 
@@ -160,7 +160,7 @@ class EmployeeController:
                 "Vous n'avez pas les autorisations necessaires pour supprimer des utilisateurs.\nRetour au menu",
                 True,
                 True,
-                3,
+                2,
             )
         else:
             while True:
@@ -179,7 +179,7 @@ class EmployeeController:
                             employees_obj_list
                         )
                         if employee_choice == "q":
-                            display_message("Retour au menu...", True, True, 3)
+                            display_message("Retour au menu...", True, True, 2)
                             break
                         else:
                             employee_obj = (
@@ -192,7 +192,7 @@ class EmployeeController:
                         employees_obj_list
                     )
                     if employee_choice == "q":
-                        display_message("Retour au menu...", False, True, 3)
+                        display_message("Retour au menu...", True, True, 2)
                         break
                     else:
                         employee_obj = (
@@ -214,14 +214,14 @@ class EmployeeController:
                                 f"Employé '{employee_obj.username}' supprimé avec succès!",
                                 True,
                                 True,
-                                3,
+                                2,
                             )
                         else:
                             display_message(
                                 "Erreur lors de la suppresion de l'employé.\nVoir log Sentry pour plus d'informations",
                                 True,
                                 True,
-                                3,
+                                2,
                             )
                         break
                     elif choice.lower() == "n" or choice.lower() == "":
@@ -229,7 +229,7 @@ class EmployeeController:
                             "Annulation de la suppression. Retour au menu.",
                             True,
                             True,
-                            3,
+                            2,
                         )
                         break
                 break

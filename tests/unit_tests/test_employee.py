@@ -93,7 +93,6 @@ class TestEmployee(unittest.TestCase):
         salt = bcrypt.gensalt()
 
         employee_obj = EmployeeModel()
-        employee_obj.id = 1000000
         employee_obj.username = ("TestUser",)
         employee_obj.password = (bcrypt.hashpw("Toto1234!".encode("utf-8"), salt),)
         employee_obj.email = ("cedrik76@msn.com",)
@@ -111,7 +110,7 @@ class TestEmployee(unittest.TestCase):
         )
 
         # Test to delete employee in the database
-        self.assertTrue(self.employee.delete_employee("1000000"))
+        self.assertTrue(self.employee.delete_last_employee())
 
 
 if __name__ == "__main__":

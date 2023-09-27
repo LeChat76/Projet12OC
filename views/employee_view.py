@@ -103,9 +103,7 @@ class EmployeeView:
             if choice_made:
                 break
 
-        description = input("Une description (non obligatoire)? ")
-
-        return username, password, email, department_choice, description
+        return username, password, email, department_choice
 
     def select_employee_by_entry(self):
         """selection of a employee by typing"""

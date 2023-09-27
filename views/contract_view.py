@@ -34,7 +34,7 @@ class ContractView:
         ):
             clear_screen()
             print("+--------------------------------+")
-            print("|          MENU CONTRAT          |")
+            print("|          MENU CONTRAT         |")
             print("+--------------------------------+")
             print("| 1 - création d'un contrat      |")
             print("| 2 - voir/modifier un contrat   |")
@@ -64,7 +64,7 @@ class ContractView:
         ):
             clear_screen()
             print("+--------------------------------+")
-            print("|      MENU FILTER CONTRAT       |")
+            print("|      MENU FILTRE CONTRAT       |")
             print("+--------------------------------+")
             print("| 1 - contrats non signés        |")
             print("| 2 - contrats non payés         |")

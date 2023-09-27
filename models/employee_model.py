@@ -58,7 +58,7 @@ class EmployeeModel(Base):
         except Exception as e:
             send_to_sentry("employee", "search", e)
             display_message(
-                f"Erreur lors de la recherche employee : {str(e)}", True, True, 3
+                f"Erreur lors de la recherche employee : {str(e)}", True, True, 2
             )
         finally:
             session.close()
@@ -75,19 +75,13 @@ class EmployeeModel(Base):
                 session.query(EmployeeModel)
                 .join(DepartmentModel)
                 .options(joinedload(EmployeeModel.department))
-                .filter(
-                    or_(
-                        DepartmentModel.name == SUPPORT,
-                        DepartmentModel.name == SUPERADMIN,
-                        EmployeeModel.status == "ENABLE",
-                    )
-                )
+                .filter(DepartmentModel.name == SUPPORT, EmployeeModel.status == "ENABLE")
                 .all()
             )
         except Exception as e:
             send_to_sentry("employee", "search", e)
             display_message(
-                f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 3
+                f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 2
             )
         finally:
             session.close()
@@ -109,7 +103,7 @@ class EmployeeModel(Base):
         except Exception as e:
             send_to_sentry("employee", "search", e)
             display_message(
-                f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 3
+                f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 2
             )
         finally:
             session.close()
@@ -153,7 +147,7 @@ class EmployeeModel(Base):
                 f"Erreur lors de la creation de l'objet employee : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
         finally:
             session.close()
@@ -187,7 +181,7 @@ class EmployeeModel(Base):
                 f"Erreur lors de la vérification du departement de l'utilisateur : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
             return None
         finally:
@@ -235,7 +229,7 @@ class EmployeeModel(Base):
         except Exception as e:
             send_to_sentry("employee", "creation", e)
             display_message(
-                f"Erreur lors de la selection de l'employé : {str(e)}", True, True, 3
+                f"Erreur lors de la selection de l'employé : {str(e)}", True, True, 2
             )
         finally:
             session.close()
@@ -252,9 +246,7 @@ class EmployeeModel(Base):
 
         try:
             session = self.db.get_session()
-            employee_to_delete = (
-                session.query(EmployeeModel).filter_by(id=employee_id).first()
-            )
+            employee_to_delete = session.get(EmployeeModel, employee_id)
             employee_to_delete.status = "DISABLE"
             session.commit()
         except Exception as e:
@@ -285,7 +277,7 @@ class EmployeeModel(Base):
                 f"Client '{employee_to_update.username}' mis à jour avec succès!",
                 True,
                 True,
-                3,
+                2,
             )
         except IntegrityError as e:
             session.rollback()
@@ -296,7 +288,7 @@ class EmployeeModel(Base):
                 False,
                 0,
             )
-            display_message("Retour au menu....", False, False, 3)
+            display_message("Retour au menu....", False, False, 2)
             return None
         except Exception as e:
             session.rollback()
@@ -305,8 +297,26 @@ class EmployeeModel(Base):
                 f"Erreur lors de la modification de l'employee : {str(e)}",
                 True,
                 True,
-                3,
+                2,
             )
             return None
         finally:
             session.close()
+
+    def delete_last_employee(self):
+        """ method to delete last employee from database """
+
+        result = True
+
+        try:
+            session = self.db.get_session()
+            employee_to_delete = session.query(EmployeeModel).order_by(EmployeeModel.id.desc()).first()
+            session.delete(employee_to_delete)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            send_to_sentry("employee", "delete", e)
+            result = None
+        finally:
+            session.close()
+            return result

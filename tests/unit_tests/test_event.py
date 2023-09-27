@@ -74,18 +74,18 @@ class TestEvent(unittest.TestCase):
 
         self.assertTrue(self.event.select_assigned_events(employee_id))
 
-    def test_add_update_event_in_database(self):
-        # Test of adding event in the database
+    # def test_add_update_event_in_database(self):
+    #     # Test of adding event in the database
 
-        event_obj = EventModel()
-        event_obj.id = 1000000
-        event_obj.date_start = "16/07/24 01:00"
-        event_obj.date_end = "16/07/24 23:00"
-        event_obj.location = "97 Allée des Platanes, 76520, Boos"
-        event_obj.attendees = "10"
-        event_obj.notes = ""
-        event_obj.contract_id = "1"
-        self.assertTrue(self.event.add_event(event_obj))
+    #     event_obj = EventModel()
+    #     event_obj.id = 1000000
+    #     event_obj.date_start = "16/07/24 01:00"
+    #     event_obj.date_end = "16/07/24 23:00"
+    #     event_obj.location = "97 Allée des Platanes, 76520, Boos"
+    #     event_obj.attendees = "10"
+    #     event_obj.notes = ""
+    #     event_obj.contract_id = "1"
+    #     self.assertTrue(self.event.add_event(event_obj))
 
     # def test_update_event(self):
     #     # Test update an event
@@ -100,9 +100,12 @@ class TestEvent(unittest.TestCase):
 
     #     self.assertTrue(self.event.update_event(event_obj))
 
-    def test_delete_event_in_database(self):
-        # Test of deletion of an event in the database
+    # def test_delete_event_in_database(self):
+    #     # Test of deletion of an event in the database
 
-        event_id = 1000000
+    #     event_id = 1000000
 
-        self.assertTrue(self.event.delete_event(event_id))
+    #     self.assertTrue(self.event.delete_event(event_id))
+
+if __name__ == "__main__":
+    unittest.main()

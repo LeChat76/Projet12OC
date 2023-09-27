@@ -4,6 +4,7 @@ from constants.base import (
     MENU_CONTRACTS,
     MENU_EVENTS,
     MENU_EMPLOYEES,
+    CREATE_SAMPLES,
     MENU_EXIT,
 )
 
@@ -21,6 +22,7 @@ class MainMenu:
             and choice != MENU_EVENTS
             and choice != MENU_EXIT
             and choice != MENU_EMPLOYEES
+            and choice != CREATE_SAMPLES
         ):
             clear_screen()
             print("+--------------------------------+")

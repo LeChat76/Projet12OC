@@ -10,8 +10,8 @@ Base = declarative_base()
 class DatabaseModel:
     """Database class"""
 
-    def __init__(self, db_url):
-        self.engine = create_engine(db_url)
+    def __init__(self, DB_URL):
+        self.engine = create_engine(DB_URL)
         self.Session = sessionmaker(bind=self.engine)
 
     def create_tables(self):
@@ -30,7 +30,7 @@ class DatabaseModel:
             session.close()
 
     def tables_exist(self):
-        """method to check if tables already exists"""
+        """ method to check if tables already exists """
 
         inspector = inspect(self.engine)
         table_names = inspector.get_table_names()

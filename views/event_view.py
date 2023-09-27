@@ -62,7 +62,7 @@ class EventView:
         ):
             clear_screen()
             print("+--------------------------------+")
-            print("|      MENU FILTER EVENEMENT     |")
+            print("|      MENU FILTRE EVENEMENT     |")
             print("+--------------------------------+")
             print("| 1 - evenements non assignés    |")
             print("| 2 - evenement a venir/en cours |")

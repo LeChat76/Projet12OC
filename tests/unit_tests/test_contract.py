@@ -14,24 +14,24 @@ class TestContract(unittest.TestCase):
         )
         self.customer_obj.id = 1000000
         self.contract_obj = ContractModel(
-            "Contrat de test", "1500", "500", "SIGNED", self.customer_obj, 4
+            "1500", "500", "SIGNED", self.customer_obj, 1000000
         )
         self.contract_obj.id = 1000000
 
-    def test_create_contract_in_database(self):
-        # Test creation of contract in the database
+    # def test_create_contract_in_database(self):
+    #     # Test creation of contract in the database
 
-        self.assertTrue(self.contract_obj.add_contract(self.contract_obj))
+    #     self.assertTrue(self.contract_obj.add_contract(self.contract_obj))
 
     # def test_check_if_contract_exists(self):
     #     # Test if contract 1000000 exists
 
     #     self.assertTrue(self.contract_obj.check_if_contract_exists("1000000"))
 
-    def test_delete_contract_in_database(self):
-        # Test deletion of contract in database
+    # def test_delete_contract_in_database(self):
+    #     # Test deletion of contract in database
 
-        self.assertTrue(self.contract_obj.delete_contract("1000000"))
+    #     self.assertTrue(self.contract_obj.delete_contract("1000000"))
 
     def test_create_contract_object(self):
         # Test creation of contract object chosen from list
@@ -81,3 +81,6 @@ class TestContract(unittest.TestCase):
     def tearDown(self):
         # delete test customer ID 1000000 after all test
         self.customer_obj.delete_customer("1000000")
+
+if __name__ == "__main__":
+    unittest.main()

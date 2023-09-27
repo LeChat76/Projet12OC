@@ -10,13 +10,14 @@ from controllers.contract_controller import ContractController
 from controllers.event_controller import EventController
 from controllers.employee_controller import EmployeeController
 from utils.utils_view import display_message
-from utils.utils_database import create_departments, create_super_admin
+from utils.utils_database import create_departments, create_super_admin, create_samples
 from constants.base import (
     MENU_CUSTOMERS,
     MENU_CONTRACTS,
     MENU_EVENTS,
     MENU_EMPLOYEES,
     MENU_EXIT,
+    CREATE_SAMPLES,
 )
 
 
@@ -28,8 +29,8 @@ class epicEvents:
         if not self.db.tables_exist():
             try:
                 self.db.create_tables()
-                create_departments(DB_URL)
-                create_super_admin(DB_URL)
+                create_departments()
+                create_super_admin()
             except Exception as e:
                 print(
                     f"Une erreur s'est produite lors de l'initialisation de la base de données : {e}"
@@ -80,5 +81,7 @@ class epicEvents:
                 self.event_controller.menu_event(employee_id)
             elif choice == MENU_EMPLOYEES:
                 self.employee_controller.menu_employee(employee_id)
+            elif choice == CREATE_SAMPLES:
+                create_samples()
             elif choice == MENU_EXIT:
                 self.login_menu()

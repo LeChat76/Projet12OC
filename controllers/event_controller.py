@@ -62,7 +62,7 @@ class EventController:
                                 "Vous n'êtes pas autorisé à accéder à ce menu...",
                                 True,
                                 True,
-                                3,
+                                2,
                             )
                     elif filter_choice == MENU_EVENT_FILTER_IN_PROGRESS:
                         if permission_management:
@@ -72,7 +72,7 @@ class EventController:
                                 "Vous n'êtes pas autorisé à accéder à ce menu...",
                                 True,
                                 True,
-                                3,
+                                2,
                             )
                     elif filter_choice == MENU_EVENT_FILTER_ASSIGNED:
                         if permission_support:
@@ -82,7 +82,7 @@ class EventController:
                                 "Vous n'êtes pas autorisé à accéder à ce menu...",
                                 True,
                                 True,
-                                3,
+                                2,
                             )
                     elif filter_choice == MENU_EVENT_FILTER_EXIT:
                         break
@@ -100,7 +100,7 @@ class EventController:
             available_contracts = self.contract_model.select_available_contracts()
             if not available_contracts:
                 display_message(
-                    "Aucun contrat disponibles. Retour au menu...", True, True, 3
+                    "Aucun contrat disponibles. Retour au menu...", True, True, 2
                 )
             else:
                 while True:
@@ -116,12 +116,11 @@ class EventController:
                                 "Ce numéro de contrat n'est pas repertorié dans la base de donnée.\nVeuillez en choisir un dans la liste :",
                                 False,
                                 True,
-                                2,
+                                0.5,
                             )
-                            contracts_list = self.contract_model.search_all_contracts()
                             contract_choice = (
                                 self.contract_view.select_contract_by_list(
-                                    contracts_list
+                                    available_contracts
                                 )
                             )
                     else:
@@ -147,14 +146,14 @@ class EventController:
                             result = self.event_model.add_event(new_event_obj)
                             if result:
                                 display_message(
-                                    "Evenement ajouté avec succès !", True, True, 3
+                                    "Evenement ajouté avec succès !", True, True, 2
                                 )
                             else:
                                 display_message(
                                     f"Erreur lors de l'ajout de l'evenement.\nVoir logs Sentry pour plus d'informations.",
                                     True,
                                     True,
-                                    3,
+                                    2,
                                 )
                             break
                         else:
@@ -162,17 +161,17 @@ class EventController:
                                 "Le client associé à ce contrat ne vous appartient pas. Recommencez...",
                                 True,
                                 True,
-                                3,
+                                2,
                             )
                     else:
-                        display_message("Retour au menu...", True, True, 3)
+                        display_message("Retour au menu...", True, True, 2)
                         break
         else:
             display_message(
                 "Vous n'avez pas les authorisations necessaire pour la creation d'évenements.\nRetour au menu...",
                 True,
                 True,
-                3,
+                2,
             )
 
     def assign_event(self, employee_id):
@@ -187,7 +186,7 @@ class EventController:
                 "Vous n'avez les autorisations necessaire pour assigner un evenement à un employe.\Retour au menu...",
                 True,
                 True,
-                3,
+                2,
             )
         else:
             while True:
@@ -200,7 +199,7 @@ class EventController:
 
                 if not not_assigned_event:
                     display_message(
-                        "Aucun evenement non assignés. Retour au menu...", True, True, 3
+                        "Aucun evenement non assignés. Retour au menu...", True, True, 2
                     )
                     break
                 elif not support_employees_obj_list:
@@ -208,17 +207,17 @@ class EventController:
                         "Aucun employee associé au service support dans la base de donnée.\nRetour au menu...",
                         True,
                         True,
-                        3,
+                        2,
                     )
                     break
                 else:
                     # selection of the event
                     event_choice = self.event_view.select_event_by_entry()
                     if event_choice:
-                        check_if_event_exists = self.event_model.search_event(
+                        event_obj = self.event_model.search_event(
                             event_choice
                         )
-                        if not check_if_event_exists:
+                        if not event_obj:
                             display_message(
                                 "Ce numéro d'évenement n'existe pas. Selectionnez le par liste: ",
                                 False,
@@ -229,13 +228,15 @@ class EventController:
                                 not_assigned_event
                             )
                             if event_choice == "q":
-                                display_message("Retour au menu...", True, True, 3)
+                                display_message("Retour au menu...", True, True, 2)
                                 break
+                            else:
+                                event_obj = not_assigned_event[(int(event_choice) - 1)]
                         else:
                             display_message(
                                 "Evenement " + str(event_choice) + " trouvé.",
                                 False,
-                                True,
+                                False,
                                 1,
                             )
                     else:
@@ -243,10 +244,10 @@ class EventController:
                             not_assigned_event
                         )
                         if event_choice == "q":
-                            display_message("Retour au menu...", True, True, 3)
+                            display_message("Retour au menu...", True, True, 2)
                             break
-
-                    event_obj = not_assigned_event[(int(event_choice) - 1)]
+                        else:
+                            event_obj = not_assigned_event[(int(event_choice) - 1)]
 
                     # selection of the employee to assign to the selected event
                     employee_choice = self.employee_view.select_employee_by_entry()
@@ -267,14 +268,14 @@ class EventController:
                                 )
                             )
                             if employee_choice == "q":
-                                display_message("Retour au menu...", False, True, 3)
+                                display_message("Retour au menu...", True, True, 2)
                                 break
                     else:
                         employee_choice = self.employee_view.select_employee_by_list(
                             support_employees_obj_list
                         )
                         if employee_choice == "q":
-                            display_message("Retour au menu...", False, True, 3)
+                            display_message("Retour au menu...", True, True, 2)
                             break
 
                     if not employee_obj:
@@ -295,7 +296,7 @@ class EventController:
 
             all_events = self.event_model.select_all_events()
             if not all_events:
-                display_message("Aucun evenement, retour au menu...", True, True, 3)
+                display_message("Aucun evenement, retour au menu...", True, True, 2)
                 break
 
             event_choice = self.event_view.select_event_by_entry()
@@ -311,14 +312,14 @@ class EventController:
                     )
                     event_choice = self.event_view.select_event_by_list(all_events)
                     if event_choice == "q":
-                        display_message("Retour au menu...", True, True, 3)
+                        display_message("Retour au menu...", True, True, 2)
                         break
                     else:
                         event_obj = self.event_model.create_event_object(event_choice)
             else:
                 event_choice = self.event_view.select_event_by_list(all_events)
                 if event_choice == "q":
-                    display_message("Retour au menu...", True, True, 3)
+                    display_message("Retour au menu...", True, True, 2)
                     break
                 else:
                     event_obj = self.event_model.create_event_object(event_choice)
@@ -352,14 +353,14 @@ class EventController:
                                 f"Evenement '{event_to_update.id}' mis à jour avec succès!",
                                 True,
                                 True,
-                                3,
+                                2,
                             )
                         else:
                             display_message(
                                 "Erreur lors de la mise à jour de l'evenement.\nVoir logs Sentry.",
                                 True,
                                 True,
-                                3,
+                                2,
                             )
                         break
                     else:
@@ -367,7 +368,7 @@ class EventController:
                             "Aucune modification apportée à l'evenement, retour au menu.",
                             True,
                             True,
-                            3,
+                            2,
                         )
                         break
 
@@ -383,13 +384,13 @@ class EventController:
                 "Vous n'avez pas les autorisations necessaires pour supprimer un evenement.\Retour au menu...",
                 True,
                 True,
-                3,
+                2,
             )
         else:
             # check if events in database
             all_events = self.event_model.select_all_events()
             if not all_events:
-                display_message("Aucun evenement, retour au menu...", True, True, 3)
+                display_message("Aucun evenement, retour au menu...", True, True, 2)
             else:
                 while True:
                     # selection of the event to delete
@@ -407,7 +408,7 @@ class EventController:
                                 all_events
                             )
                             if event_choice == "q":
-                                display_message("Retour au menu...", True, True, 3)
+                                display_message("Retour au menu...", True, True, 2)
                                 break
                             else:
                                 event_obj = self.event_model.create_event_object(
@@ -419,7 +420,7 @@ class EventController:
                     else:
                         event_choice = self.event_view.select_event_by_list(all_events)
                         if event_choice == "q":
-                            display_message("Retour au menu...", True, True, 3)
+                            display_message("Retour au menu...", True, True, 2)
                             break
                         else:
                             event_obj = self.event_model.create_event_object(
@@ -439,14 +440,14 @@ class EventController:
                                     f"Evenement numero '{event_obj.id}' supprimé avec succès!",
                                     True,
                                     True,
-                                    3,
+                                    2,
                                 )
                             else:
                                 display_message(
                                     f"Erreur lors de la suppresion de l'evenement.\n(voir logs Sentry pour plus de détails).",
                                     True,
                                     True,
-                                    3,
+                                    2,
                                 )
                             break
                         elif choice.lower() == "n" or choice.lower() == "":
@@ -454,7 +455,7 @@ class EventController:
                                 "Annulation de la suppression. Retour au menu.",
                                 True,
                                 True,
-                                3,
+                                2,
                             )
                             break
 
@@ -467,7 +468,7 @@ class EventController:
             self.event_view.display_events_by_list(events_obj_list)
         else:
             display_message(
-                "Tous les évènements sont assignés. Retour au menu...", True, True, 3
+                "Tous les évènements sont assignés. Retour au menu...", True, True, 2
             )
 
     def filter_event_in_progress(self):
@@ -479,7 +480,7 @@ class EventController:
             self.event_view.display_events_by_list(events_obj_list)
         else:
             display_message(
-                "Aucun évènement en cours. Retour au menu...", True, True, 3
+                "Aucun évènement en cours. Retour au menu...", True, True, 2
             )
 
     def filter_event_assigned(self, employee_id):
@@ -491,5 +492,5 @@ class EventController:
             self.event_view.display_events_by_list(events_obj_list)
         else:
             display_message(
-                "Vous n'avez aucun évènement assigné. Retour au menu...", True, True, 3
+                "Vous n'avez aucun évènement assigné. Retour au menu...", True, True, 2
             )

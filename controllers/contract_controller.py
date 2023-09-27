@@ -53,7 +53,7 @@ class ContractController:
                             break
                 elif not permission:
                     display_message(
-                        "Vous n'êtes pas autorisé à accéder à ce menu...", True, True, 3
+                        "Vous n'êtes pas autorisé à accéder à ce menu...", True, True, 2
                     )
                     break
             elif choice == MENU_CONTRACT_EXIT:
@@ -86,24 +86,24 @@ class ContractController:
             result = self.contract_model.add_contract(new_contract_obj)
             if result:
                 display_message(
-                    "Contrat numéro créé avec succes. Retour au menu...",
+                    "Contrat créé avec succès. Retour au menu...",
                     True,
                     True,
-                    3,
+                    2,
                 )
             else:
                 display_message(
                     "Erreur lors de l'ajout du contrat.\nVoir log Sentry.",
                     True,
                     True,
-                    3,
+                    2,
                 )
         else:
             display_message(
                 "Vous n'êtes pas autorisé à créer des contrats. Retour au menu...",
                 True,
                 True,
-                3,
+                2,
             )
 
     def delete_contract(self, employee_id):
@@ -119,7 +119,7 @@ class ContractController:
                     "Vous n'avez pas la permission de supprimer des contrats. Retour au menu...",
                     True,
                     False,
-                    3,
+                    2,
                 )
             else:
                 # display choice selection (bye input or list)
@@ -143,7 +143,7 @@ class ContractController:
                                 "Ce contrat est signé, interdit de le supprimer. Retour au menu...",
                                 True,
                                 False,
-                                3,
+                                2,
                             )
                         else:
                             while choice.lower() != "o" and choice.lower() != "n":
@@ -156,24 +156,24 @@ class ContractController:
                                     )
                                     if result:
                                         display_message(
-                                            f"Contrat némro '{contract_obj.id}' supprimé avec succès!",
+                                            f"Contrat numéro '{contract_obj.id}' supprimé avec succès!",
                                             True,
                                             True,
-                                            3,
+                                            2,
                                         )
                                     else:
                                         display_message(
                                             "Erreur lors de la suppresion du contrat.\nVoir logs Sentry.",
                                             True,
                                             True,
-                                            3,
+                                            2,
                                         )
                                 elif choice.lower() == "n" or choice.lower() == "":
                                     display_message(
                                         "Annulation de la suppression. Retour au menu.",
                                         True,
                                         True,
-                                        3,
+                                        2,
                                     )
                                     break
                     else:
@@ -181,13 +181,13 @@ class ContractController:
                             "Aucun contrat trouvé avec ce nom. Retour au menu.",
                             True,
                             True,
-                            3,
+                            2,
                         )
                 else:
-                    display_message("Retour au menu...", True, False, 3)
+                    display_message("Retour au menu...", True, True, 2)
         else:
             display_message(
-                "Aucun contrat dans la base de donnée. Retour au menu...", True, True, 3
+                "Aucun contrat dans la base de donnée. Retour au menu...", True, True, 2
             )
 
     def update_contract(self, employee_id):
@@ -244,7 +244,7 @@ class ContractController:
                                     "Aucune modification apportée au contrat, retour au menu.",
                                     True,
                                     True,
-                                    3,
+                                    2,
                                 )
                         else:
                             display_message(
@@ -260,10 +260,10 @@ class ContractController:
                         # ... if not permit : display contract info
                         self.contract_view.display_contract_informations(contract_obj)
             else:
-                display_message("Retour au menu...", True, True, 3)
+                display_message("Retour au menu...", True, True, 2)
         else:
             display_message(
-                "Aucun contrat dans la base de donnée. Retour au menu...", True, True, 3
+                "Aucun contrat dans la base de donnée. Retour au menu...", True, True, 2
             )
 
     def sign_contract(self, employee_id):
@@ -279,7 +279,7 @@ class ContractController:
                     "Vous n'avez pas la permission de signer des contrats. Retour au menu...",
                     True,
                     False,
-                    3,
+                    2,
                 )
             else:
                 # display choice selection (bye input or list)
@@ -318,7 +318,7 @@ class ContractController:
                             "Ce contrat est déjà signé. Retour au menu...",
                             True,
                             True,
-                            3,
+                            2,
                         )
                     else:
                         while choice.lower() != "o" and choice.lower() != "n":
@@ -331,26 +331,26 @@ class ContractController:
                                     f"Contrat numéro {contract_obj.id} signé. Retour au menu...",
                                     True,
                                     True,
-                                    3,
+                                    2,
                                 )
                             elif choice.lower() == "n" or choice.lower() == "":
                                 display_message(
                                     "Annulation de la signature. Retour au menu.",
                                     True,
                                     True,
-                                    3,
+                                    2,
                                 )
                                 break
                 else:
                     display_message(
-                        "Annulation de la signature. Retour au menu.", True, True, 3
+                        "Annulation de la signature. Retour au menu.", True, True, 2
                     )
         else:
             display_message(
                 "Aucun contrat non signés dans la base de donnée. Retour au menu...",
                 True,
                 True,
-                3,
+                2,
             )
 
     def filter_contract_by_signature(self):
@@ -362,7 +362,7 @@ class ContractController:
             self.contract_view.display_contracts_by_list(contracts_obj_list)
         else:
             display_message(
-                "Tous les contrats sont signés. Retour au menu...", True, True, 3
+                "Tous les contrats sont signés. Retour au menu...", True, True, 2
             )
 
     def filter_contract_by_payed(self):
@@ -374,5 +374,5 @@ class ContractController:
             self.contract_view.display_contracts_by_list(contracts_obj_list)
         else:
             display_message(
-                "Tous les contrats sont payés. Retour au menu...", True, True, 3
+                "Tous les contrats sont payés. Retour au menu...", True, True, 2
             )

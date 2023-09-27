@@ -16,3 +16,6 @@ class TestDatabase(unittest.TestCase):
         # Test check if tables exist
 
         self.assertTrue(self.database.tables_exist())
+
+if __name__ == "__main__":
+    unittest.main()
