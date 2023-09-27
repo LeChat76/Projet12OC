@@ -12,8 +12,8 @@ from utils.utils_sentry import send_to_sentry
 
 
 class ContractModel(Base):
-    """ Contract class """
-    
+    """Contract class"""
+
     def __init__(self, customer_info, price, due, status, customer, employee_id):
         self.db = DatabaseModel(DB_URL)
         self.customer_info = customer_info
@@ -22,19 +22,23 @@ class ContractModel(Base):
         self.status = status
         self.customer = customer
         self.employee_id = employee_id
-    
+
     __tablename__ = "contract"
     id = Column(Integer, primary_key=True, autoincrement=True)
     customer_info = Column(String(5000), nullable=True)
     price = Column(Float, nullable=False, default=0)
     due = Column(Float, nullable=False, default=0)
-    date_creation = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
+    date_creation = Column(
+        TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False
+    )
     status = Column(String(10), nullable=False, server_default="NOT-SIGNED")
     customer_id = Column(Integer, ForeignKey("customer.id"), nullable=False)
     customer = relationship("CustomerModel", back_populates="contract", lazy="select")
     employee_id = Column(Integer, ForeignKey("employee.id"), nullable=False)
     employee = relationship("EmployeeModel", back_populates="contract", lazy="select")
-    event = relationship("EventModel", uselist=False, back_populates="contract", lazy="select")
+    event = relationship(
+        "EventModel", uselist=False, back_populates="contract", lazy="select"
+    )
 
     def __repr__(self):
         status_text = "Oui" if self.status == "SIGNED" else "Non"
@@ -46,7 +50,7 @@ class ContractModel(Base):
         INPUT : contract object
         RESULT : record of the new customer in the database
         """
-        
+
         result = True
 
         try:
@@ -72,10 +76,20 @@ class ContractModel(Base):
 
         try:
             session = self.db.get_session()
-            contract_obj = session.query(ContractModel).options(joinedload(ContractModel.customer)).offset(int(choice) - 1).first()
+            contract_obj = (
+                session.query(ContractModel)
+                .options(joinedload(ContractModel.customer))
+                .offset(int(choice) - 1)
+                .first()
+            )
         except Exception as e:
             send_to_sentry("contract", "creation", e)
-            display_message(f"Erreur lors de la creation de l'objet contrat: {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la creation de l'objet contrat: {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return contract_obj
@@ -89,18 +103,31 @@ class ContractModel(Base):
 
         try:
             session = self.db.get_session()
-            employee_obj = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
-            if employee_obj.department.name == MANAGEMENT or employee_obj.department.name == SUPERADMIN:
+            employee_obj = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter_by(id=employee_id)
+                .first()
+            )
+            if (
+                employee_obj.department.name == MANAGEMENT
+                or employee_obj.department.name == SUPERADMIN
+            ):
                 return True
             else:
                 return False
         except Exception as e:
             send_to_sentry("contract", "permission", e)
-            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la verification des permissions : {str(e)}",
+                True,
+                True,
+                3,
+            )
             return None
         finally:
             session.close()
-    
+
     def check_permission_filter_menu(self, employee_id):
         """
         function to check authorization to access to the filter menu
@@ -110,14 +137,27 @@ class ContractModel(Base):
 
         try:
             session = self.db.get_session()
-            employee_obj = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
-            if employee_obj.department.name == COMMERCIAL or employee_obj.department.name == SUPERADMIN:
+            employee_obj = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter_by(id=employee_id)
+                .first()
+            )
+            if (
+                employee_obj.department.name == COMMERCIAL
+                or employee_obj.department.name == SUPERADMIN
+            ):
                 return True
             else:
                 return False
         except Exception as e:
             send_to_sentry("contract", "permission", e)
-            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la verification des permissions : {str(e)}",
+                True,
+                True,
+                3,
+            )
             return None
         finally:
             session.close()
@@ -131,37 +171,57 @@ class ContractModel(Base):
 
         try:
             session = self.db.get_session()
-            employee_obj = session.query(EmployeeModel) \
-                .options(joinedload(EmployeeModel.department)) \
-                .filter_by(id=employee_id).first()
-            if employee_obj.department.name == MANAGEMENT or employee_obj.department.name == SUPERADMIN:
+            employee_obj = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter_by(id=employee_id)
+                .first()
+            )
+            if (
+                employee_obj.department.name == MANAGEMENT
+                or employee_obj.department.name == SUPERADMIN
+            ):
                 return True
             if employee_obj.department.name == COMMERCIAL:
-                customer_obj = session.query(CustomerModel) \
-                .options(joinedload(CustomerModel.employee)) \
-                .filter_by(id=contract_obj.customer_id).first()
+                customer_obj = (
+                    session.query(CustomerModel)
+                    .options(joinedload(CustomerModel.employee))
+                    .filter_by(id=contract_obj.customer_id)
+                    .first()
+                )
                 if customer_obj.employee_id == employee_obj.id:
                     return True
             else:
                 return False
         except Exception as e:
             send_to_sentry("contract", "permission", e)
-            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la verification des permissions : {str(e)}",
+                True,
+                True,
+                3,
+            )
             return None
         finally:
             session.close()
 
     def search_all_contracts(self):
-        """ method to select all contracts """
+        """method to select all contracts"""
 
         contracts_list = None
 
         try:
             session = self.db.get_session()
-            contracts_list = session.query(ContractModel).options(joinedload(ContractModel.customer)).all()
+            contracts_list = (
+                session.query(ContractModel)
+                .options(joinedload(ContractModel.customer))
+                .all()
+            )
         except Exception as e:
             send_to_sentry("contract", "search", e)
-            display_message(f"Erreur lors de la recherche des contrats : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche des contrats : {str(e)}", True, True, 3
+            )
         finally:
             session.close()
             return contracts_list
@@ -176,10 +236,20 @@ class ContractModel(Base):
 
         try:
             session = self.db.get_session()
-            not_signed_contracts_list = session.query(ContractModel).options(joinedload(ContractModel.customer)).filter_by(status="NOT-SIGNED").all()
+            not_signed_contracts_list = (
+                session.query(ContractModel)
+                .options(joinedload(ContractModel.customer))
+                .filter_by(status="NOT-SIGNED")
+                .all()
+            )
         except Exception as e:
             send_to_sentry("contract", "search", e)
-            display_message(f"Erreur lors de la recherche des contrats nons signés : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche des contrats nons signés : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return not_signed_contracts_list
@@ -194,17 +264,27 @@ class ContractModel(Base):
 
         try:
             session = self.db.get_session()
-            not_fully_payed_contracts_list = session.query(ContractModel).options(joinedload(ContractModel.customer)).filter(ContractModel.due != 0).all()
+            not_fully_payed_contracts_list = (
+                session.query(ContractModel)
+                .options(joinedload(ContractModel.customer))
+                .filter(ContractModel.due != 0)
+                .all()
+            )
         except Exception as e:
             send_to_sentry("contract", "search", e)
-            display_message(f"Erreur lors de la recherche des contrats nons totalement payés : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche des contrats nons totalement payés : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return not_fully_payed_contracts_list
 
     def check_signature(self, contract_obj):
         """
-        check if contract is signed 
+        check if contract is signed
         INPUT : contract object
         OUTPUT : True or False
         """
@@ -229,7 +309,9 @@ class ContractModel(Base):
         except Exception as e:
             session.rollback()
             send_to_sentry("contract", "update", e)
-            display_message(f"Erreur lors de la signature du contrat : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la signature du contrat : {str(e)}", True, True, 3
+            )
             return None
         finally:
             session.close()
@@ -249,11 +331,18 @@ class ContractModel(Base):
             contract.due = contract_to_update_obj.due
             contract.status = contract_to_update_obj.status
             session.commit()
-            display_message(f"Contrat '{contract_to_update_obj.id}' mis à jour avec succès!", True, True, 3)
+            display_message(
+                f"Contrat '{contract_to_update_obj.id}' mis à jour avec succès!",
+                True,
+                True,
+                3,
+            )
         except Exception as e:
             session.rollback()
             send_to_sentry("contract", "update", e)
-            display_message(f"Erreur lors de la modification du contrat : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la modification du contrat : {str(e)}", True, True, 3
+            )
             return None
         finally:
             session.close()
@@ -269,7 +358,9 @@ class ContractModel(Base):
 
         try:
             session = self.db.get_session()
-            contract_to_delete = session.query(ContractModel).filter_by(id=contract_id).first()
+            contract_to_delete = (
+                session.query(ContractModel).filter_by(id=contract_id).first()
+            )
             session.delete(contract_to_delete)
             session.commit()
         except Exception as e:
@@ -279,7 +370,7 @@ class ContractModel(Base):
         finally:
             session.close()
             return result
-    
+
     def check_if_contract_exists(self, contract_id):
         """
         method to check if a contract exists
@@ -296,28 +387,37 @@ class ContractModel(Base):
                 result = False
         except Exception as e:
             send_to_sentry("contract", "search", e)
-            display_message(f"Erreur lors de la recherche d'un contrat : {str(e)}", True, True, 3)
-            result =  None
+            display_message(
+                f"Erreur lors de la recherche d'un contrat : {str(e)}", True, True, 3
+            )
+            result = None
         finally:
             session.close()
             return result
 
     def select_available_contracts(self):
-        """ method to select all contracts not associated to an event AND signed """
+        """method to select all contracts not associated to an event AND signed"""
 
         contracts_without_event = None
 
         try:
             session = self.db.get_session()
-            contracts_without_event = session.query(ContractModel) \
-                .outerjoin(EventModel, ContractModel.id == EventModel.contract_id) \
-                .options(joinedload(ContractModel.customer)) \
-                .filter(EventModel.id.is_(None)) \
-                .filter(ContractModel.status=="SIGNED") \
+            contracts_without_event = (
+                session.query(ContractModel)
+                .outerjoin(EventModel, ContractModel.id == EventModel.contract_id)
+                .options(joinedload(ContractModel.customer))
+                .filter(EventModel.id.is_(None))
+                .filter(ContractModel.status == "SIGNED")
                 .all()
+            )
         except Exception as e:
             send_to_sentry("contract", "search", e)
-            display_message(f"Erreur lors de la selection des contrats sans evenements associés : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la selection des contrats sans evenements associés : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return contracts_without_event

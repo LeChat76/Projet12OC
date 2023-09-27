@@ -12,7 +12,7 @@ class TestDepartment(unittest.TestCase):
 
     def test_create_department_object_from_list(self):
         # Test creation of department object with choice from a list
-        
+
         choice = 1
 
         self.assertTrue(self.department.create_department_object_from_list(choice))
@@ -21,4 +21,3 @@ class TestDepartment(unittest.TestCase):
         # Test selection of all department
 
         self.assertTrue(self.department.select_all_department())
-

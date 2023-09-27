@@ -1,21 +1,29 @@
 import time, re
 from getpass_asterisk.getpass_asterisk import getpass_asterisk
-from constants.employee import MENU_EMPLOYEE_CREATION, MENU_EMPLOYEE_UPDATE, MENU_EMPLOYEE_DELETE, MENU_EMPLOYEE_EXIT
+from constants.employee import (
+    MENU_EMPLOYEE_CREATION,
+    MENU_EMPLOYEE_UPDATE,
+    MENU_EMPLOYEE_DELETE,
+    MENU_EMPLOYEE_EXIT,
+)
 from utils.utils_view import clear_screen
 from getpass_asterisk.getpass_asterisk import getpass_asterisk
 import bcrypt
 
 
 class EmployeeView:
-    """ Employee view class"""
-
+    """Employee view class"""
 
     def employee_menu(self):
-        """ Menu 4 - EMPLOYEE """
-        
+        """Menu 4 - EMPLOYEE"""
+
         choice = None
-        while choice !=  MENU_EMPLOYEE_CREATION and choice != MENU_EMPLOYEE_UPDATE and\
-            choice != MENU_EMPLOYEE_DELETE and choice != MENU_EMPLOYEE_EXIT:
+        while (
+            choice != MENU_EMPLOYEE_CREATION
+            and choice != MENU_EMPLOYEE_UPDATE
+            and choice != MENU_EMPLOYEE_DELETE
+            and choice != MENU_EMPLOYEE_EXIT
+        ):
             clear_screen()
             print("+--------------------------------+")
             print("|          MENU EMPLOYE          |")
@@ -38,44 +46,52 @@ class EmployeeView:
         return choice
 
     def add_employee(self, department_obj_list):
-        """ method to add new employee """
+        """method to add new employee"""
 
         clear_screen()
-        password_pattern = r'^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%:^&*])[a-zA-Z0-9!@#$%:^&*]{8,}$'
-        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        password_pattern = (
+            r"^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%:^&*])[a-zA-Z0-9!@#$%:^&*]{8,}$"
+        )
+        email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
         while True:
-            username = input("Nom d'utilisateur (utilisé pour se connecter à l'application): ")
+            username = input(
+                "Nom d'utilisateur (utilisé pour se connecter à l'application): "
+            )
             if not username:
                 print("\nNom d'utilisateur obligatoire. Merci d'en saisir un...\n")
             else:
                 break
 
         while True:
-            password = getpass_asterisk("\nMot de passe (8 caractères mini, au moins un chiffre, au moins un caractère spécial): ")
+            password = getpass_asterisk(
+                "\nMot de passe (8 caractères mini, au moins un chiffre, au moins un caractère spécial): "
+            )
             if re.match(password_pattern, password):
                 break
             else:
-                print("\nLe mot de passe ne contient pas les critères requis. Ressaisir svp...")
-        
+                print(
+                    "\nLe mot de passe ne contient pas les critères requis. Ressaisir svp..."
+                )
+
         while True:
             email = input("\nEmail : ")
             if re.match(email_pattern, email):
                 break
             else:
                 print("\nLe format de l'email est incorrect. Ressaisir svp...")
-        
+
         print("\nSelectionnez le department de l'utilisateur:\n")
 
         while True:
             choice_made = False
             counter_int = 1
             for department in department_obj_list:
-                print(str(counter_int) + ' - ' + str(department))
+                print(str(counter_int) + " - " + str(department))
                 counter_int += 1
                 time.sleep(0.1)
-                if counter_int %5 == 0:
-                    department_choice = input ("\nSaisir numero de ligne: ")
+                if counter_int % 5 == 0:
+                    department_choice = input("\nSaisir numero de ligne: ")
                     print()
                     if department_choice.isalpha():
                         print("\nMerci de saisir un chiffre.")
@@ -93,27 +109,31 @@ class EmployeeView:
         return username, password, email, department_choice, description
 
     def select_employee_by_entry(self):
-        """ selection of a employee by typing """
+        """selection of a employee by typing"""
 
         while True:
-            employee_name = input("\nQuel est le nom de l'employee [ENTRER pour afficher une liste]? ")
+            employee_name = input(
+                "\nQuel est le nom de l'employee [ENTRER pour afficher une liste]? "
+            )
             print()
             return employee_name
 
     def select_employee_by_list(self, employees_list):
-        """ selection of an employee by list """
+        """selection of an employee by list"""
 
         while True:
             counter_int = 1
             employee_id_list = []
 
             for employee in employees_list:
-                print(str(counter_int) + ' - ' + str(employee))
+                print(str(counter_int) + " - " + str(employee))
                 employee_id_list.append(employee.id)
                 counter_int += 1
                 time.sleep(0.1)
-                if counter_int %5 == 0:
-                    choice = input ("\nSaisir numero de ligne ([ENTRER] pour continuer ou (q)uitter)? ")
+                if counter_int % 5 == 0:
+                    choice = input(
+                        "\nSaisir numero de ligne ([ENTRER] pour continuer ou (q)uitter)? "
+                    )
                     if choice.lower() == "q":
                         return choice
                     elif choice.isalpha():
@@ -126,7 +146,9 @@ class EmployeeView:
                     else:
                         print()
 
-            choice = input("\nFin de liste atteinte. Faites un choix ou [ENTRER] pour relancer ou (q)uitter: ")
+            choice = input(
+                "\nFin de liste atteinte. Faites un choix ou [ENTRER] pour relancer ou (q)uitter: "
+            )
             if choice.lower() == "q":
                 return choice
             elif choice.isalpha():
@@ -138,14 +160,16 @@ class EmployeeView:
                     return choice
 
     def update_employee(self, employee_obj, department_obj_list):
-        """ method to update an employee """
+        """method to update an employee"""
 
         clear_screen()
         print("\nEmployé selectionné :", employee_obj)
         print()
 
-        password_pattern = r'^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%:^&*])[a-zA-Z0-9!@#$%:^&*]{8,}$'
-        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        password_pattern = (
+            r"^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%:^&*])[a-zA-Z0-9!@#$%:^&*]{8,}$"
+        )
+        email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
         salt = bcrypt.gensalt()
 
@@ -153,55 +177,69 @@ class EmployeeView:
         department_chosen = False
 
         while True:
-            employee_username = input(f"Nom de l'employee '{employee_obj.username}'. Changer ou [ENTRER] pour conserver actuel: ")
+            employee_username = input(
+                f"Nom de l'employee '{employee_obj.username}'. Changer ou [ENTRER] pour conserver actuel: "
+            )
             if employee_username:
                 modification_state_boolean = True
                 employee_obj.username = employee_username
                 break
             else:
                 break
-        
+
         while True:
-            employee_password = getpass_asterisk("\nSaisir un nouveau mot de passe (ou [ENTRER] pour conserver actuel): ")
+            employee_password = getpass_asterisk(
+                "\nSaisir un nouveau mot de passe (ou [ENTRER] pour conserver actuel): "
+            )
             if employee_password:
                 if re.match(password_pattern, employee_password):
-                    modification_state_boolean = True                    
-                    employee_obj.password = bcrypt.hashpw(employee_password.encode('utf-8'), salt),
+                    modification_state_boolean = True
+                    employee_obj.password = (
+                        bcrypt.hashpw(employee_password.encode("utf-8"), salt),
+                    )
                     break
                 else:
-                    print("\nLe mot de passe ne contient pas les critères requis. Ressaisir svp...")
+                    print(
+                        "\nLe mot de passe ne contient pas les critères requis. Ressaisir svp..."
+                    )
             else:
                 break
-        
+
         while True:
-            employee_email = input(f"\nEmail de l'employé '{employee_obj.email}'. Saisir nouveau ou [ENTRER] pour conserver: ")
+            employee_email = input(
+                f"\nEmail de l'employé '{employee_obj.email}'. Saisir nouveau ou [ENTRER] pour conserver: "
+            )
             if employee_email:
                 if re.match(email_pattern, employee_email):
-                    modification_state_boolean = True 
+                    modification_state_boolean = True
                     employee_obj.email = employee_email
                     break
                 else:
                     print("\nLe format de l'email est incorrect. Ressaisir svp...")
             else:
                 break
-        
+
         while True:
-            employee_department = input(f"\nDepartement de l'employé '{employee_obj.department}', changer? ('o' ou [ENTRER] pour conserver): ")
-            if employee_department.lower()=="o":
+            employee_department = input(
+                f"\nDepartement de l'employé '{employee_obj.department}', changer? ('o' ou [ENTRER] pour conserver): "
+            )
+            if employee_department.lower() == "o":
                 while True:
                     counter_int = 1
                     for department in department_obj_list:
-                        print(str(counter_int) + ' - ' + str(department))
+                        print(str(counter_int) + " - " + str(department))
                         counter_int += 1
                         time.sleep(0.1)
-                        if counter_int %5 == 0:
-                            employee_department = input ("\nSaisir numero de ligne: ")
+                        if counter_int % 5 == 0:
+                            employee_department = input("\nSaisir numero de ligne: ")
                             print()
                             if employee_department.isalpha():
                                 print("\nMerci de saisir un chiffre.")
                             elif employee_department.isnumeric():
                                 if int(employee_department) >= counter_int:
-                                    print("\nCe choix ne fait pas parti de la liste...\n")
+                                    print(
+                                        "\nCe choix ne fait pas parti de la liste...\n"
+                                    )
                                 else:
                                     department_chosen = True
                     if department_chosen:
@@ -210,7 +248,9 @@ class EmployeeView:
 
         while True:
             if employee_obj.status == "ENABLE":
-                employee_status = input("\nStatus actuel de l'employé 'ENABLE'. Passer à 'DISABLE'? (o/N)")
+                employee_status = input(
+                    "\nStatus actuel de l'employé 'ENABLE'. Passer à 'DISABLE'? (o/N)"
+                )
                 if employee_status.lower() == "o":
                     modification_state_boolean = True
                     employee_obj.status = "DISABLE"
@@ -218,7 +258,9 @@ class EmployeeView:
                 elif employee_status.lower() == "n" or employee_status == "":
                     break
             elif employee_obj.status == "DISABLE":
-                employee_status = input("\nStatus actuel de l'employé 'DISABLE'. Passer à 'ENABLE'? (o/N)")
+                employee_status = input(
+                    "\nStatus actuel de l'employé 'DISABLE'. Passer à 'ENABLE'? (o/N)"
+                )
                 if employee_status.lower() == "o":
                     modification_state_boolean = True
                     employee_obj.status = "ENABLE"
@@ -227,7 +269,7 @@ class EmployeeView:
                 break
             else:
                 break
-        
+
         if modification_state_boolean:
             return employee_obj, employee_department
         else:
@@ -246,5 +288,3 @@ class EmployeeView:
         print(f"* Departement      : {employee_obj.department.name}")
         print(f"* Status           : {employee_obj.status}")
         input("\n[ENTRER] pour retourner au menu.\n")
-
-    

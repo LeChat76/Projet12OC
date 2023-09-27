@@ -12,7 +12,7 @@ class TestEvent(unittest.TestCase):
 
     def test_create_event_object_from_list(self):
         # Test creation of event object with choice from a list
-        
+
         choice = 1
 
         self.assertTrue(self.event.create_event_object(choice))
@@ -20,28 +20,28 @@ class TestEvent(unittest.TestCase):
     def test_permission_for_authorized_employee(self):
         # Test permission for authorized employee (COMMERCIAL or SUPERADMIN department)
 
-        employee_id = 4 # commercial employee (authorized employee)
+        employee_id = 4  # commercial employee (authorized employee)
 
         self.assertTrue(self.event.check_permission_event(employee_id))
-    
+
     def test_check_permission_menu_filter_event(self):
         # Test permission for event update menu
 
-        employee_id = 2 # support employee (authorized employee)
+        employee_id = 2  # support employee (authorized employee)
 
         self.assertTrue(self.event.check_permission_menu_filter_event(employee_id))
 
     def test_permission_for_unauthorized_employee(self):
         # Test permission for unauthorized employee (not COMMERCIAL or SUPERADMIN department)
 
-        employee_id = 2 # support employee (unauthorized employee)
+        employee_id = 2  # support employee (unauthorized employee)
 
         self.assertFalse(self.event.check_permission_event(employee_id))
-    
+
     def test_check_permission_event_assignation(self):
         # Test permission for access to the event assignation menu
 
-        employee_id = 3 # support employee (authorized employee)
+        employee_id = 3  # support employee (authorized employee)
 
         self.assertTrue(self.event.check_permission_event_assignation(employee_id))
 
@@ -73,7 +73,7 @@ class TestEvent(unittest.TestCase):
         employee_id = 2
 
         self.assertTrue(self.event.select_assigned_events(employee_id))
-    
+
     def test_add_update_event_in_database(self):
         # Test of adding event in the database
 
@@ -106,4 +106,3 @@ class TestEvent(unittest.TestCase):
         event_id = 1000000
 
         self.assertTrue(self.event.delete_event(event_id))
-

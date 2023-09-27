@@ -9,9 +9,13 @@ from models.event_model import EventModel
 class TestContract(unittest.TestCase):
     def setUp(self):
         employee_id = 4
-        self.customer_obj = CustomerModel("Kevin Mitcnick", "kevin@mitnick.com", "0661994560", "KM Corp", employee_id)
+        self.customer_obj = CustomerModel(
+            "Kevin Mitcnick", "kevin@mitnick.com", "0661994560", "KM Corp", employee_id
+        )
         self.customer_obj.id = 1000000
-        self.contract_obj = ContractModel("Contrat de test", "1500", "500", "SIGNED", self.customer_obj, 4)
+        self.contract_obj = ContractModel(
+            "Contrat de test", "1500", "500", "SIGNED", self.customer_obj, 4
+        )
         self.contract_obj.id = 1000000
 
     def test_create_contract_in_database(self):
@@ -28,7 +32,7 @@ class TestContract(unittest.TestCase):
         # Test deletion of contract in database
 
         self.assertTrue(self.contract_obj.delete_contract("1000000"))
-    
+
     def test_create_contract_object(self):
         # Test creation of contract object chosen from list
 
@@ -39,18 +43,18 @@ class TestContract(unittest.TestCase):
     def test_check_permission(self):
         # Test permission to access to contract menu
 
-        employee_id = 3 # commercial employee (authorized employee)
+        employee_id = 3  # commercial employee (authorized employee)
 
         self.assertTrue(self.contract_obj.check_permission(employee_id))
 
-        employee_id = 2 # support employee (unauthorizer employee)
+        employee_id = 2  # support employee (unauthorizer employee)
 
         self.assertFalse(self.contract_obj.check_permission(employee_id))
 
     def test_check_permission_filter_menu(self):
         # Test access to filter contract menu
 
-        employee_id = 1 # commercial employee (authorized employee)
+        employee_id = 1  # commercial employee (authorized employee)
 
         self.assertTrue(self.contract_obj.check_permission_filter_menu(employee_id))
 
@@ -77,4 +81,3 @@ class TestContract(unittest.TestCase):
     def tearDown(self):
         # delete test customer ID 1000000 after all test
         self.customer_obj.delete_customer("1000000")
-    

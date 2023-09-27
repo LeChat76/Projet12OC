@@ -11,7 +11,7 @@ from utils.utils_sentry import send_to_sentry
 
 
 class EventModel(Base):
-    """ Event class """
+    """Event class"""
 
     def __init__(self):
         self.db = DatabaseModel(DB_URL)
@@ -32,7 +32,9 @@ class EventModel(Base):
         if self.employee_id:
             return f"Evenement '{self.id}' associé au contrat numero '{self.contract_id}', assigné à l'employee '{self.employee.username.capitalize()}'."
         else:
-            return f"Evenement '{self.id}' associé au contrat numero '{self.contract_id}'."
+            return (
+                f"Evenement '{self.id}' associé au contrat numero '{self.contract_id}'."
+            )
 
     def add_event(self, new_event):
         """
@@ -40,7 +42,7 @@ class EventModel(Base):
         INPUT : event object
         RESULT : record of the new event in the database
         """
-        
+
         result = True
 
         try:
@@ -66,13 +68,21 @@ class EventModel(Base):
 
         try:
             session = self.db.get_session()
-            event_obj = session.query(EventModel) \
-                .options(joinedload(EventModel.employee)) \
-                .options(joinedload(EventModel.contract)) \
-                .offset(int(choice) - 1).first()
+            event_obj = (
+                session.query(EventModel)
+                .options(joinedload(EventModel.employee))
+                .options(joinedload(EventModel.contract))
+                .offset(int(choice) - 1)
+                .first()
+            )
         except Exception as e:
             send_to_sentry("event", "creation", e)
-            display_message(f"Erreur lors de la creation de l'objet evenement : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la creation de l'objet evenement : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return event_obj
@@ -86,14 +96,27 @@ class EventModel(Base):
 
         try:
             session = self.db.get_session()
-            employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
-            if employee.department.name == COMMERCIAL or employee.department.name == SUPERADMIN:
+            employee = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter_by(id=employee_id)
+                .first()
+            )
+            if (
+                employee.department.name == COMMERCIAL
+                or employee.department.name == SUPERADMIN
+            ):
                 return True
             else:
                 return False
         except Exception as e:
             send_to_sentry("event", "permission", e)
-            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la verification des permissions : {str(e)}",
+                True,
+                True,
+                3,
+            )
             return None
         finally:
             session.close()
@@ -108,17 +131,25 @@ class EventModel(Base):
         try:
             session = self.db.get_session()
             employee = session.query(EmployeeModel).filter_by(id=employee_id).first()
-            if employee.department.name == SUPPORT or employee.department.name == SUPERADMIN:
+            if (
+                employee.department.name == SUPPORT
+                or employee.department.name == SUPERADMIN
+            ):
                 return True
             else:
                 return False
         except Exception as e:
             send_to_sentry("event", "permission", e)
-            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la verification des permissions : {str(e)}",
+                True,
+                True,
+                3,
+            )
             return None
         finally:
             session.close()
-    
+
     def check_permission_event_update(self, employee_id, event_obj):
         """
         check authorization of the logged-in employee to update an event
@@ -128,7 +159,12 @@ class EventModel(Base):
 
         try:
             session = self.db.get_session()
-            employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
+            employee = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter_by(id=employee_id)
+                .first()
+            )
             if employee.department.name == SUPERADMIN:
                 return True
             elif employee.department.name == SUPPORT:
@@ -138,12 +174,16 @@ class EventModel(Base):
                 return False
         except Exception as e:
             send_to_sentry("event", "permission", e)
-            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la verification des permissions : {str(e)}",
+                True,
+                True,
+                3,
+            )
             return None
         finally:
             session.close()
 
-    
     def check_permission_event_assignation(self, employee_id):
         """
         check authorization of the logged-in employee to associate an event with an support employee
@@ -153,48 +193,73 @@ class EventModel(Base):
 
         try:
             session = self.db.get_session()
-            employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
-            if employee.department.name == MANAGEMENT or employee.department.name == SUPERADMIN:
+            employee = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter_by(id=employee_id)
+                .first()
+            )
+            if (
+                employee.department.name == MANAGEMENT
+                or employee.department.name == SUPERADMIN
+            ):
                 return True
             else:
                 return False
         except Exception as e:
             send_to_sentry("event", "permission", e)
-            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la verification des permissions : {str(e)}",
+                True,
+                True,
+                3,
+            )
             return None
         finally:
             session.close()
 
     def select_unassigned_event(self):
-        """ method to search unassigned events  """
+        """method to search unassigned events"""
 
         unassigned_event = None
 
         try:
             session = self.db.get_session()
-            unassigned_event = session.query(EventModel) \
-                .filter(EventModel.employee_id.is_(None)) \
-                .all()
+            unassigned_event = (
+                session.query(EventModel).filter(EventModel.employee_id.is_(None)).all()
+            )
         except Exception as e:
             send_to_sentry("event", "search", e)
-            display_message(f"Erreur lors de la recherche d'evenements non assignés : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche d'evenements non assignés : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return unassigned_event
 
     def select_in_progress_event(self):
-        """ method to select events where date has not passed """
+        """method to select events where date has not passed"""
 
         unassigned_event = None
 
         try:
             session = self.db.get_session()
-            unassigned_event = session.query(EventModel) \
-                .filter(EventModel.date_end > datetime.now()) \
+            unassigned_event = (
+                session.query(EventModel)
+                .filter(EventModel.date_end > datetime.now())
                 .all()
+            )
         except Exception as e:
             send_to_sentry("event", "search", e)
-            display_message(f"Erreur lors de la recherche d'evenements non terminés : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche d'evenements non terminés : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return unassigned_event
@@ -210,13 +275,18 @@ class EventModel(Base):
 
         try:
             session = self.db.get_session()
-            event = session.query(EventModel) \
-                .options(joinedload(EventModel.employee)) \
-                .options(joinedload(EventModel.contract)) \
-                .filter_by(id=event_number).first()
+            event = (
+                session.query(EventModel)
+                .options(joinedload(EventModel.employee))
+                .options(joinedload(EventModel.contract))
+                .filter_by(id=event_number)
+                .first()
+            )
         except Exception as e:
             send_to_sentry("event", "search", e)
-            display_message(f"Erreur lors de la recherche de l'evenement : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche de l'evenement : {str(e)}", True, True, 3
+            )
         finally:
             session.close()
             return event
@@ -233,11 +303,18 @@ class EventModel(Base):
             event = session.query(EventModel).get(event_obj.id)
             event.employee_id = employee_obj.id
             session.commit()
-            display_message(f"Evenement assigné à {employee_obj.username} avec succès...", True, True, 3)
+            display_message(
+                f"Evenement assigné à {employee_obj.username} avec succès...",
+                True,
+                True,
+                3,
+            )
         except Exception as e:
             session.rollback()
             send_to_sentry("event", "update", e)
-            display_message(f"Erreur lors de l'assignation de l'evenement : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de l'assignation de l'evenement : {str(e)}", True, True, 3
+            )
             return None
         finally:
             session.close()
@@ -252,12 +329,17 @@ class EventModel(Base):
 
         try:
             session = self.db.get_session()
-            event = session.query(EventModel) \
-                .options(joinedload(EventModel.employee)) \
-                .all()
+            event = (
+                session.query(EventModel).options(joinedload(EventModel.employee)).all()
+            )
         except Exception as e:
             send_to_sentry("event", "search", e)
-            display_message(f"Erreur lors de la recherche dans la table event : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche dans la table event : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return event
@@ -273,12 +355,19 @@ class EventModel(Base):
 
         try:
             session = self.db.get_session()
-            event = session.query(EventModel) \
-                .filter(EventModel.employee_id == employee_id) \
+            event = (
+                session.query(EventModel)
+                .filter(EventModel.employee_id == employee_id)
                 .all()
+            )
         except Exception as e:
             send_to_sentry("event", "search", e)
-            display_message(f"Erreur lors de la recherche des evenements assignés : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche des evenements assignés : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return event

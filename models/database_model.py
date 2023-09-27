@@ -8,24 +8,29 @@ Base = declarative_base()
 
 
 class DatabaseModel:
-    """ Database class """
+    """Database class"""
 
     def __init__(self, db_url):
         self.engine = create_engine(db_url)
         self.Session = sessionmaker(bind=self.engine)
 
     def create_tables(self):
-        """ method to create tables + superadmin account """
+        """method to create tables + superadmin account"""
         try:
             session = self.Session()
             Base.metadata.create_all(self.engine)
         except Exception as e:
-            display_message(f"Probleme lors de la creation des bases de données : {str(e)}", True, True, 2)
+            display_message(
+                f"Probleme lors de la creation des bases de données : {str(e)}",
+                True,
+                True,
+                2,
+            )
         finally:
             session.close()
 
     def tables_exist(self):
-        """ method to check if tables already exists """
+        """method to check if tables already exists"""
 
         inspector = inspect(self.engine)
         table_names = inspector.get_table_names()
@@ -34,5 +39,3 @@ class DatabaseModel:
 
     def get_session(self):
         return self.Session()
-
-    

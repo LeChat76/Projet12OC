@@ -1,17 +1,27 @@
 from utils.utils_view import clear_screen
-from constants.base import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EMPLOYEES, MENU_EXIT
+from constants.base import (
+    MENU_CUSTOMERS,
+    MENU_CONTRACTS,
+    MENU_EVENTS,
+    MENU_EMPLOYEES,
+    MENU_EXIT,
+)
 
 
 class MainMenu:
-    """ Main Menu Class """
-    
+    """Main Menu Class"""
+
     def main_menu(self):
-        """ Root menu """
+        """Root menu"""
 
         choice = None
-        while choice != MENU_CUSTOMERS and choice != MENU_CONTRACTS\
-                and choice != MENU_EVENTS and choice != MENU_EXIT\
-                and choice != MENU_EMPLOYEES:
+        while (
+            choice != MENU_CUSTOMERS
+            and choice != MENU_CONTRACTS
+            and choice != MENU_EVENTS
+            and choice != MENU_EXIT
+            and choice != MENU_EMPLOYEES
+        ):
             clear_screen()
             print("+--------------------------------+")
             print("|        MENU PRINCIPAL          |")

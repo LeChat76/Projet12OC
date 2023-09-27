@@ -1,23 +1,39 @@
 import time
 from utils.utils_view import clear_screen
 from views.customer_view import CustomerView
-from constants.contract import MENU_CONTRACT_CREATION, MENU_CONTRACT_UPDATE, MENU_CONTRACT_DELETE, MENU_CONTRACT_SIGNATURE, MENU_CONTRACT_FILTER, MENU_CONTRACT_EXIT
-from constants.contract import MENU_CONTRACT_FILTER_BY_SIGNATURE, MENU_CONTRACT_FILTER_NOT_FULLY_PAYED, MENU_CONTRACT_FILTER_EXIT
+from constants.contract import (
+    MENU_CONTRACT_CREATION,
+    MENU_CONTRACT_UPDATE,
+    MENU_CONTRACT_DELETE,
+    MENU_CONTRACT_SIGNATURE,
+    MENU_CONTRACT_FILTER,
+    MENU_CONTRACT_EXIT,
+)
+from constants.contract import (
+    MENU_CONTRACT_FILTER_BY_SIGNATURE,
+    MENU_CONTRACT_FILTER_NOT_FULLY_PAYED,
+    MENU_CONTRACT_FILTER_EXIT,
+)
 
 
 class ContractView:
-    """ Customer view class """
+    """Customer view class"""
 
     def __init__(self):
         self.customer_view = CustomerView()
 
     def contract_menu(self):
-        """ Menu 2 - CONTRAT """
+        """Menu 2 - CONTRAT"""
 
         choice = None
-        while choice !=  MENU_CONTRACT_CREATION and choice != MENU_CONTRACT_UPDATE and\
-            choice != MENU_CONTRACT_DELETE and choice != MENU_CONTRACT_EXIT and\
-            choice != MENU_CONTRACT_SIGNATURE and choice !=MENU_CONTRACT_FILTER:
+        while (
+            choice != MENU_CONTRACT_CREATION
+            and choice != MENU_CONTRACT_UPDATE
+            and choice != MENU_CONTRACT_DELETE
+            and choice != MENU_CONTRACT_EXIT
+            and choice != MENU_CONTRACT_SIGNATURE
+            and choice != MENU_CONTRACT_FILTER
+        ):
             clear_screen()
             print("+--------------------------------+")
             print("|          MENU CONTRAT          |")
@@ -41,11 +57,14 @@ class ContractView:
         return choice
 
     def contract_menu_filter(self):
-        """ Menu 2 - 5 contracts filter """
+        """Menu 2 - 5 contracts filter"""
 
         choice = None
-        while choice !=  MENU_CONTRACT_FILTER_BY_SIGNATURE and choice != MENU_CONTRACT_FILTER_NOT_FULLY_PAYED and\
-            choice != MENU_CONTRACT_FILTER_EXIT:
+        while (
+            choice != MENU_CONTRACT_FILTER_BY_SIGNATURE
+            and choice != MENU_CONTRACT_FILTER_NOT_FULLY_PAYED
+            and choice != MENU_CONTRACT_FILTER_EXIT
+        ):
             clear_screen()
             print("+--------------------------------+")
             print("|      MENU FILTER CONTRAT       |")
@@ -67,14 +86,15 @@ class ContractView:
 
         return choice
 
-
     def add_contract(self):
-        """ ask informations about new contract to add """
+        """ask informations about new contract to add"""
 
         clear_screen()
         price, due = None, None
-        
-        customer_info = input("Information sur le client et sur l'evenement (max 5000 caractères) : ")
+
+        customer_info = input(
+            "Information sur le client et sur l'evenement (max 5000 caractères) : "
+        )
 
         while True:
 
@@ -87,7 +107,7 @@ class ContractView:
                     print("\nMerci de renseigner uniquement des chiffres.\n")
                 else:
                     break
-            
+
             while True:
                 due = input(f"Montant restant du (< à {price}, [ENTRER = 0€] : ")
                 if due == "":
@@ -96,13 +116,19 @@ class ContractView:
                 elif not due.isnumeric() and not due == "":
                     print("\nMerci de renseigner uniquement des chiffres.\n")
                 elif int(due) > int(price):
-                    print("\nLe montant du ne peut pas etre superieur au montant du contrat.\n")
+                    print(
+                        "\nLe montant du ne peut pas etre superieur au montant du contrat.\n"
+                    )
                 else:
                     break
 
             while True:
                 status = input("Contrat signé (o)ui/(n)on ([ENTRER] = non): ")
-                if not status.lower() == "o" and not status.lower() == "n" and not status == "":
+                if (
+                    not status.lower() == "o"
+                    and not status.lower() == "n"
+                    and not status == ""
+                ):
                     print("\nSaisie incorrect, reessayez svp.\n")
                 elif status == "" or status.lower() == "n":
                     status = "NOT-SIGNED"
@@ -110,14 +136,16 @@ class ContractView:
                 else:
                     status = "SIGNED"
                     break
-            
+
             return customer_info, price, due, status
 
     def select_contract_by_entry(self):
-        """ selection of a contract by typing """
+        """selection of a contract by typing"""
 
         while True:
-            contract_number = input("\nQuel est le numero du contrat ([ENTRER] pour afficher une liste)? ")
+            contract_number = input(
+                "\nQuel est le numero du contrat ([ENTRER] pour afficher une liste)? "
+            )
             print()
             if not contract_number:
                 return None
@@ -126,9 +154,9 @@ class ContractView:
             else:
                 print()
                 return contract_number
-    
+
     def select_contract_by_list(self, contracts_list):
-        """ selection of a contract by list """
+        """selection of a contract by list"""
 
         # display list of contracts
         while True:
@@ -138,8 +166,10 @@ class ContractView:
                 print(str(counter_int) + " - " + str(contract))
                 counter_int += 1
                 time.sleep(0.1)
-                if counter_int %5 == 0:
-                    choice = input("\nQuel est votre choix ([ENTRER] pour continuer ou (q)uitter)? ")
+                if counter_int % 5 == 0:
+                    choice = input(
+                        "\nQuel est votre choix ([ENTRER] pour continuer ou (q)uitter)? "
+                    )
                     if choice.lower() == "q":
                         return choice
                     elif choice.isalpha():
@@ -152,7 +182,9 @@ class ContractView:
                     else:
                         print()
 
-            choice = input("\nFin de liste atteinte. Faites un choix ou [ENTRER] pour relancer ou (q)uitter: ")
+            choice = input(
+                "\nFin de liste atteinte. Faites un choix ou [ENTRER] pour relancer ou (q)uitter: "
+            )
             print()
             if choice.lower() == "q":
                 return choice
@@ -163,9 +195,9 @@ class ContractView:
                     print("\nCe choix ne fait pas parti de la liste...\n")
                 else:
                     return choice
-        
+
     def update_contract(self, contract_obj):
-        """ modifications input for a contract """    
+        """modifications input for a contract"""
 
         clear_screen()
         print("\nContrat selectionné :", contract_obj)
@@ -175,14 +207,20 @@ class ContractView:
         customer_info = None
         modification_state_boolean = False
 
-        print(f"Information actuelle sur le client et son evenement:\n{contract_obj.customer_info}\n")
-        customer_info = input("Modifier ([ENTRER] pour conserver information actuelle)? ")
+        print(
+            f"Information actuelle sur le client et son evenement:\n{contract_obj.customer_info}\n"
+        )
+        customer_info = input(
+            "Modifier ([ENTRER] pour conserver information actuelle)? "
+        )
         if customer_info:
             modification_state_boolean = True
             contract_obj.customer_info = customer_info
 
         while True:
-            price = input(f"Prix actuel : '{contract_obj.price}' [ENTRER pour conserver prix actuel]: ")
+            price = input(
+                f"Prix actuel : '{contract_obj.price}' [ENTRER pour conserver prix actuel]: "
+            )
             if price.isnumeric():
                 modification_state_boolean = True
                 contract_obj.price = price
@@ -194,7 +232,9 @@ class ContractView:
 
         while True:
             print(f"Montant restant du actuel : '{contract_obj.due}")
-            due = input(f"Preciser nouveau montant (<{contract_obj.price}) [ENTRER pour conserver montant actuel]: ")
+            due = input(
+                f"Preciser nouveau montant (<{contract_obj.price}) [ENTRER pour conserver montant actuel]: "
+            )
             if due.isnumeric():
                 modification_state_boolean = True
                 contract_obj.due = due
@@ -202,13 +242,19 @@ class ContractView:
             elif not due:
                 break
             elif int(due) > int(price):
-                print("\nLe montant du ne peut pas etre superieur au montant du contrat.\n")
+                print(
+                    "\nLe montant du ne peut pas etre superieur au montant du contrat.\n"
+                )
             else:
                 print("\nMerci de préciser un montant en chiffre...\n")
-        
+
         while True:
             status = input("Signer contrat? (o/N): ")
-            if not status.lower() == "o" and not status.lower() == "n" and not status == "":
+            if (
+                not status.lower() == "o"
+                and not status.lower() == "n"
+                and not status == ""
+            ):
                 print("\nSaisie incorrect, reessayez svp.\n")
             elif status == "" or status.lower() == "n":
                 status = "NOT-SIGNED"
@@ -216,7 +262,7 @@ class ContractView:
             else:
                 status = "SIGNED"
                 break
-        
+
         if modification_state_boolean:
             return contract_obj
         else:
@@ -234,7 +280,11 @@ class ContractView:
         while True:
             print()
             status = input("Contrat signé (o)ui/(n)on ([ENTRER] = non): ")
-            if not status.lower() == "o" and not status.lower() == "n" and not status == "":
+            if (
+                not status.lower() == "o"
+                and not status.lower() == "n"
+                and not status == ""
+            ):
                 print("\nSaisie incorrect, reessayez svp.\n")
             elif status == "" or status.lower() == "n":
                 print("\nRetour au menu...")
@@ -261,7 +311,7 @@ class ContractView:
         print(f"* Status           : {contract_obj.status}")
         print(f"* Information      : {contract_obj.customer_info}")
         input("\n[ENTRER] pour retourner au menu.\n")
-    
+
     def display_contracts_by_list(self, contracts_obj_list):
         """
         method to display contracts by list
@@ -279,8 +329,10 @@ class ContractView:
                 print(" - " + str(contract))
                 counter_int += 1
                 time.sleep(0.1)
-                if counter_int %5 == 0:
-                    choice = input("\nAppuyez sur [ENTRER] pour continuer ou (q)uitter)? ")
+                if counter_int % 5 == 0:
+                    choice = input(
+                        "\nAppuyez sur [ENTRER] pour continuer ou (q)uitter)? "
+                    )
                     if choice.lower() == "q":
                         break
                     else:
@@ -291,5 +343,7 @@ class ContractView:
                 time.sleep(3)
                 break
 
-            input("\nFin de liste atteinte. Appuyez sur [ENTRER] pour retourner au menu...")
+            input(
+                "\nFin de liste atteinte. Appuyez sur [ENTRER] pour retourner au menu..."
+            )
             break

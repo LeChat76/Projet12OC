@@ -18,13 +18,17 @@ class TestEmployee(unittest.TestCase):
         # Test with valid password
         input_password = "Toto1234!"
 
-        self.assertTrue(self.employee.check_password(self.employee.password, input_password))
+        self.assertTrue(
+            self.employee.check_password(self.employee.password, input_password)
+        )
 
     def test_invalid_password(self):
         # Test with invalid password
         input_password = "MauvaisPassword1234!"
 
-        self.assertFalse(self.employee.check_password(self.employee.password, input_password))
+        self.assertFalse(
+            self.employee.check_password(self.employee.password, input_password)
+        )
 
     def test_valid_username(self):
         # Test with existant username
@@ -47,7 +51,7 @@ class TestEmployee(unittest.TestCase):
         # Test search all employees
 
         self.assertTrue(self.employee.select_all_employee())
-    
+
     def test_create_employee_object_with_valid_employee_id(self):
         # test creation of an employee object with valid employee ID
 
@@ -74,7 +78,7 @@ class TestEmployee(unittest.TestCase):
 
         employee_id = 2
 
-        self.assertFalse(self.employee.check_permission_employee(employee_id))        
+        self.assertFalse(self.employee.check_permission_employee(employee_id))
 
     def test_create_employee_object_from_choice_list(self):
         # test of creation of employee object choice from a list
@@ -90,19 +94,25 @@ class TestEmployee(unittest.TestCase):
 
         employee_obj = EmployeeModel()
         employee_obj.id = 1000000
-        employee_obj.username = "TestUser",
-        employee_obj.password = bcrypt.hashpw("Toto1234!".encode('utf-8'), salt),
-        employee_obj.email = "cedrik76@msn.com",
+        employee_obj.username = ("TestUser",)
+        employee_obj.password = (bcrypt.hashpw("Toto1234!".encode("utf-8"), salt),)
+        employee_obj.email = ("cedrik76@msn.com",)
         employee_obj.department_id = 1
         self.assertTrue(self.employee.add_employee(employee_obj))
 
         # Test of login with user TestUser
         self.assertTrue(self.employee.search_employee("TestUser"))
         # Test password of TestUser
-        self.assertTrue(self.employee.check_password("$2b$12$e1/vhXWWcWCQZQKEi5DCruo3hPlLw4DVLdqXX0qMj7uDF49EZe6FK", "Toto1234!"))
+        self.assertTrue(
+            self.employee.check_password(
+                "$2b$12$e1/vhXWWcWCQZQKEi5DCruo3hPlLw4DVLdqXX0qMj7uDF49EZe6FK",
+                "Toto1234!",
+            )
+        )
 
         # Test to delete employee in the database
         self.assertTrue(self.employee.delete_employee("1000000"))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

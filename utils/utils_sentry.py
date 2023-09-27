@@ -1,5 +1,6 @@
 import sentry_sdk
 
+
 def send_to_sentry(tag1, tag2, exception):
     """ method to send report to Sentry """
     

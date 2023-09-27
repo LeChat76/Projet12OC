@@ -12,7 +12,7 @@ from utils.utils_sentry import send_to_sentry
 
 
 class EmployeeModel(Base):
-    """ Employee class """
+    """Employee class"""
 
     def __init__(self):
         self.db = DatabaseModel(DB_URL)
@@ -31,7 +31,7 @@ class EmployeeModel(Base):
 
     def __repr__(self):
         return f"Employe '{self.username}', department '{self.department.name}'."
-    
+
     def __eq__(self, other):
         if isinstance(other, EmployeeModel):
             return self.id == other.id
@@ -48,51 +48,69 @@ class EmployeeModel(Base):
 
         try:
             session = self.db.get_session()
-            employee = session.query(EmployeeModel) \
-                .options(joinedload(EmployeeModel.department)) \
-                .filter_by(username=input_username) \
-                .filter(EmployeeModel.status=="ENABLE") \
+            employee = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter_by(username=input_username)
+                .filter(EmployeeModel.status == "ENABLE")
                 .first()
+            )
         except Exception as e:
             send_to_sentry("employee", "search", e)
-            display_message(f"Erreur lors de la recherche employee : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche employee : {str(e)}", True, True, 3
+            )
         finally:
             session.close()
             return employee
-    
+
     def select_support_employee(self):
-        """ method to select support employees """
+        """method to select support employees"""
 
         support_employees = None
 
         try:
             session = self.db.get_session()
-            support_employees = session.query(EmployeeModel) \
-                .join(DepartmentModel) \
-                .options(joinedload(EmployeeModel.department)) \
-                .filter(or_(DepartmentModel.name == SUPPORT, DepartmentModel.name == SUPERADMIN, EmployeeModel.status == "ENABLE")) \
+            support_employees = (
+                session.query(EmployeeModel)
+                .join(DepartmentModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter(
+                    or_(
+                        DepartmentModel.name == SUPPORT,
+                        DepartmentModel.name == SUPERADMIN,
+                        EmployeeModel.status == "ENABLE",
+                    )
+                )
                 .all()
+            )
         except Exception as e:
             send_to_sentry("employee", "search", e)
-            display_message(f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 3
+            )
         finally:
             session.close()
             return support_employees
 
     def select_all_employee(self):
-        """ method to select all employees """
+        """method to select all employees"""
 
         employees = None
 
         try:
             session = self.db.get_session()
-            employees = session.query(EmployeeModel) \
-                .options(joinedload(EmployeeModel.department)) \
-                .filter(EmployeeModel.status=="ENABLE") \
+            employees = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter(EmployeeModel.status == "ENABLE")
                 .all()
+            )
         except Exception as e:
             send_to_sentry("employee", "search", e)
-            display_message(f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 3
+            )
         finally:
             session.close()
             return employees
@@ -104,7 +122,9 @@ class EmployeeModel(Base):
         OUTPUT : True if valid or False if invalid
         """
 
-        if bcrypt.checkpw(input_password.encode("utf-8"), account_password.encode("utf-8")):
+        if bcrypt.checkpw(
+            input_password.encode("utf-8"), account_password.encode("utf-8")
+        ):
             return True
         else:
             return None
@@ -120,36 +140,55 @@ class EmployeeModel(Base):
 
         try:
             session = self.db.get_session()
-            employee = session.query(EmployeeModel) \
-                .options(joinedload(EmployeeModel.contract)) \
-                .options(joinedload(EmployeeModel.department)) \
-                .filter_by(id=employee_id).first()
+            employee = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.contract))
+                .options(joinedload(EmployeeModel.department))
+                .filter_by(id=employee_id)
+                .first()
+            )
         except Exception as e:
             send_to_sentry("employee", "creation", e)
-            display_message(f"Erreur lors de la creation de l'objet employee : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la creation de l'objet employee : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
-            return employee    
+            return employee
 
     def check_permission_employee(self, employee_id):
         """
         method to check if logged-in user has permission to add employee
         INPUT : employee id of the logged-in employee
-        OUTPUT : True of False 
+        OUTPUT : True of False
         """
 
         try:
             session = self.db.get_session()
-            employee = session.query(EmployeeModel) \
-                .options(joinedload(EmployeeModel.department)) \
-                .filter_by(id=employee_id).first()
-            if employee.department.name == MANAGEMENT or employee.department.name == SUPERADMIN:
+            employee = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter_by(id=employee_id)
+                .first()
+            )
+            if (
+                employee.department.name == MANAGEMENT
+                or employee.department.name == SUPERADMIN
+            ):
                 return True
             else:
                 return False
         except Exception as e:
             send_to_sentry("employee", "permission", e)
-            display_message(f"Erreur lors de la vérification du departement de l'utilisateur : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la vérification du departement de l'utilisateur : {str(e)}",
+                True,
+                True,
+                3,
+            )
             return None
         finally:
             session.close()
@@ -160,7 +199,7 @@ class EmployeeModel(Base):
         INPUT : employee_obj
         RESULT : record of the new employee in the database
         """
-        
+
         result = True
 
         try:
@@ -186,12 +225,17 @@ class EmployeeModel(Base):
 
         try:
             session = self.db.get_session()
-            employee_obj = session.query(EmployeeModel) \
-                .options(joinedload(EmployeeModel.department)) \
-                .offset(int(choice) - 1).first()
+            employee_obj = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .offset(int(choice) - 1)
+                .first()
+            )
         except Exception as e:
             send_to_sentry("employee", "creation", e)
-            display_message(f"Erreur lors de la selection de l'employé : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la selection de l'employé : {str(e)}", True, True, 3
+            )
         finally:
             session.close()
             return employee_obj
@@ -207,7 +251,9 @@ class EmployeeModel(Base):
 
         try:
             session = self.db.get_session()
-            employee_to_delete = session.query(EmployeeModel).filter_by(id=employee_id).first()
+            employee_to_delete = (
+                session.query(EmployeeModel).filter_by(id=employee_id).first()
+            )
             employee_to_delete.status = "DISABLE"
             session.commit()
         except Exception as e:
@@ -234,17 +280,32 @@ class EmployeeModel(Base):
             employee.department_id = employee_to_update.department_id
             employee.status = employee_to_update.status
             session.commit()
-            display_message(f"Client '{employee_to_update.username}' mis à jour avec succès!", True, True, 3)
+            display_message(
+                f"Client '{employee_to_update.username}' mis à jour avec succès!",
+                True,
+                True,
+                3,
+            )
         except IntegrityError as e:
             session.rollback()
             send_to_sentry("employee", "update", e)
-            display_message("Erreur lors de la modification de l'employee : l'email est déjà associé à un autre employee.", True, False, 0)
+            display_message(
+                "Erreur lors de la modification de l'employee : l'email est déjà associé à un autre employee.",
+                True,
+                False,
+                0,
+            )
             display_message("Retour au menu....", False, False, 3)
             return None
         except Exception as e:
             session.rollback()
             send_to_sentry("employee", "update", e)
-            display_message(f"Erreur lors de la modification de l'employee : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la modification de l'employee : {str(e)}",
+                True,
+                True,
+                3,
+            )
             return None
         finally:
             session.close()

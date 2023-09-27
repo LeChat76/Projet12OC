@@ -8,7 +8,7 @@ from utils.utils_sentry import send_to_sentry
 
 
 class DepartmentModel(Base):
-    """ Department class """
+    """Department class"""
 
     def __init__(self):
         self.db = DatabaseModel(DB_URL)
@@ -21,7 +21,7 @@ class DepartmentModel(Base):
 
     def __repr__(self):
         return f"Department '{self.name}', {self.description.lower()}."
-    
+
     def select_all_department(self):
         """
         method to select all department
@@ -35,7 +35,12 @@ class DepartmentModel(Base):
             department_obj_list = session.query(DepartmentModel).all()
         except Exception as e:
             send_to_sentry("department", "search", e)
-            display_message(f"Erreur lors de la selection des departements : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la selection des departements : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return department_obj_list
@@ -51,10 +56,17 @@ class DepartmentModel(Base):
 
         try:
             session = self.db.get_session()
-            department_obj = session.query(DepartmentModel).offset(int(choice) - 1).first()
+            department_obj = (
+                session.query(DepartmentModel).offset(int(choice) - 1).first()
+            )
         except Exception as e:
             send_to_sentry("department", "creation", e)
-            display_message(f"Erreur lors de la creation de l'object departement : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la creation de l'object departement : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return department_obj

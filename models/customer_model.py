@@ -11,7 +11,7 @@ from utils.utils_sentry import send_to_sentry
 
 
 class CustomerModel(Base):
-    """ Customer class """
+    """Customer class"""
 
     def __init__(self, name, email, phone, company, employee_id):
         self.db = DatabaseModel(DB_URL)
@@ -20,14 +20,16 @@ class CustomerModel(Base):
         self.phone = phone
         self.company = company
         self.employee_id = employee_id
-    
+
     __tablename__ = "customer"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
     phone = Column(String(20), nullable=True)
     company = Column(String(255), nullable=False)
-    date_creation = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
+    date_creation = Column(
+        TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False
+    )
     date_update = Column(TIMESTAMP, onupdate=text("CURRENT_TIMESTAMP"), nullable=True)
     employee_id = Column(Integer, ForeignKey("employee.id"), nullable=False)
     status = Column(String(7), nullable=False, server_default="ENABLE")
@@ -47,7 +49,12 @@ class CustomerModel(Base):
 
         try:
             session = self.db.get_session()
-            employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
+            employee = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter_by(id=employee_id)
+                .first()
+            )
             if employee.department.name == SUPERADMIN:
                 return True
             elif employee.department.name == COMMERCIAL:
@@ -57,7 +64,12 @@ class CustomerModel(Base):
                 return False
         except Exception as e:
             send_to_sentry("customer", "permission", e)
-            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la verification des permissions : {str(e)}",
+                True,
+                True,
+                3,
+            )
             return None
         finally:
             session.close()
@@ -71,18 +83,30 @@ class CustomerModel(Base):
 
         try:
             session = self.db.get_session()
-            employee = session.query(EmployeeModel).options(joinedload(EmployeeModel.department)).filter_by(id=employee_id).first()
-            if employee.department.name == COMMERCIAL or employee.department.name == SUPERADMIN:
+            employee = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter_by(id=employee_id)
+                .first()
+            )
+            if (
+                employee.department.name == COMMERCIAL
+                or employee.department.name == SUPERADMIN
+            ):
                 return True
             else:
                 return False
         except Exception as e:
             send_to_sentry("customer", "permission", e)
-            display_message(f"Erreur lors de la verification des permissions : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la verification des permissions : {str(e)}",
+                True,
+                True,
+                3,
+            )
             return None
         finally:
             session.close()
-
 
     def add_customer(self, new_customer):
         """
@@ -90,7 +114,7 @@ class CustomerModel(Base):
         INPUT : customer object
         RESULT : record of the new customer in the database
         """
-        
+
         result = True
 
         try:
@@ -104,20 +128,24 @@ class CustomerModel(Base):
         finally:
             session.close()
             return result
-    
+
     def search_all_customers(self):
-        """ method to select all customers """
+        """method to select all customers"""
 
         customers_list = None
 
         try:
             session = self.db.get_session()
-            customers_list = session.query(CustomerModel) \
-                .filter(CustomerModel.status=="ENABLE") \
+            customers_list = (
+                session.query(CustomerModel)
+                .filter(CustomerModel.status == "ENABLE")
                 .all()
+            )
         except Exception as e:
             send_to_sentry("customer", "select", e)
-            display_message(f"Erreur lors de la recherche des clients : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la recherche des clients : {str(e)}", True, True, 3
+            )
         finally:
             session.close()
             return customers_list
@@ -136,10 +164,15 @@ class CustomerModel(Base):
             if isinstance(choice, str) and choice.isnumeric():
                 customer = session.query(CustomerModel).offset(int(choice) - 1).first()
             else:
-                customer = session.query(CustomerModel).filter_by(name = choice).first()
+                customer = session.query(CustomerModel).filter_by(name=choice).first()
         except Exception as e:
             send_to_sentry("customer", "creation", e)
-            display_message(f"Erreur lors de la creation de l'objet client : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la creation de l'objet client : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return customer
@@ -158,7 +191,12 @@ class CustomerModel(Base):
             customer = session.get(CustomerModel, customer_id)
         except Exception as e:
             send_to_sentry("customer", "creation", e)
-            display_message(f"Erreur lors de la creation de l'objet client : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la creation de l'objet client : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return customer
@@ -166,7 +204,7 @@ class CustomerModel(Base):
     def create_customer_object_with_name(self, customer_name):
         """
         method to create customer object
-        INPUT : name of the customer 
+        INPUT : name of the customer
         OUTPUT : customer object
         """
 
@@ -174,12 +212,19 @@ class CustomerModel(Base):
 
         try:
             session = self.db.get_session()
-            customer = session.query(CustomerModel) \
-                .filter(CustomerModel.name==customer_name) \
+            customer = (
+                session.query(CustomerModel)
+                .filter(CustomerModel.name == customer_name)
                 .first()
+            )
         except Exception as e:
             send_to_sentry("customer", "creation", e)
-            display_message(f"Erreur lors de la creation de l'objet client : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la creation de l'objet client : {str(e)}",
+                True,
+                True,
+                3,
+            )
         finally:
             session.close()
             return customer
@@ -200,17 +245,29 @@ class CustomerModel(Base):
             customer.company = customer_to_update.company
             customer.employee_id = customer_to_update.employee_id
             session.commit()
-            display_message(f"Client '{customer_to_update.name}' mis à jour avec succès!", True, True, 3)
+            display_message(
+                f"Client '{customer_to_update.name}' mis à jour avec succès!",
+                True,
+                True,
+                3,
+            )
         except IntegrityError as e:
             session.rollback()
             send_to_sentry("customer", "update", e)
-            display_message("Erreur lors de la modification du client : l'email est déjà associé à un autre client.", True, False, 0)
+            display_message(
+                "Erreur lors de la modification du client : l'email est déjà associé à un autre client.",
+                True,
+                False,
+                0,
+            )
             display_message("Retour au menu....", False, False, 3)
             return None
         except Exception as e:
             session.rollback()
             send_to_sentry("customer", "update", e)
-            display_message(f"Erreur lors de la modification du client : {str(e)}", True, True, 3)
+            display_message(
+                f"Erreur lors de la modification du client : {str(e)}", True, True, 3
+            )
             return None
         finally:
             session.close()
@@ -226,7 +283,9 @@ class CustomerModel(Base):
 
         try:
             session = self.db.get_session()
-            customer_to_delete = session.query(CustomerModel).filter_by(id=customer_id).first()
+            customer_to_delete = (
+                session.query(CustomerModel).filter_by(id=customer_id).first()
+            )
             customer_to_delete.status = "DISABLE"
             session.commit()
         except Exception as e:
