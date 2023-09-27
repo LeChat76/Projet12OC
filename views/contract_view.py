@@ -196,18 +196,8 @@ class ContractView:
         print()
 
         # view and modify value for an contract
-        customer_info = None
-        modification_state_boolean = False
 
-        print(
-            f"Information actuelle sur le client et son evenement:\n{contract_obj.customer_info}\n"
-        )
-        customer_info = input(
-            "Modifier ([ENTRER] pour conserver information actuelle)? "
-        )
-        if customer_info:
-            modification_state_boolean = True
-            contract_obj.customer_info = customer_info
+        modification_state_boolean = False
 
         while True:
             price = input(
@@ -301,7 +291,6 @@ class ContractView:
         print(f"* Prix             : {contract_obj.price}")
         print(f"* Due              : {contract_obj.due}")
         print(f"* Status           : {contract_obj.status}")
-        print(f"* Information      : {contract_obj.customer_info}")
         input("\n[ENTRER] pour retourner au menu.\n")
 
     def display_contracts_by_list(self, contracts_obj_list):

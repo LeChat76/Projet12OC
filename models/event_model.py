@@ -243,13 +243,14 @@ class EventModel(Base):
     def select_in_progress_event(self):
         """method to select events where date has not passed"""
 
-        unassigned_event = None
+        in_progress_event = None
 
         try:
             session = self.db.get_session()
-            unassigned_event = (
+            in_progress_event = (
                 session.query(EventModel)
                 .filter(EventModel.date_end > datetime.now())
+                .options(joinedload(EventModel.employee))
                 .all()
             )
         except Exception as e:
@@ -262,7 +263,7 @@ class EventModel(Base):
             )
         finally:
             session.close()
-            return unassigned_event
+            return in_progress_event
 
     def search_event(self, event_number):
         """

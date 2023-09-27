@@ -107,7 +107,7 @@ def create_samples():
         {"price": 4000.0, "due": 0.0, "status": "SIGNED", "customer_id": 7, "employee_id": 3},
         {"price": 1500.0, "due": 0.0, "status": "SIGNED", "customer_id": 6, "employee_id": 3},
         {"price": 2500.0, "due": 0.0, "status": "NOT-SIGNED", "customer_id": 9, "employee_id": 3},
-        {"price": 4000.0, "due": 3500.0, "status": "NOT-SIGNED", "customer_id": 7, "employee_id": 3}
+        {"price": 4000.0, "due": 3500.0, "status": "NOT-SIGNED", "customer_id": 7, "employee_id": 3},
     ]
 
     event_data = [
@@ -124,11 +124,9 @@ def create_samples():
         customer.phone = data["phone"]
         customer.company = data["company"]
         customer.employee_id = data["employee_id"]
-
+        
         session.add(customer)
-
-    session.commit()
-
+    
     for data in contract_data:
         contract = ContractModel(None, None, None, None, None)
         contract.price = data["price"]
@@ -138,9 +136,6 @@ def create_samples():
         contract.employee_id = data["employee_id"]
         
         session.add(contract)
-
-    session.commit()
-
 
     for data in event_data:
         event = EventModel()

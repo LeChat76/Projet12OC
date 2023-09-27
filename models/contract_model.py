@@ -92,6 +92,35 @@ class ContractModel(Base):
             session.close()
             return contract_obj
 
+    def create_contract_object_with_id(self, contract_id):
+        """
+        method to create contract object with contract ID
+        INPUT : contract ID
+        OUTPUT : contract object
+        """
+
+        contract_obj = None
+
+        try:
+            session = self.db.get_session()
+            contract_obj = (
+                session.query(ContractModel)
+                .filter_by(id=contract_id)
+                .options(joinedload(ContractModel.customer))
+                .first()
+            )
+        except Exception as e:
+            send_to_sentry("contract", "creation", e)
+            display_message(
+                f"Erreur lors de la creation de l'objet contrat: {str(e)}",
+                True,
+                True,
+                2,
+            )
+        finally:
+            session.close()
+            return contract_obj
+
     def check_permission(self, employee_id):
         """
         function to check authorization to access to the contract menu

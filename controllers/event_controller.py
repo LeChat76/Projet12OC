@@ -93,6 +93,9 @@ class EventController:
     def add_event(self, employee_id):
         """creation of event method"""
 
+        contract_choice = None
+        contract_obj = None
+
         # check permission of the logged employee to access to this menu
         permission = self.event_model.check_permission_event(employee_id)
         if permission:
@@ -123,14 +126,18 @@ class EventController:
                                     available_contracts
                                 )
                             )
+                        else:
+                            contract_obj = self.contract_model.create_contract_object_with_id(contract_choice)
                     else:
                         contract_choice = self.contract_view.select_contract_by_list(
                             available_contracts
                         )
+                        # contract_id = available_contracts[int(contract_choice) - 1].id
                     if not contract_choice.lower() == "q":
-                        contract_obj = self.contract_model.create_contract_object(
-                            contract_choice
-                        )
+                        if not contract_obj:
+                            contract_obj = self.contract_model.create_contract_object_with_id(
+                                available_contracts[int(contract_choice) - 1].id
+                            )
                         permission = self.contract_model.check_if_contract_associated_to_employee(
                             employee_id, contract_obj
                         )
@@ -217,9 +224,9 @@ class EventController:
                         event_obj = self.event_model.search_event(
                             event_choice
                         )
-                        if not event_obj:
+                        if not event_obj or all(obj.id != event_obj.id for obj in not_assigned_event):
                             display_message(
-                                "Ce numéro d'évenement n'existe pas. Selectionnez le par liste: ",
+                                "Ce numéro d'évenement n'existe pas ou est déjà assigné. Selectionnez le par liste: ",
                                 False,
                                 True,
                                 2,
