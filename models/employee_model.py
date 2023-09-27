@@ -22,7 +22,7 @@ class EmployeeModel(Base):
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
-    status = Column(Enum('ENABLE', 'DISABLE'), server_default="ENABLE")
+    status = Column(Enum('ENABLE', 'DISABLE'), nullable=False, server_default="ENABLE")
     department_id = Column(Integer, ForeignKey("department.id"), nullable=False)
     department = relationship("DepartmentModel", back_populates="employee")
     customer = relationship("CustomerModel", back_populates="employee")
