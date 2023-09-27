@@ -133,7 +133,6 @@ class CustomerController:
                 # display choice selection (bye input or list)
                 customer_choice = self.customer_view.select_customer_by_entry()
                 if not customer_choice:
-                    customers_list = self.customer_model.search_all_customers()
                     customer_choice = self.customer_view.select_customer_by_list(
                         customers_list
                     )

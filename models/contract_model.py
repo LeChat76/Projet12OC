@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, text, Float
+from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, text, Float, Enum
 from sqlalchemy.orm import relationship, joinedload
 from models.database_model import Base
 from constants.database import DB_URL
@@ -14,9 +14,8 @@ from utils.utils_sentry import send_to_sentry
 class ContractModel(Base):
     """Contract class"""
 
-    def __init__(self, customer_info, price, due, status, customer, employee_id):
+    def __init__(self, price, due, status, customer, employee_id):
         self.db = DatabaseModel(DB_URL)
-        self.customer_info = customer_info
         self.price = price
         self.due = due
         self.status = status
@@ -25,13 +24,12 @@ class ContractModel(Base):
 
     __tablename__ = "contract"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    customer_info = Column(String(5000), nullable=True)
     price = Column(Float, nullable=False, default=0)
     due = Column(Float, nullable=False, default=0)
     date_creation = Column(
         TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False
     )
-    status = Column(String(10), nullable=False, server_default="NOT-SIGNED")
+    status = Column(Enum('SIGNED', 'NOT-SIGNED'), nullable=False, server_default="NOT-SIGNED")
     customer_id = Column(Integer, ForeignKey("customer.id"), nullable=False)
     customer = relationship("CustomerModel", back_populates="contract", lazy="select")
     employee_id = Column(Integer, ForeignKey("employee.id"), nullable=False)
@@ -326,7 +324,6 @@ class ContractModel(Base):
         try:
             session = self.db.get_session()
             contract = session.query(ContractModel).get(contract_to_update_obj.id)
-            contract.customer_info = contract_to_update_obj.customer_info
             contract.price = contract_to_update_obj.price
             contract.due = contract_to_update_obj.due
             contract.status = contract_to_update_obj.status

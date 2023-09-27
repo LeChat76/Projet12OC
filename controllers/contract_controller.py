@@ -6,7 +6,6 @@ from constants.contract import (
     MENU_CONTRACT_CREATION,
     MENU_CONTRACT_UPDATE,
     MENU_CONTRACT_SIGNATURE,
-    MENU_CONTRACT_DELETE,
     MENU_CONTRACT_FILTER,
     MENU_CONTRACT_EXIT,
 )
@@ -26,7 +25,7 @@ class ContractController:
         self.contract_view = ContractView()
         self.customer_view = CustomerView()
         self.customer_model = CustomerModel(None, None, None, None, None)
-        self.contract_model = ContractModel(None, None, None, None, None, None)
+        self.contract_model = ContractModel(None, None, None, None, None)
 
     def menu_customer(self, employee_id):
         """Contract menu"""
@@ -39,8 +38,6 @@ class ContractController:
                 self.update_contract(employee_id)
             elif choice == MENU_CONTRACT_SIGNATURE:
                 self.sign_contract(employee_id)
-            elif choice == MENU_CONTRACT_DELETE:
-                self.delete_contract(employee_id)
             elif choice == MENU_CONTRACT_FILTER:
                 permission = self.contract_model.check_permission_filter_menu(
                     employee_id
@@ -80,17 +77,16 @@ class ContractController:
                 )
             else:
                 customer_obj = self.customer_model.create_customer_object(customer_name)
-            customer_info = new_contract_values[0]
-            price = new_contract_values[1]
-            due = new_contract_values[2]
-            status = new_contract_values[3]
+            price = new_contract_values[0]
+            due = new_contract_values[1]
+            status = new_contract_values[2]
             new_contract_obj = ContractModel(
-                customer_info, price, due, status, customer_obj, employee_id
+                price, due, status, customer_obj, employee_id
             )
             result = self.contract_model.add_contract(new_contract_obj)
             if result:
                 display_message(
-                    str(new_contract_obj) + " créé avec succes. Retour au menu...",
+                    "Contrat numéro créé avec succes. Retour au menu...",
                     True,
                     True,
                     3,

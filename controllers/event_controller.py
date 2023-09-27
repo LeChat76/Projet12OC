@@ -10,7 +10,6 @@ from constants.event import (
     MENU_EVENT_CREATION,
     MENU_EVENT_ASSIGNATION,
     MENU_EVENT_UPDATE,
-    MENU_EVENT_DELETE,
     MENU_EVENT_FILTER,
     MENU_EVENT_EXIT,
 )
@@ -31,7 +30,7 @@ class EventController:
         self.contract_view = ContractView()
         self.employee_view = EmployeeView()
         self.event_model = EventModel()
-        self.contract_model = ContractModel(None, None, None, None, None, None)
+        self.contract_model = ContractModel(None, None, None, None, None)
         self.customer_model = CustomerModel(None, None, None, None, None)
         self.employee_model = EmployeeModel()
 
@@ -88,8 +87,6 @@ class EventController:
                     elif filter_choice == MENU_EVENT_FILTER_EXIT:
                         break
 
-            elif choice == MENU_EVENT_DELETE:
-                self.delete_event(employee_id)
             elif choice == MENU_EVENT_EXIT:
                 break
 

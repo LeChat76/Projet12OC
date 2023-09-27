@@ -32,9 +32,8 @@ class EmployeeView:
             print("| 2 - voir/modifier un employe   |")
             print("| 3 - suppression d'un employe   |")
             print("|                                |")
-            print("|                                |")
             print("|--------------------------------|")
-            print("| 6 - revenir au menu principal  |")
+            print("| 5 - revenir au menu principal  |")
             print("+--------------------------------+")
 
             choice = input("\nQuel est votre choix : ")

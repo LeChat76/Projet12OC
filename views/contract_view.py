@@ -4,7 +4,6 @@ from views.customer_view import CustomerView
 from constants.contract import (
     MENU_CONTRACT_CREATION,
     MENU_CONTRACT_UPDATE,
-    MENU_CONTRACT_DELETE,
     MENU_CONTRACT_SIGNATURE,
     MENU_CONTRACT_FILTER,
     MENU_CONTRACT_EXIT,
@@ -29,7 +28,6 @@ class ContractView:
         while (
             choice != MENU_CONTRACT_CREATION
             and choice != MENU_CONTRACT_UPDATE
-            and choice != MENU_CONTRACT_DELETE
             and choice != MENU_CONTRACT_EXIT
             and choice != MENU_CONTRACT_SIGNATURE
             and choice != MENU_CONTRACT_FILTER
@@ -40,11 +38,10 @@ class ContractView:
             print("+--------------------------------+")
             print("| 1 - création d'un contrat      |")
             print("| 2 - voir/modifier un contrat   |")
-            print("| 3 - suppression d'un contrat   |")
-            print("| 4 - signer un contrat          |")
-            print("| 5 - filtrer contrats           |")
+            print("| 3 - signer un contrat          |")
+            print("| 4 - filtrer contrats           |")
             print("|--------------------------------|")
-            print("| 6 - revenir au menu principal  |")
+            print("| 5 - revenir au menu principal  |")
             print("+--------------------------------+")
 
             choice = input("\nQuel est votre choix : ")
@@ -73,9 +70,8 @@ class ContractView:
             print("| 2 - contrats non payés         |")
             print("|                                |")
             print("|                                |")
-            print("|                                |")
             print("|--------------------------------|")
-            print("| 6 - revenir au menu principal  |")
+            print("| 5 - revenir au menu principal  |")
             print("+--------------------------------+")
 
             choice = input("\nQuel est votre choix : ")
@@ -91,10 +87,6 @@ class ContractView:
 
         clear_screen()
         price, due = None, None
-
-        customer_info = input(
-            "Information sur le client et sur l'evenement (max 5000 caractères) : "
-        )
 
         while True:
 
@@ -137,7 +129,7 @@ class ContractView:
                     status = "SIGNED"
                     break
 
-            return customer_info, price, due, status
+            return price, due, status
 
     def select_contract_by_entry(self):
         """selection of a contract by typing"""

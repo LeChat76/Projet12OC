@@ -3,7 +3,6 @@ from constants.event import (
     MENU_EVENT_CREATION,
     MENU_EVENT_ASSIGNATION,
     MENU_EVENT_UPDATE,
-    MENU_EVENT_DELETE,
     MENU_EVENT_FILTER,
     MENU_EVENT_EXIT,
 )
@@ -27,7 +26,6 @@ class EventView:
         while (
             choice != MENU_EVENT_CREATION
             and choice != MENU_EVENT_UPDATE
-            and choice != MENU_EVENT_DELETE
             and choice != MENU_EVENT_EXIT
             and choice != MENU_EVENT_ASSIGNATION
             and choice != MENU_EVENT_FILTER
@@ -39,10 +37,9 @@ class EventView:
             print("| 1 - création d'un evenement    |")
             print("| 2 - assignation d'un evenement |")
             print("| 3 - voir/modifier un evenement |")
-            print("| 4 - suppression d'un evenement |")
-            print("| 5 - filtrer evenements         |")
+            print("| 4 - filtrer evenements         |")
             print("|--------------------------------|")
-            print("| 6 - revenir au menu principal  |")
+            print("| 5 - revenir au menu principal  |")
             print("+--------------------------------+")
 
             choice = input("\nQuel est votre choix : ")
@@ -71,9 +68,8 @@ class EventView:
             print("| 2 - evenement a venir/en cours |")
             print("| 3 - events qui me sont assignés|")
             print("|                                |")
-            print("|                                |")
             print("|--------------------------------|")
-            print("| 6 - revenir au menu principal  |")
+            print("| 5 - revenir au menu principal  |")
             print("+--------------------------------+")
 
             choice = input("\nQuel est votre choix : ")

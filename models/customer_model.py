@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, text
+from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, text, Enum
 from sqlalchemy.orm import relationship, joinedload
 from sqlalchemy.exc import IntegrityError
 from constants.database import DB_URL
@@ -23,7 +23,7 @@ class CustomerModel(Base):
 
     __tablename__ = "customer"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False, unique=True)
     email = Column(String(255), nullable=False, unique=True)
     phone = Column(String(20), nullable=True)
     company = Column(String(255), nullable=False)
@@ -32,7 +32,7 @@ class CustomerModel(Base):
     )
     date_update = Column(TIMESTAMP, onupdate=text("CURRENT_TIMESTAMP"), nullable=True)
     employee_id = Column(Integer, ForeignKey("employee.id"), nullable=False)
-    status = Column(String(7), nullable=False, server_default="ENABLE")
+    status = Column(Enum('ENABLE', 'DISABLE'), nullable=False, server_default="ENABLE")
     employee = relationship("EmployeeModel", back_populates="customer")
     contract = relationship("ContractModel", back_populates="customer")
 
@@ -162,7 +162,7 @@ class CustomerModel(Base):
         try:
             session = self.db.get_session()
             if isinstance(choice, str) and choice.isnumeric():
-                customer = session.query(CustomerModel).offset(int(choice) - 1).first()
+                customer = session.query(CustomerModel).filter(CustomerModel.status != 'DISABLE').offset(int(choice) - 1).first()
             else:
                 customer = session.query(CustomerModel).filter_by(name=choice).first()
         except Exception as e:

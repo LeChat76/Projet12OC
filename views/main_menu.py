@@ -30,9 +30,8 @@ class MainMenu:
             print("| 2 - contrats                   |")
             print("| 3 - evenements                 |")
             print("| 4 - employees                  |")
-            print("|                                |")
             print("|--------------------------------|")
-            print("| 6 - quitter                    |")
+            print("| 5 - quitter                    |")
             print("+--------------------------------+")
             choice = input("\nQuel est votre choix : ")
             if not choice.isnumeric():
