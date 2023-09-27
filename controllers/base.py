@@ -4,7 +4,6 @@ from models.database_model import DatabaseModel
 from models.employee_model import EmployeeModel
 from views.login_view import LoginMenu
 from views.main_menu import MainMenu
-from constants.base import MENU_CUSTOMERS, MENU_CONTRACTS, MENU_EVENTS, MENU_EMPLOYEES, MENU_EXIT
 from constants.database import DB_URL
 from controllers.customer_controller import CustomerController
 from controllers.contract_controller import ContractController
@@ -12,11 +11,17 @@ from controllers.event_controller import EventController
 from controllers.employee_controller import EmployeeController
 from utils.utils_view import display_message
 from utils.utils_database import create_departments, create_super_admin
-
+from constants.base import (
+    MENU_CUSTOMERS,
+    MENU_CONTRACTS,
+    MENU_EVENTS,
+    MENU_EMPLOYEES,
+    MENU_EXIT,
+)
 
 
 class epicEvents:
-    """ Epic Events class """
+    """Epic Events class"""
 
     def __init__(self):
         self.db = DatabaseModel(DB_URL)
@@ -26,7 +31,9 @@ class epicEvents:
                 create_departments(DB_URL)
                 create_super_admin(DB_URL)
             except Exception as e:
-                print(f"Une erreur s'est produite lors de l'initialisation de la base de données : {e}")
+                print(
+                    f"Une erreur s'est produite lors de l'initialisation de la base de données : {e}"
+                )
                 sys.exit()
         self.login_view = LoginMenu()
         self.main_menu_view = MainMenu()
@@ -37,7 +44,7 @@ class epicEvents:
         self.employee_model = EmployeeModel()
 
     def login_menu(self):
-        """ login menu of Epic Events CRM """
+        """login menu of Epic Events CRM"""
 
         show_title = True
         authentication = False
@@ -47,17 +54,21 @@ class epicEvents:
             show_title = False
             employee_obj = self.employee_model.search_employee(input_username)
             if employee_obj:
-                password_valid = self.employee_model.check_password(employee_obj.password, input_password)
+                password_valid = self.employee_model.check_password(
+                    employee_obj.password, input_password
+                )
                 if password_valid:
                     authentication = True
                     self.main_menu(employee_obj.id)
                 else:
-                    display_message("Password incorrect! Merci de resaisir.", True, True, 0)
+                    display_message(
+                        "Password incorrect! Merci de resaisir.", True, True, 0
+                    )
             else:
                 display_message("Utilisateur inexistant.", True, True, 0)
 
     def main_menu(self, employee_id):
-        """ main menu """
+        """main menu"""
 
         while True:
             choice = self.main_menu_view.main_menu()

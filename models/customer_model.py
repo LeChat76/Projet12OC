@@ -30,6 +30,7 @@ class CustomerModel(Base):
     date_creation = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
     date_update = Column(TIMESTAMP, onupdate=text("CURRENT_TIMESTAMP"), nullable=True)
     employee_id = Column(Integer, ForeignKey("employee.id"), nullable=False)
+    status = Column(String(7), nullable=False, server_default="ENABLE")
     employee = relationship("EmployeeModel", back_populates="customer")
     contract = relationship("ContractModel", back_populates="customer")
 
@@ -111,7 +112,9 @@ class CustomerModel(Base):
 
         try:
             session = self.db.get_session()
-            customers_list = session.query(CustomerModel).all()
+            customers_list = session.query(CustomerModel) \
+                .filter(CustomerModel.status=="ENABLE") \
+                .all()
         except Exception as e:
             send_to_sentry("customer", "select", e)
             display_message(f"Erreur lors de la recherche des clients : {str(e)}", True, True, 3)
@@ -224,7 +227,7 @@ class CustomerModel(Base):
         try:
             session = self.db.get_session()
             customer_to_delete = session.query(CustomerModel).filter_by(id=customer_id).first()
-            session.delete(customer_to_delete)
+            customer_to_delete.status = "DISABLE"
             session.commit()
         except Exception as e:
             session.rollback()

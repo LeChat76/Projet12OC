@@ -51,6 +51,7 @@ class EmployeeModel(Base):
             employee = session.query(EmployeeModel) \
                 .options(joinedload(EmployeeModel.department)) \
                 .filter_by(username=input_username) \
+                .filter(EmployeeModel.status=="ENABLE") \
                 .first()
         except Exception as e:
             send_to_sentry("employee", "search", e)
@@ -69,7 +70,7 @@ class EmployeeModel(Base):
             support_employees = session.query(EmployeeModel) \
                 .join(DepartmentModel) \
                 .options(joinedload(EmployeeModel.department)) \
-                .filter(or_(DepartmentModel.name == SUPPORT, DepartmentModel.name == SUPERADMIN)) \
+                .filter(or_(DepartmentModel.name == SUPPORT, DepartmentModel.name == SUPERADMIN, EmployeeModel.status == "ENABLE")) \
                 .all()
         except Exception as e:
             send_to_sentry("employee", "search", e)
@@ -87,6 +88,7 @@ class EmployeeModel(Base):
             session = self.db.get_session()
             employees = session.query(EmployeeModel) \
                 .options(joinedload(EmployeeModel.department)) \
+                .filter(EmployeeModel.status=="ENABLE") \
                 .all()
         except Exception as e:
             send_to_sentry("employee", "search", e)
@@ -206,7 +208,7 @@ class EmployeeModel(Base):
         try:
             session = self.db.get_session()
             employee_to_delete = session.query(EmployeeModel).filter_by(id=employee_id).first()
-            session.delete(employee_to_delete)
+            employee_to_delete.status = "DISABLE"
             session.commit()
         except Exception as e:
             session.rollback()

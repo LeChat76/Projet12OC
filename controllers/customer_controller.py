@@ -106,7 +106,7 @@ class CustomerController:
                             if choice.lower() == "o":
                                 result = self.customer_model.delete_customer(customer_obj.id)
                                 if result:
-                                    display_message("Client '{customer_obj.name}' supprimé avec succès!", True, True, 3)
+                                    display_message(f"Client '{customer_obj.name}' supprimé avec succès!", True, True, 3)
                                 else:
                                     display_message("Erreur lors de la suppresion du client.\nVoir los Sentry.", True, True, 3)
                                 break

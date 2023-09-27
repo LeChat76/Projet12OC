@@ -29,7 +29,10 @@ class EventModel(Base):
     contract = relationship("ContractModel", uselist=False, back_populates="event")
 
     def __repr__(self):
-        return f"Evenement '{self.id}' associé au contrat numero '{self.contract_id}'."
+        if self.employee_id:
+            return f"Evenement '{self.id}' associé au contrat numero '{self.contract_id}', assigné à l'employee '{self.employee.username.capitalize()}'."
+        else:
+            return f"Evenement '{self.id}' associé au contrat numero '{self.contract_id}'."
 
     def add_event(self, new_event):
         """
@@ -249,7 +252,9 @@ class EventModel(Base):
 
         try:
             session = self.db.get_session()
-            event = session.query(EventModel).all()
+            event = session.query(EventModel) \
+                .options(joinedload(EventModel.employee)) \
+                .all()
         except Exception as e:
             send_to_sentry("event", "search", e)
             display_message(f"Erreur lors de la recherche dans la table event : {str(e)}", True, True, 3)
