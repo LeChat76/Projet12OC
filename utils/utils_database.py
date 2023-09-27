@@ -127,15 +127,22 @@ def create_samples():
         
         session.add(customer)
     
+    session.commit()
+    
     for data in contract_data:
         contract = ContractModel(None, None, None, None, None)
         contract.price = data["price"]
         contract.due = data["due"]
         contract.status = data["status"]
-        contract.customer_id = data["customer_id"]
+        input(data["customer_id"])
+        contract.customer_id = (
+            session.get(CustomerModel, data["customer_id"])
+            ).id
         contract.employee_id = data["employee_id"]
         
         session.add(contract)
+    
+    session.commit()
 
     for data in event_data:
         event = EventModel()
