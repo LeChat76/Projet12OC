@@ -5,8 +5,8 @@ from models.database_model import DatabaseModel
 from models.customer_model import CustomerModel
 from models.contract_model import ContractModel
 from models.event_model import EventModel
-from datetime import datetime
 from constants.database import DB_URL
+from utils.utils_sentry import send_to_sentry
 
 
 db = DatabaseModel(DB_URL)
@@ -79,8 +79,8 @@ def create_super_admin():
     session.commit()
     session.close()
 
-def create_samples():
-    """ method to create samples for the demonstration """
+def create_employees():
+    """ method to create employees for the demonstration """
 
     session = db.get_session()
 
@@ -101,62 +101,101 @@ def create_samples():
         {"name": "Titi", "email": "titi@titi.fr", "phone": "666-666-666", "company": "Titi & Gros Minet Corp", "employee_id": 4}
     ]
 
+    try:
+        for data in customer_data:
+            customer = CustomerModel(None, None, None, None, None)
+            customer.name = data["name"]
+            customer.email = data["email"]
+            customer.phone = data["phone"]
+            customer.company = data["company"]
+            customer.employee_id = data["employee_id"]
+            
+            session.add(customer)
+        
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        send_to_sentry("database", "employees_creation", e)
+    finally:
+        session.close()
+
+def create_contracts():
+    """ method to create contracts for the demonstration """
+
+    session = db.get_session()
+
     contract_data = [
-        {"price": 1500.0, "due": 1000.0, "status": "NOT-SIGNED", "customer_id": 6, "employee_id": 3},
-        {"price": 2500.0, "due": 0.0, "status": "SIGNED", "customer_id": 9, "employee_id": 3},
-        {"price": 4000.0, "due": 0.0, "status": "SIGNED", "customer_id": 7, "employee_id": 3},
-        {"price": 1500.0, "due": 0.0, "status": "SIGNED", "customer_id": 6, "employee_id": 3},
-        {"price": 2500.0, "due": 0.0, "status": "NOT-SIGNED", "customer_id": 9, "employee_id": 3},
-        {"price": 4000.0, "due": 3500.0, "status": "NOT-SIGNED", "customer_id": 7, "employee_id": 3},
+        {"id": 1, "price": 1500.0, "due": 1000.0, "status": "NOT-SIGNED", "customer_email": "kevin@kevin.com", "employee_id": 3},
+        {"id": 2, "price": 2500.0, "due": 0.0, "status": "SIGNED", "customer_email": "d@f.fr", "employee_id": 3},
+        {"id": 3, "price": 4000.0, "due": 0.0, "status": "SIGNED", "customer_email": "09@gmail.com", "employee_id": 3},
+        {"id": 4, "price": 1500.0, "due": 0.0, "status": "SIGNED", "customer_email": "kevin@kevin.com", "employee_id": 3},
+        {"id": 5, "price": 2500.0, "due": 0.0, "status": "NOT-SIGNED", "customer_email": "d@f.fr", "employee_id": 3},
+        {"id": 6, "price": 4000.0, "due": 3500.0, "status": "NOT-SIGNED", "customer_email": "09@gmail.com", "employee_id": 3},
     ]
 
+    try:
+        for data in contract_data:
+            contract = ContractModel(None, None, None, None, None)
+            contract.id = data["id"]
+            contract.price = data["price"]
+            contract.due = data["due"]
+            contract.status = data["status"]
+            customer_obj = (
+                session.query(CustomerModel)
+                .filter_by(email = data["customer_email"])
+                .first()
+            )
+            contract.customer_id = customer_obj.id
+            contract.employee_id = data["employee_id"]
+
+            session.add(contract)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        send_to_sentry("database", "contracts_creation", e)
+    finally:
+        session.close()
+
+    contracts_obj_list = session.query(ContractModel).all()
+
+    customers_ids = [6,9,7,6,9,7]
+
+    counter = 0
+
+    for contract_obj in contracts_obj_list:
+        contract_obj.customer_id = customers_ids[counter]
+        session.commit()
+        counter += 1
+    
+    session.close()
+
+def create_events():
+    """ method to create events for the demonstration """
+
+    session = db.get_session()
+
     event_data = [
-        {"date_start": "2024-07-16 12:00:00", "date_end": "2024-07-16 20:00:00", "location": "97 allée des Platanes, 76520 Boos", "attendees": 30, "notes": "Anniversaire du bézo!", "employee_id": 2, "contract_id": 2},
+        {"date_start": "2024-07-16 12:00:00", "date_end": "2024-07-16 20:00:00", "location": "97 allée des Platanes, 76520 Boos", "attendees": 30, "notes": "Anniversaire du bézo!", "employee_id": 2, "contract_id": 4},
         {"date_start": "2023-06-24 13:00:00", "date_end": "2023-06-25 14:00:00", "location": "Marie de Paris, 75000, Paris", "attendees": 5000, "notes": "Grand marathon de Noël à Paris!", "employee_id": None, "contract_id": 3},
         {"date_start": "2023-06-04 13:00:00", "date_end": "2023-06-05 14:00:00", "location": "Rue de Rouen, 76000, Rouen", "attendees": 75, "notes": "Elections pestilentielles", "employee_id": 2, "contract_id": 1},
         {"date_start": "2023-09-28 10:00:00", "date_end": "2023-09-28 16:30:00", "location": "rue de Rouen, 76000, Rouen", "attendees": 20, "notes": "Forum créateurs d'entreprise", "employee_id": None, "contract_id": 1}
     ]
-
-    for data in customer_data:
-        customer = CustomerModel(None, None, None, None, None)
-        customer.name = data["name"]
-        customer.email = data["email"]
-        customer.phone = data["phone"]
-        customer.company = data["company"]
-        customer.employee_id = data["employee_id"]
-        
-        session.add(customer)
-    
-    session.commit()
-    
-    for data in contract_data:
-        contract = ContractModel(None, None, None, None, None)
-        contract.price = data["price"]
-        contract.due = data["due"]
-        contract.status = data["status"]
-        input(data["customer_id"])
-        contract.customer_id = (
-            session.get(CustomerModel, data["customer_id"])
-            ).id
-        contract.employee_id = data["employee_id"]
-        
-        session.add(contract)
-    
-    session.commit()
-
-    for data in event_data:
-        event = EventModel()
-        event.date_start = data["date_start"]
-        event.date_end = data["date_end"]
-        event.location = data["location"]
-        event.attendees = data["attendees"]
-        event.notes = data["notes"]
-        if "employee_id" in data and data["employee_id"]:
+    try:
+        for data in event_data:
+            event = EventModel()
+            event.date_start = data["date_start"]
+            event.date_end = data["date_end"]
+            event.location = data["location"]
+            event.attendees = data["attendees"]
+            event.notes = data["notes"]
             event.employee_id = data["employee_id"]
-        event.contract_id = data["contract_id"]
+            event.contract_id = data["contract_id"]
 
-        session.add(event)
+            session.add(event)
 
-    session.commit()
-
-    session.close()
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        send_to_sentry("database", "events_creation", e)
+    finally:
+        session.close()

@@ -30,7 +30,7 @@ class ContractModel(Base):
         TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False
     )
     status = Column(Enum('SIGNED', 'NOT-SIGNED'), nullable=False, server_default="NOT-SIGNED")
-    customer_id = Column(Integer, ForeignKey("customer.id"), nullable=False)
+    customer_id = Column(Integer, ForeignKey("customer.id"), nullable=True)
     customer = relationship("CustomerModel", back_populates="contract", lazy="select")
     employee_id = Column(Integer, ForeignKey("employee.id"), nullable=False)
     employee = relationship("EmployeeModel", back_populates="contract", lazy="select")

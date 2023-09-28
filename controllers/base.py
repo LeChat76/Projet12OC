@@ -10,7 +10,7 @@ from controllers.contract_controller import ContractController
 from controllers.event_controller import EventController
 from controllers.employee_controller import EmployeeController
 from utils.utils_view import display_message
-from utils.utils_database import create_departments, create_super_admin, create_samples
+from utils.utils_database import create_departments, create_super_admin, create_employees, create_contracts, create_events
 from constants.base import (
     MENU_CUSTOMERS,
     MENU_CONTRACTS,
@@ -82,6 +82,8 @@ class epicEvents:
             elif choice == MENU_EMPLOYEES:
                 self.employee_controller.menu_employee(employee_id)
             elif choice == CREATE_SAMPLES:
-                create_samples()
+                create_employees()
+                create_contracts()
+                create_events()
             elif choice == MENU_EXIT:
                 self.login_menu()

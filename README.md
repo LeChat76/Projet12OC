@@ -190,6 +190,14 @@ To check coverage, execute this command : `coverage report`
     <img alt="logo" src="https://github.com/LeChat76/Projet12OC/assets/119883313/d5e534b3-6e41-4486-993a-81fe7404def3">
 </p>
 
+## Features
+When launching the application for the first time, there is 4 departmens autocreated + 4 employees with same names:
+* superadmin : access to all menus and all features
+* commercial : used to manage customers and events
+* management : used to manage employees, contracts and assignation of events to an support employee
+* support    : used to be assigned to an event, these can also modify their own event
+If you want to autocreate employees, contracts and events, just go the hidden menu "666" at the home menu :-)
+(in that way you can play with samples to navigate in menus...)
 
 
 
