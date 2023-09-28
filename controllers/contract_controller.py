@@ -230,31 +230,20 @@ class ContractController:
                         contract_obj
                     )
                     if permission:
-                        if not contract_signed_boolean:
-                            # .... if permit : display contract modification menu
-                            contract_to_update_obj = self.contract_view.update_contract(
-                                contract_obj
+                        # .... if permit : display contract modification menu
+                        contract_to_update_obj = self.contract_view.update_contract(
+                            contract_obj
+                        )
+                        if contract_to_update_obj:
+                            self.contract_model.update_contract(
+                                contract_to_update_obj
                             )
-                            if contract_to_update_obj:
-                                self.contract_model.update_contract(
-                                    contract_to_update_obj
-                                )
-                            else:
-                                display_message(
-                                    "Aucune modification apportée au contrat, retour au menu.",
-                                    True,
-                                    True,
-                                    2,
-                                )
                         else:
                             display_message(
-                                "Ce contrat est déjà signé, interdit de le modifier",
+                                "Aucune modification apportée au contrat, retour au menu.",
                                 True,
                                 True,
-                                0,
-                            )
-                            self.contract_view.display_contract_informations(
-                                contract_obj
+                                2,
                             )
                     else:
                         # ... if not permit : display contract info
@@ -268,6 +257,8 @@ class ContractController:
 
     def sign_contract(self, employee_id):
         """method to sign contract"""
+
+        contract_obj = None
 
         not_signed_contracts_list = self.contract_model.select_not_signed_contract()
         if not_signed_contracts_list:
@@ -298,6 +289,8 @@ class ContractController:
                         contract_choice = self.contract_view.select_contract_by_list(
                             not_signed_contracts_list
                         )
+                    else:
+                        contract_obj = self.contract_model.create_contract_object_with_id(contract_choice)
                 elif not contract_choice:
                     not_signed_contracts_list = (
                         self.contract_model.select_not_signed_contract()
@@ -307,8 +300,10 @@ class ContractController:
                     )
                 if not contract_choice.lower() == "q":
                     # if valid choice : convert choice in object
-                    contract_obj = self.contract_model.create_contract_object(
-                        contract_choice
+                    if not contract_obj:
+                        contract_choice = not_signed_contracts_list[int(contract_choice) - 1].id
+                        contract_obj = self.contract_model.create_contract_object(
+                            contract_choice
                     )
                     check_if_contract_signed_boolean = (
                         self.contract_model.check_signature(contract_obj)

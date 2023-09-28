@@ -208,41 +208,48 @@ class ContractView:
                 contract_obj.price = price
                 break
             elif not price:
+                price = contract_obj.price
                 break
             else:
                 print("\nMerci de préciser un prix en chiffre...\n")
 
         while True:
-            print(f"Montant restant du actuel : '{contract_obj.due}")
+            print(f"\nMontant restant du actuel : '{contract_obj.due}'")
             due = input(
-                f"Preciser nouveau montant (<{contract_obj.price}) [ENTRER pour conserver montant actuel]: "
+                f"\nPreciser nouveau montant (< {contract_obj.price}) [ENTRER pour conserver montant actuel]: "
             )
             if due.isnumeric():
-                modification_state_boolean = True
-                contract_obj.due = due
-                break
+                if int(due) > int(price):
+                    print(
+                        "\nLe montant du ne peut pas etre superieur au montant du contrat.\n"
+                    )
+                else:
+                    modification_state_boolean = True
+                    contract_obj.due = due
+                    break
             elif not due:
                 break
-            elif int(due) > int(price):
-                print(
-                    "\nLe montant du ne peut pas etre superieur au montant du contrat.\n"
-                )
             else:
                 print("\nMerci de préciser un montant en chiffre...\n")
 
         while True:
-            status = input("Signer contrat? (o/N): ")
-            if (
-                not status.lower() == "o"
-                and not status.lower() == "n"
-                and not status == ""
-            ):
-                print("\nSaisie incorrect, reessayez svp.\n")
-            elif status == "" or status.lower() == "n":
-                status = "NOT-SIGNED"
-                break
+            if contract_obj.status == "NOT-SIGNED":
+                status = input("\nSigner contrat? (o/N): ")
+                if (
+                    not status.lower() == "o"
+                    and not status.lower() == "n"
+                    and not status == ""
+                ):
+                    print("\nSaisie incorrect, reessayez svp.\n")
+                elif status.lower() == "o":
+                    contract_obj.status = "SIGNED"
+                    modification_state_boolean = True
+                    break
+                elif status.lower() == "n" or not status.lower():
+                    break
             else:
-                status = "SIGNED"
+                print("\nCe contrat est déjà signé, on ne peut pas le 'déssigner' ;-)")
+                time.sleep(2)
                 break
 
         if modification_state_boolean:

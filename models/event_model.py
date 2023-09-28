@@ -165,7 +165,7 @@ class EventModel(Base):
                 .filter_by(id=employee_id)
                 .first()
             )
-            if employee.department.name == SUPERADMIN:
+            if employee.department.name == SUPERADMIN or employee.department.name == MANAGEMENT:
                 return True
             elif employee.department.name == SUPPORT:
                 if employee.id == event_obj.employee_id:

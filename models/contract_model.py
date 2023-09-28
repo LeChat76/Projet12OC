@@ -421,21 +421,23 @@ class ContractModel(Base):
             session.close()
             return result
 
-    def select_available_contracts(self):
+    def select_available_contracts(self, employee_id):
         """method to select all contracts not associated to an event AND signed"""
 
-        contracts_without_event = None
+        filtered_contracts = None
 
         try:
             session = self.db.get_session()
             contracts_without_event = (
                 session.query(ContractModel)
                 .outerjoin(EventModel, ContractModel.id == EventModel.contract_id)
-                .options(joinedload(ContractModel.customer))
                 .filter(EventModel.id.is_(None))
                 .filter(ContractModel.status == "SIGNED")
-                .all()
             )
+            filtered_contracts = [
+                contract for contract in contracts_without_event
+                if contract.customer is not None and contract.customer.employee_id == employee_id
+            ]
         except Exception as e:
             send_to_sentry("contract", "search", e)
             display_message(
@@ -446,7 +448,7 @@ class ContractModel(Base):
             )
         finally:
             session.close()
-            return contracts_without_event
+            return filtered_contracts
 
     def check_if_contract_associated_to_employee(self, employee_id, contract_obj):
         """

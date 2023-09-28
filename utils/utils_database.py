@@ -93,7 +93,7 @@ def create_employees():
         {"name": "Kevin", "email": "kevin@kevin.com", "phone": "0661994560", "company": "Kev Comp", "employee_id": 4},
         {"name": "Rasta", "email": "09@gmail.com", "phone": "666-777-888", "company": "R&K Company", "employee_id": 1},
         {"name": "Yo!", "email": "5@g.fr", "phone": "01 23 45 78 89", "company": "Wesh Studio", "employee_id": 1},
-        {"name": "Cedrik", "email": "d@f.fr", "phone": "07 77 66 65 52", "company": "Ced K", "employee_id": 1},
+        {"name": "Cedrik", "email": "d@f.fr", "phone": "07 77 66 65 52", "company": "Ced K", "employee_id": 4},
         {"name": "LG", "email": "g@g.fr", "phone": "02 01 02 01 06", "company": "Lady G", "employee_id": 1},
         {"name": "GKSD", "email": "0@fr.fr", "phone": "06 60 06 60 06", "company": "GKSD Corporation", "employee_id": 1},
         {"name": "AZERTY2", "email": "d@fr.com", "phone": "+33 2 32 94 04 56", "company": "AZERTY or Not", "employee_id": 1},

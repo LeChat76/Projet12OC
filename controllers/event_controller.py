@@ -100,7 +100,7 @@ class EventController:
         permission = self.event_model.check_permission_event(employee_id)
         if permission:
             # check if available contracts (not associated to an event + not signed)
-            available_contracts = self.contract_model.select_available_contracts()
+            available_contracts = self.contract_model.select_available_contracts(employee_id)
             if not available_contracts:
                 display_message(
                     "Aucun contrat disponibles. Retour au menu...", True, True, 2
