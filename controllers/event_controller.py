@@ -269,6 +269,7 @@ class EventController:
                                 True,
                                 2,
                             )
+                            employee_obj = None
                             employee_choice = (
                                 self.employee_view.select_employee_by_list(
                                     support_employees_obj_list

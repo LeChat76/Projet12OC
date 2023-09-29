@@ -193,41 +193,41 @@ class ContractController:
     def update_contract(self, employee_id):
         """update contract method"""
 
+        contract_obj = None
+
         contracts_list = self.contract_model.search_all_contracts()
         if contracts_list:
             # display choice selection (by input or list)
             contract_choice = self.contract_view.select_contract_by_entry()
             if contract_choice:
-                check_if_contract_exists_boolean = (
-                    self.contract_model.check_if_contract_exists(contract_choice)
+                contract_obj = (
+                    self.contract_model.create_contract_object_with_id(contract_choice)
                 )
-                if not check_if_contract_exists_boolean:
+                if not contract_obj:
                     display_message(
                         "Ce numéro de contrat n'est pas repertorié dans la base de donnée.\nVeuillez choisir dans la liste des contrats non signés.",
                         False,
                         True,
                         2,
                     )
-                    contracts_list = self.contract_model.search_all_contracts()
-                    contract_choice = self.contract_view.select_contract_by_list(
-                        contracts_list
-                    )
-            elif not contract_choice:
+                    # contract_choice = self.contract_view.select_contract_by_list(
+                    #     contracts_list
+                    # )
+            if not contract_choice or not contract_obj:
                 contract_choice = self.contract_view.select_contract_by_list(
                     contracts_list
                 )
-            if not contract_choice.lower() == "q":
+            if not contract_choice.lower() == "q" or contract_obj:
                 # if valid choice : convert choice to object
-                contract_obj = self.contract_model.create_contract_object(
-                    contract_choice
+                if not contract_obj:
+                    contract_obj = self.contract_model.create_contract_object_from_list(
+                        contract_choice,
+                        contracts_list
                 )
                 if contract_obj:
                     # check permission to modify customer by the logged employee...
                     permission = self.contract_model.check_permission_on_contract(
                         employee_id, contract_obj
-                    )
-                    contract_signed_boolean = self.contract_model.check_signature(
-                        contract_obj
                     )
                     if permission:
                         # .... if permit : display contract modification menu
