@@ -1,5 +1,4 @@
 from getpass_asterisk.getpass_asterisk import getpass_asterisk
-from constants.department import SUPERADMIN
 import time
 
 
@@ -24,16 +23,20 @@ class LoginMenu:
             time.sleep(0.1)
             print("       | |")
             time.sleep(0.1)
-            print("       |_|\n")
+            print("       |_|")
             time.sleep(0.1)
 
-        username = input("Nom d'utilisateur : ")
-        if not username:
-            # A SUPPRIMER
-            username = SUPERADMIN
-        password = getpass_asterisk("Mot de passe : ")
-        if not password:
-            # A SUPPRIMER
-            password = "Toto1234!"
+        while True:
+            username = input("\nNom d'utilisateur : ")
+            if not username:
+                print("\nMerci de sair un nom d'utilisateur...")
+            else:
+                break
+        while True:
+            password = getpass_asterisk("\nMot de passe : ")
+            if not password:
+                print("\nMerci de sair un mot de passe...")
+            else:
+                break
 
         return username, password

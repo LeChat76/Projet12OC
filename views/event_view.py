@@ -93,10 +93,6 @@ class EventView:
             date_start = input(
                 "Quel est la date de début de l'évènement (exemple 04/06/23 13:00)? "
             )
-            # A SUPPRIMER =================
-            if not date_start:
-                date_start = "04/06/23 13:00"
-            # =============================
             try:
                 datetime.strptime(date_start, date_format)
                 date_start = datetime.strptime(date_start, date_format)
@@ -108,10 +104,6 @@ class EventView:
             date_end = input(
                 "\nQuel est la date de fin de l'évènement (exemple 04/06/23 13:00)? "
             )
-            # A SUPPRIMER =================
-            if not date_end:
-                date_end = "05/06/23 14:00"
-            # =============================
             try:
                 datetime.strptime(date_end, date_format)
                 date_end = datetime.strptime(date_end, date_format)
@@ -128,10 +120,6 @@ class EventView:
             location = input(
                 "\nQuel est le lieu de l'évènement (exemple : 97 Allée des Platanes, 76520, Boos)? "
             )
-            # A SUPPRIMER =================
-            if not location:
-                location = "97 Allée des Platanes, 76520, Boos"
-            # =============================
             if re.match(location_pattern, location):
                 break
             else:
@@ -141,10 +129,6 @@ class EventView:
 
         while True:
             attendees = input("\nCombien d'invités? ")
-            # A SUPPRIMER =================
-            if not attendees:
-                attendees = "75"
-            # =============================
             if not attendees.isnumeric():
                 print("\nMerci de préciser un nombre.")
             else:

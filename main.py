@@ -1,6 +1,7 @@
 from controllers.base import epicEvents
 from models.database_model import DatabaseModel
 from constants.database import DB_URL
+from constants.sentry import DSN
 from utils.utils_sentry import send_to_sentry
 import sentry_sdk
 
@@ -9,7 +10,7 @@ def main():
     """ Launching start here """
 
     sentry_sdk.init(
-        dsn="https://6053c93c03077056f53f0034deed18fb@o4505942102638592.ingest.sentry.io/4505942105915392",
+        dsn=DSN,
         traces_sample_rate=1.0,
     )
 

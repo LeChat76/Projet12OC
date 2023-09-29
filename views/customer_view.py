@@ -43,6 +43,8 @@ class CustomerView:
     def add_customer(self):
         """ask informations about new customer to add"""
 
+        clear_screen()
+
         customer_name, customer_email, customer_phone, customer_company = (
             None,
             None,

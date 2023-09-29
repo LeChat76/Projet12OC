@@ -50,6 +50,7 @@ class epicEvents:
         show_title = True
         authentication = False
         clear_screen()
+        
         while authentication == False:
             input_username, input_password = self.login_view.login_menu(show_title)
             show_title = False
