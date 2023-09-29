@@ -8,8 +8,7 @@ from models.department_model import DepartmentModel
 from models.database_model import Base
 from models.database_model import DatabaseModel
 import bcrypt
-from utils.utils_sentry import send_to_sentry_NOK
-from utils.utils_sentry import send_to_sentry_OK
+from utils.utils_sentry import send_to_sentry_NOK, send_creation_employee_message_to_sentry
 
 
 class EmployeeModel(Base):
@@ -188,10 +187,10 @@ class EmployeeModel(Base):
         finally:
             session.close()
 
-    def add_employee(self, new_employee_obj):
+    def add_employee(self, employee_id, new_employee_obj):
         """
         method to add employee in the database
-        INPUT : employee_obj
+        INPUT : loggedin employee id + employee_obj
         RESULT : record of the new employee in the database
         """
 
@@ -199,9 +198,10 @@ class EmployeeModel(Base):
 
         try:
             session = self.db.get_session()
+            employee_obj = session.get(EmployeeModel, employee_id)
             session.add(new_employee_obj)
             session.commit()
-            send_to_sentry_OK("creation", f"Employee '{new_employee_obj.username}' created successfully", "info")
+            send_creation_employee_message_to_sentry(employee_obj.username, new_employee_obj.username)
         except Exception as e:
             session.rollback()
             send_to_sentry_NOK("employee", "creation", e)

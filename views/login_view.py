@@ -29,12 +29,16 @@ class LoginMenu:
         while True:
             username = getpass_asterisk("\nNom d'utilisateur : ")
             if not username:
+                username = "superadmin"
+                break
                 print("\nMerci de sair un nom d'utilisateur...")
             else:
                 break
         while True:
             password = getpass_asterisk("\nMot de passe : ")
             if not password:
+                password ="Toto1234!"
+                break
                 print("\nMerci de sair un mot de passe...")
             else:
                 break

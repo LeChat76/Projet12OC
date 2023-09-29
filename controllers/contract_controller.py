@@ -322,7 +322,7 @@ class ContractController:
                                 f"\nEtes vous sure de vouloir signer le contrat {contract_obj.id} (o/N)? "
                             )
                             if choice.lower() == "o":
-                                self.contract_model.sign_contract(contract_obj)
+                                self.contract_model.sign_contract(employee_id, contract_obj.id)
                                 display_message(
                                     f"Contrat numéro {contract_obj.id} signé. Retour au menu...",
                                     True,

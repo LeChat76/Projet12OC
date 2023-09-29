@@ -6,7 +6,10 @@ from models.contract_model import ContractModel
 from models.event_model import EventModel
 from constants.department import COMMERCIAL
 import bcrypt
+from cryptography.fernet import Fernet
 
+
+employee_id = 1
 
 class TestEmployee(unittest.TestCase):
     def setUp(self):
@@ -16,7 +19,11 @@ class TestEmployee(unittest.TestCase):
 
     def test_valid_password(self):
         # Test with valid password
-        input_password = "Toto1234!"
+
+        KEY = "aWbBVphsmr3o9E0DYyU6nIw07afqOIaMWRGUKHDbD4E="
+        HASHED_PASSWORD = "gAAAAABlF0LnYTgI18lne029oXPElH6ugIHvQ0eElK-5wIelNvMftg8FAZ0cQfJcif1AVU369g976yNO7oc8sADpcGj3p3LC_A=="
+        fernet = Fernet(KEY)
+        input_password = fernet.decrypt(HASHED_PASSWORD).decode()
 
         self.assertTrue(
             self.employee.check_password(self.employee.password, input_password)
@@ -94,18 +101,22 @@ class TestEmployee(unittest.TestCase):
 
         employee_obj = EmployeeModel()
         employee_obj.username = ("TestUser",)
-        employee_obj.password = (bcrypt.hashpw("Toto1234!".encode("utf-8"), salt),)
+        employee_obj.password = "$2y$10$IpoOpINijEvbie3PjdBzae/5SPTfoBnz7U27myUk3GBThO/fzGr2i"
         employee_obj.email = ("cedrik76@msn.com",)
         employee_obj.department_id = 1
-        self.assertTrue(self.employee.add_employee(employee_obj))
+        self.assertTrue(self.employee.add_employee(employee_id, employee_obj))
 
         # Test of login with user TestUser
         self.assertTrue(self.employee.search_employee("TestUser"))
         # Test password of TestUser
+        KEY = "aWbBVphsmr3o9E0DYyU6nIw07afqOIaMWRGUKHDbD4E="
+        HASHED_PASSWORD = "gAAAAABlF0LnYTgI18lne029oXPElH6ugIHvQ0eElK-5wIelNvMftg8FAZ0cQfJcif1AVU369g976yNO7oc8sADpcGj3p3LC_A=="
+        fernet = Fernet(KEY)
+        password = fernet.decrypt(HASHED_PASSWORD).decode()
         self.assertTrue(
             self.employee.check_password(
                 "$2b$12$e1/vhXWWcWCQZQKEi5DCruo3hPlLw4DVLdqXX0qMj7uDF49EZe6FK",
-                "Toto1234!",
+                password,
             )
         )
 

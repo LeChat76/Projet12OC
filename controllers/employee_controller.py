@@ -63,7 +63,7 @@ class EmployeeController:
             new_employee_obj.email = (new_employee_values_tuple[2],)
             new_employee_obj.department_id = department_obj.id
 
-            result = self.employee_model.add_employee(new_employee_obj)
+            result = self.employee_model.add_employee(employee_id, new_employee_obj)
             if result:
                 display_message("Employé ajouté avec succès!\nConsigné dans Sentry.", True, True, 2)
             else:

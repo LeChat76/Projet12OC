@@ -6,9 +6,10 @@ from models.contract_model import ContractModel
 from models.event_model import EventModel
 
 
+employee_id = 1
+
 class TestContract(unittest.TestCase):
     def setUp(self):
-        employee_id = 4
         self.customer_obj = CustomerModel(
             "Kevin Mitcnick", "kevin@mitnick.com", "0661994560", "KM Corp", employee_id
         )
@@ -76,7 +77,7 @@ class TestContract(unittest.TestCase):
     def test_select_available_contracts(self):
         # Test select available contracts
 
-        self.assertTrue(self.contract_obj.select_available_contracts())
+        self.assertTrue(self.contract_obj.select_available_contracts(employee_id))
 
     def tearDown(self):
         # delete test customer ID 1000000 after all test

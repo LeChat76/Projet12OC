@@ -177,7 +177,7 @@ def create_events():
     event_data = [
         {"id": 1000000, "date_start": "2024-07-16 12:00:00", "date_end": "2024-07-16 20:00:00", "location": "97 allée des Platanes, 76520 Boos", "attendees": 30, "notes": "Anniversaire du bézo!", "employee_id": 2, "contract_id": 1000003},
         {"id": 1000001, "date_start": "2023-06-24 13:00:00", "date_end": "2023-06-25 14:00:00", "location": "Marie de Paris, 75000, Paris", "attendees": 5000, "notes": "Grand marathon de Noël à Paris!", "employee_id": None, "contract_id": 1000002},
-        {"id": 1000002, "date_start": "2023-06-04 13:00:00", "date_end": "2023-06-05 14:00:00", "location": "Rue de Rouen, 76000, Rouen", "attendees": 75, "notes": "Elections pestilentielles", "employee_id": 2, "contract_id": 1000000},
+        {"id": 1000002, "date_start": "2023-06-04 13:00:00", "date_end": "2023-06-05 14:00:00", "location": "Rue de Rouen, 76000, Rouen", "attendees": 75, "notes": "Elections pestilentielles", "employee_id": 2, "contract_id": 1000001},
         {"id": 1000003, "date_start": "2023-09-28 10:00:00", "date_end": "2023-09-28 16:30:00", "location": "rue de Rouen, 76000, Rouen", "attendees": 20, "notes": "Forum créateurs d'entreprise", "employee_id": None, "contract_id": 1000000}
     ]
     try:

@@ -58,7 +58,7 @@ class TestEvent(unittest.TestCase):
     def test_search_event_by_number(self):
         # Test of selection of an event by ID
 
-        event_id = 1
+        event_id = 1000000
 
         self.assertTrue(self.event.search_event(event_id))
 

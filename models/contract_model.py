@@ -8,8 +8,7 @@ from models.customer_model import CustomerModel
 from models.database_model import DatabaseModel
 from models.event_model import EventModel
 from constants.department import MANAGEMENT, SUPERADMIN, COMMERCIAL
-from utils.utils_sentry import send_to_sentry_NOK
-from utils.utils_sentry import send_to_sentry_OK
+from utils.utils_sentry import send_to_sentry_NOK, send_contract_signature_message_to_sentry
 
 
 class ContractModel(Base):
@@ -352,19 +351,20 @@ class ContractModel(Base):
         else:
             return False
 
-    def sign_contract(self, contract_obj):
+    def sign_contract(self, employee_id, contract_id):
         """
         method to sign contract
-        INPUT : contract_obj
+        INPUT : loggedin employee id + contract_obj
         RESULT : status field change to 'SIGNED'
         """
 
         try:
             session = self.db.get_session()
-            contract = session.query(ContractModel).get(contract_obj.id)
-            contract.status = "SIGNED"
+            employee_obj = session.query(EmployeeModel).get(employee_id)
+            contract_obj = session.query(ContractModel).get(contract_id)
+            contract_obj.status = "SIGNED"
             session.commit()
-            send_to_sentry_OK("creation", f"contract '{contract.id}' created successfully", "info")
+            send_contract_signature_message_to_sentry(employee_obj.username, contract_id)
         except Exception as e:
             session.rollback()
             send_to_sentry_NOK("contract", "update", e)

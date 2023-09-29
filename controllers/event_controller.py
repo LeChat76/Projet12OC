@@ -332,7 +332,7 @@ class EventController:
                     event_obj = self.event_model.create_event_object(event_choice)
 
             if not event_choice == "q":
-                contract_obj = self.contract_model.create_contract_object(
+                contract_obj = self.contract_model.create_contract_object_with_id(
                     event_obj.contract_id
                 )
                 customer_obj = self.customer_model.create_customer_object_with_id(
