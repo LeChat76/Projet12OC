@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, text, Float, Enum
+from sqlalchemy import Column, Integer, TIMESTAMP, ForeignKey, text, Float, Enum
 from sqlalchemy.orm import relationship, joinedload
 from models.database_model import Base
 from constants.database import DB_URL
@@ -30,9 +30,9 @@ class ContractModel(Base):
         TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False
     )
     status = Column(Enum('SIGNED', 'NOT-SIGNED'), nullable=False, server_default="NOT-SIGNED")
-    customer_id = Column(Integer, ForeignKey("customer.id"), nullable=True)
+    customer_id = Column(Integer, ForeignKey("customer.id", name="fk_contract_customer"), nullable=True)
     customer = relationship("CustomerModel", back_populates="contract", lazy="select")
-    employee_id = Column(Integer, ForeignKey("employee.id"), nullable=False)
+    employee_id = Column(Integer, ForeignKey("employee.id", name="fk_contract_employee"), nullable=False)
     employee = relationship("EmployeeModel", back_populates="contract", lazy="select")
     event = relationship(
         "EventModel", uselist=False, back_populates="contract", lazy="select"

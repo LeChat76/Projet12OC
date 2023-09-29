@@ -23,9 +23,9 @@ class EventModel(Base):
     location = Column(String(255), nullable=False)
     attendees = Column(Integer, nullable=False, default=0)
     notes = Column(String(1000), nullable=True)
-    employee_id = Column(Integer, ForeignKey("employee.id"), nullable=True)
+    employee_id = Column(Integer, ForeignKey("employee.id", name="fk_event_employee"), nullable=True)
     employee = relationship("EmployeeModel", back_populates="event")
-    contract_id = Column(Integer, ForeignKey("contract.id"), nullable=False)
+    contract_id = Column(Integer, ForeignKey("contract.id", name="fk_event_contract"), nullable=False)
     contract = relationship("ContractModel", uselist=False, back_populates="event")
 
     def __repr__(self):

@@ -125,12 +125,12 @@ def create_contracts():
     session = db.get_session()
 
     contract_data = [
-        {"id": 1, "price": 1500.0, "due": 1000.0, "status": "NOT-SIGNED", "customer_email": "kevin@kevin.com", "employee_id": 3},
-        {"id": 2, "price": 2500.0, "due": 0.0, "status": "SIGNED", "customer_email": "d@f.fr", "employee_id": 3},
-        {"id": 3, "price": 4000.0, "due": 0.0, "status": "SIGNED", "customer_email": "09@gmail.com", "employee_id": 3},
-        {"id": 4, "price": 1500.0, "due": 0.0, "status": "SIGNED", "customer_email": "kevin@kevin.com", "employee_id": 3},
-        {"id": 5, "price": 2500.0, "due": 0.0, "status": "NOT-SIGNED", "customer_email": "d@f.fr", "employee_id": 3},
-        {"id": 6, "price": 4000.0, "due": 3500.0, "status": "NOT-SIGNED", "customer_email": "09@gmail.com", "employee_id": 3},
+        {"id": 1000000, "price": 1500.0, "due": 1000.0, "status": "NOT-SIGNED", "customer_email": "kevin@kevin.com", "employee_id": 3},
+        {"id": 1000001, "price": 2500.0, "due": 0.0, "status": "SIGNED", "customer_email": "d@f.fr", "employee_id": 3},
+        {"id": 1000002, "price": 4000.0, "due": 0.0, "status": "SIGNED", "customer_email": "09@gmail.com", "employee_id": 3},
+        {"id": 1000003, "price": 1500.0, "due": 0.0, "status": "SIGNED", "customer_email": "kevin@kevin.com", "employee_id": 3},
+        {"id": 1000004, "price": 2500.0, "due": 0.0, "status": "NOT-SIGNED", "customer_email": "d@f.fr", "employee_id": 3},
+        {"id": 1000005, "price": 4000.0, "due": 3500.0, "status": "NOT-SIGNED", "customer_email": "09@gmail.com", "employee_id": 3},
     ]
 
     try:
@@ -175,27 +175,42 @@ def create_events():
     session = db.get_session()
 
     event_data = [
-        {"date_start": "2024-07-16 12:00:00", "date_end": "2024-07-16 20:00:00", "location": "97 allée des Platanes, 76520 Boos", "attendees": 30, "notes": "Anniversaire du bézo!", "employee_id": 2, "contract_id": 4},
-        {"date_start": "2023-06-24 13:00:00", "date_end": "2023-06-25 14:00:00", "location": "Marie de Paris, 75000, Paris", "attendees": 5000, "notes": "Grand marathon de Noël à Paris!", "employee_id": None, "contract_id": 3},
-        {"date_start": "2023-06-04 13:00:00", "date_end": "2023-06-05 14:00:00", "location": "Rue de Rouen, 76000, Rouen", "attendees": 75, "notes": "Elections pestilentielles", "employee_id": 2, "contract_id": 1},
-        {"date_start": "2023-09-28 10:00:00", "date_end": "2023-09-28 16:30:00", "location": "rue de Rouen, 76000, Rouen", "attendees": 20, "notes": "Forum créateurs d'entreprise", "employee_id": None, "contract_id": 1}
+        {"id": 1000000, "date_start": "2024-07-16 12:00:00", "date_end": "2024-07-16 20:00:00", "location": "97 allée des Platanes, 76520 Boos", "attendees": 30, "notes": "Anniversaire du bézo!", "employee_id": 2, "contract_id": 1000003},
+        {"id": 1000001, "date_start": "2023-06-24 13:00:00", "date_end": "2023-06-25 14:00:00", "location": "Marie de Paris, 75000, Paris", "attendees": 5000, "notes": "Grand marathon de Noël à Paris!", "employee_id": None, "contract_id": 1000002},
+        {"id": 1000002, "date_start": "2023-06-04 13:00:00", "date_end": "2023-06-05 14:00:00", "location": "Rue de Rouen, 76000, Rouen", "attendees": 75, "notes": "Elections pestilentielles", "employee_id": 2, "contract_id": 1000000},
+        {"id": 1000003, "date_start": "2023-09-28 10:00:00", "date_end": "2023-09-28 16:30:00", "location": "rue de Rouen, 76000, Rouen", "attendees": 20, "notes": "Forum créateurs d'entreprise", "employee_id": None, "contract_id": 1000000}
     ]
     try:
         for data in event_data:
             event = EventModel()
+            event.id = data["id"]
             event.date_start = data["date_start"]
             event.date_end = data["date_end"]
             event.location = data["location"]
             event.attendees = data["attendees"]
             event.notes = data["notes"]
-            event.employee_id = data["employee_id"]
             event.contract_id = data["contract_id"]
 
             session.add(event)
 
         session.commit()
+
+        employee_id = (
+            session.query(EmployeeModel)
+            .filter_by(email = "support@epicevents.com")
+            .first()
+        ).id
+        event_obj_1000000 = session.get(EventModel, 1000000)
+        event_obj_1000000.employee_id = employee_id
+        event_obj_1000002 = session.get(EventModel, 1000002)
+        event_obj_1000002.employee_id = employee_id
+
+        session.commit()
+
     except Exception as e:
         session.rollback()
         send_to_sentry("database", "events_creation", e)
     finally:
         session.close()
+  
+

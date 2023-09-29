@@ -31,7 +31,7 @@ class CustomerModel(Base):
         TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False
     )
     date_update = Column(TIMESTAMP, onupdate=text("CURRENT_TIMESTAMP"), nullable=True)
-    employee_id = Column(Integer, ForeignKey("employee.id"), nullable=False)
+    employee_id = Column(Integer, ForeignKey("employee.id", name="fk_customer_employee"), nullable=False)
     status = Column(Enum('ENABLE', 'DISABLE'), nullable=False, server_default="ENABLE")
     employee = relationship("EmployeeModel", back_populates="customer")
     contract = relationship("ContractModel", back_populates="customer")

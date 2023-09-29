@@ -195,8 +195,9 @@ When launching the application for the first time, there is 4 departmens autocre
 * superadmin : access to all menus and all features
 * commercial : used to manage customers and events
 * management : used to manage employees, contracts and assignation of events to an support employee
-* support    : used to be assigned to an event, these can also modify their own event
-If you want to autocreate employees, contracts and events, just go the hidden menu "666" at the home menu :-)
+* support    : used to be assigned to an event, these can also modify their own event  
+
+If you want to autocreate employees, contracts and events, just enter "666" at the home menu :-)
 (in that way you can play with samples to navigate in menus...)
 
 
