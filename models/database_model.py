@@ -2,7 +2,6 @@ from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from utils.utils_view import display_message
-from constants.database import DB_USER, DB_HOST, DB_NAME
 import bcrypt
 
 Base = declarative_base()
