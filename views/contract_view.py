@@ -232,25 +232,25 @@ class ContractView:
             else:
                 print("\nMerci de préciser un montant en chiffre...\n")
 
-        while True:
-            if contract_obj.status == "NOT-SIGNED":
-                status = input("\nSigner contrat? (o/N): ")
-                if (
-                    not status.lower() == "o"
-                    and not status.lower() == "n"
-                    and not status == ""
-                ):
-                    print("\nSaisie incorrect, reessayez svp.\n")
-                elif status.lower() == "o":
-                    contract_obj.status = "SIGNED"
-                    modification_state_boolean = True
-                    break
-                elif status.lower() == "n" or not status.lower():
-                    break
-            else:
-                print("\nCe contrat est déjà signé, on ne peut pas le 'déssigner' ;-)")
-                time.sleep(2)
-                break
+        # while True:
+        #     if contract_obj.status == "NOT-SIGNED":
+        #         status = input("\nSigner contrat? (o/N): ")
+        #         if (
+        #             not status.lower() == "o"
+        #             and not status.lower() == "n"
+        #             and not status == ""
+        #         ):
+        #             print("\nSaisie incorrect, reessayez svp.\n")
+        #         elif status.lower() == "o":
+        #             contract_obj.status = "SIGNED"
+        #             modification_state_boolean = True
+        #             break
+        #         elif status.lower() == "n" or not status.lower():
+        #             break
+        #     else:
+        #         print("\nCe contrat est déjà signé, on ne peut pas le 'déssigner' ;-)")
+        #         time.sleep(2)
+        #         break
 
         if modification_state_boolean:
             return contract_obj
