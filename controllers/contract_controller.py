@@ -301,9 +301,10 @@ class ContractController:
                 if not contract_choice.lower() == "q":
                     # if valid choice : convert choice in object
                     if not contract_obj:
-                        contract_choice = not_signed_contracts_list[int(contract_choice) - 1].id
-                        contract_obj = self.contract_model.create_contract_object(
-                            contract_choice
+                        # contract_choice = not_signed_contracts_list[int(contract_choice) - 1].id
+                        contract_obj = self.contract_model.create_contract_object_from_list(
+                            contract_choice,
+                            not_signed_contracts_list
                     )
                     check_if_contract_signed_boolean = (
                         self.contract_model.check_signature(contract_obj)

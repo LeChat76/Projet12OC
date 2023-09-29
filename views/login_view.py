@@ -27,7 +27,7 @@ class LoginMenu:
             time.sleep(0.1)
 
         while True:
-            username = input("\nNom d'utilisateur : ")
+            username = getpass_asterisk("\nNom d'utilisateur : ")
             if not username:
                 print("\nMerci de sair un nom d'utilisateur...")
             else:

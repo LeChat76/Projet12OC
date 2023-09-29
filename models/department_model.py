@@ -4,7 +4,7 @@ from utils.utils_view import display_message
 from models.database_model import DatabaseModel
 from constants.database import DB_URL
 from models.database_model import Base
-from utils.utils_sentry import send_to_sentry
+from utils.utils_sentry import send_to_sentry_NOK
 
 
 class DepartmentModel(Base):
@@ -34,7 +34,7 @@ class DepartmentModel(Base):
             session = self.db.get_session()
             department_obj_list = session.query(DepartmentModel).all()
         except Exception as e:
-            send_to_sentry("department", "search", e)
+            send_to_sentry_NOK("department", "search", e)
             display_message(
                 f"Erreur lors de la selection des departements : {str(e)}",
                 True,
@@ -60,7 +60,7 @@ class DepartmentModel(Base):
                 session.query(DepartmentModel).offset(int(choice) - 1).first()
             )
         except Exception as e:
-            send_to_sentry("department", "creation", e)
+            send_to_sentry_NOK("department", "creation", e)
             display_message(
                 f"Erreur lors de la creation de l'object departement : {str(e)}",
                 True,

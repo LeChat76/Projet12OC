@@ -2,7 +2,7 @@ from controllers.base import epicEvents
 from models.database_model import DatabaseModel
 from constants.database import DB_URL
 from constants.sentry import DSN
-from utils.utils_sentry import send_to_sentry
+from utils.utils_sentry import send_to_sentry_NOK
 import sentry_sdk
 
 
@@ -20,7 +20,7 @@ def main():
     try:
         epicevents.login_menu()
     except KeyboardInterrupt as e:
-        send_to_sentry("application", "interrupt", e)
+        send_to_sentry_NOK("application", "interrupt", e)
         print("\n\nFin du script par l'utilisateur.\n")
     finally:
         if db:

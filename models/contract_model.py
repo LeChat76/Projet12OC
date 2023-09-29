@@ -8,7 +8,8 @@ from models.customer_model import CustomerModel
 from models.database_model import DatabaseModel
 from models.event_model import EventModel
 from constants.department import MANAGEMENT, SUPERADMIN, COMMERCIAL
-from utils.utils_sentry import send_to_sentry
+from utils.utils_sentry import send_to_sentry_NOK
+from utils.utils_sentry import send_to_sentry_OK
 
 
 class ContractModel(Base):
@@ -57,7 +58,7 @@ class ContractModel(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            send_to_sentry("contract", "creation", e)
+            send_to_sentry_NOK("contract", "creation", e)
             result = None
         finally:
             session.close()
@@ -81,7 +82,7 @@ class ContractModel(Base):
                 .first()
             )
         except Exception as e:
-            send_to_sentry("contract", "creation", e)
+            send_to_sentry_NOK("contract", "creation", e)
             display_message(
                 f"Erreur lors de la creation de l'objet contrat: {str(e)}",
                 True,
@@ -110,7 +111,37 @@ class ContractModel(Base):
                 .first()
             )
         except Exception as e:
-            send_to_sentry("contract", "creation", e)
+            send_to_sentry_NOK("contract", "creation", e)
+            display_message(
+                f"Erreur lors de la creation de l'objet contrat: {str(e)}",
+                True,
+                True,
+                2,
+            )
+        finally:
+            session.close()
+            return contract_obj
+
+    def create_contract_object_from_list(self, contract_choice_from_list, contract_obj_list):
+        """
+        method to create contract object with contract ID
+        INPUT : contract chocie from list + contracts objects list
+        OUTPUT : contract object
+        """
+
+        contract_obj = None
+        contract_id = contract_obj_list[int(contract_choice_from_list) - 1].id
+
+        try:
+            session = self.db.get_session()
+            contract_obj = (
+                session.query(ContractModel)
+                .filter_by(id=contract_id)
+                .options(joinedload(ContractModel.customer))
+                .first()
+            )
+        except Exception as e:
+            send_to_sentry_NOK("contract", "creation", e)
             display_message(
                 f"Erreur lors de la creation de l'objet contrat: {str(e)}",
                 True,
@@ -144,7 +175,7 @@ class ContractModel(Base):
             else:
                 return False
         except Exception as e:
-            send_to_sentry("contract", "permission", e)
+            send_to_sentry_NOK("contract", "permission", e)
             display_message(
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
@@ -178,7 +209,7 @@ class ContractModel(Base):
             else:
                 return False
         except Exception as e:
-            send_to_sentry("contract", "permission", e)
+            send_to_sentry_NOK("contract", "permission", e)
             display_message(
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
@@ -221,7 +252,7 @@ class ContractModel(Base):
             else:
                 return False
         except Exception as e:
-            send_to_sentry("contract", "permission", e)
+            send_to_sentry_NOK("contract", "permission", e)
             display_message(
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
@@ -245,7 +276,7 @@ class ContractModel(Base):
                 .all()
             )
         except Exception as e:
-            send_to_sentry("contract", "search", e)
+            send_to_sentry_NOK("contract", "search", e)
             display_message(
                 f"Erreur lors de la recherche des contrats : {str(e)}", True, True, 2
             )
@@ -270,7 +301,7 @@ class ContractModel(Base):
                 .all()
             )
         except Exception as e:
-            send_to_sentry("contract", "search", e)
+            send_to_sentry_NOK("contract", "search", e)
             display_message(
                 f"Erreur lors de la recherche des contrats nons signés : {str(e)}",
                 True,
@@ -298,7 +329,7 @@ class ContractModel(Base):
                 .all()
             )
         except Exception as e:
-            send_to_sentry("contract", "search", e)
+            send_to_sentry_NOK("contract", "search", e)
             display_message(
                 f"Erreur lors de la recherche des contrats nons totalement payés : {str(e)}",
                 True,
@@ -333,9 +364,10 @@ class ContractModel(Base):
             contract = session.query(ContractModel).get(contract_obj.id)
             contract.status = "SIGNED"
             session.commit()
+            send_to_sentry_OK("creation", f"contract '{contract.id}' created successfully", "info")
         except Exception as e:
             session.rollback()
-            send_to_sentry("contract", "update", e)
+            send_to_sentry_NOK("contract", "update", e)
             display_message(
                 f"Erreur lors de la signature du contrat : {str(e)}", True, True, 2
             )
@@ -365,7 +397,7 @@ class ContractModel(Base):
             )
         except Exception as e:
             session.rollback()
-            send_to_sentry("contract", "update", e)
+            send_to_sentry_NOK("contract", "update", e)
             display_message(
                 f"Erreur lors de la modification du contrat : {str(e)}", True, True, 2
             )
@@ -391,7 +423,7 @@ class ContractModel(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            send_to_sentry("contract", "delete", e)
+            send_to_sentry_NOK("contract", "delete", e)
             result = None
         finally:
             session.close()
@@ -412,7 +444,7 @@ class ContractModel(Base):
             if not contract:
                 result = False
         except Exception as e:
-            send_to_sentry("contract", "search", e)
+            send_to_sentry_NOK("contract", "search", e)
             display_message(
                 f"Erreur lors de la recherche d'un contrat : {str(e)}", True, True, 2
             )
@@ -439,7 +471,7 @@ class ContractModel(Base):
                 if contract.customer is not None and contract.customer.employee_id == employee_id
             ]
         except Exception as e:
-            send_to_sentry("contract", "search", e)
+            send_to_sentry_NOK("contract", "search", e)
             display_message(
                 f"Erreur lors de la selection des contrats sans evenements associés : {str(e)}",
                 True,

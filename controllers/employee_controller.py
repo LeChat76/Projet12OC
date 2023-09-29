@@ -65,7 +65,7 @@ class EmployeeController:
 
             result = self.employee_model.add_employee(new_employee_obj)
             if result:
-                display_message("Employé ajouté avec succès !", True, True, 2)
+                display_message("Employé ajouté avec succès!\nConsigné dans Sentry.", True, True, 2)
             else:
                 display_message(
                     "Erreur lors de la creation de l'employé.\nVoir log Sentry pour plus d'informations.",

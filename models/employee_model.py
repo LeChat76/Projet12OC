@@ -8,7 +8,8 @@ from models.department_model import DepartmentModel
 from models.database_model import Base
 from models.database_model import DatabaseModel
 import bcrypt
-from utils.utils_sentry import send_to_sentry
+from utils.utils_sentry import send_to_sentry_NOK
+from utils.utils_sentry import send_to_sentry_OK
 
 
 class EmployeeModel(Base):
@@ -56,7 +57,7 @@ class EmployeeModel(Base):
                 .first()
             )
         except Exception as e:
-            send_to_sentry("employee", "search", e)
+            send_to_sentry_NOK("employee", "search", e)
             display_message(
                 f"Erreur lors de la recherche employee : {str(e)}", True, True, 2
             )
@@ -79,7 +80,7 @@ class EmployeeModel(Base):
                 .all()
             )
         except Exception as e:
-            send_to_sentry("employee", "search", e)
+            send_to_sentry_NOK("employee", "search", e)
             display_message(
                 f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 2
             )
@@ -101,7 +102,7 @@ class EmployeeModel(Base):
                 .all()
             )
         except Exception as e:
-            send_to_sentry("employee", "search", e)
+            send_to_sentry_NOK("employee", "search", e)
             display_message(
                 f"Erreur lors de la recherche d'employés : {str(e)}", True, True, 2
             )
@@ -142,7 +143,7 @@ class EmployeeModel(Base):
                 .first()
             )
         except Exception as e:
-            send_to_sentry("employee", "creation", e)
+            send_to_sentry_NOK("employee", "creation", e)
             display_message(
                 f"Erreur lors de la creation de l'objet employee : {str(e)}",
                 True,
@@ -176,7 +177,7 @@ class EmployeeModel(Base):
             else:
                 return False
         except Exception as e:
-            send_to_sentry("employee", "permission", e)
+            send_to_sentry_NOK("employee", "permission", e)
             display_message(
                 f"Erreur lors de la vérification du departement de l'utilisateur : {str(e)}",
                 True,
@@ -200,9 +201,10 @@ class EmployeeModel(Base):
             session = self.db.get_session()
             session.add(new_employee_obj)
             session.commit()
+            send_to_sentry_OK("creation", f"Employee '{new_employee_obj.username}' created successfully", "info")
         except Exception as e:
             session.rollback()
-            send_to_sentry("employee", "creation", e)
+            send_to_sentry_NOK("employee", "creation", e)
             result = None
         finally:
             session.close()
@@ -227,7 +229,7 @@ class EmployeeModel(Base):
                 .first()
             )
         except Exception as e:
-            send_to_sentry("employee", "creation", e)
+            send_to_sentry_NOK("employee", "creation", e)
             display_message(
                 f"Erreur lors de la selection de l'employé : {str(e)}", True, True, 2
             )
@@ -251,7 +253,7 @@ class EmployeeModel(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            send_to_sentry("employee", "delete", e)
+            send_to_sentry_NOK("employee", "delete", e)
             result = None
         finally:
             session.close()
@@ -281,7 +283,7 @@ class EmployeeModel(Base):
             )
         except IntegrityError as e:
             session.rollback()
-            send_to_sentry("employee", "update", e)
+            send_to_sentry_NOK("employee", "update", e)
             display_message(
                 "Erreur lors de la modification de l'employee : l'email est déjà associé à un autre employee.",
                 True,
@@ -292,7 +294,7 @@ class EmployeeModel(Base):
             return None
         except Exception as e:
             session.rollback()
-            send_to_sentry("employee", "update", e)
+            send_to_sentry_NOK("employee", "update", e)
             display_message(
                 f"Erreur lors de la modification de l'employee : {str(e)}",
                 True,
@@ -315,7 +317,7 @@ class EmployeeModel(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            send_to_sentry("employee", "delete", e)
+            send_to_sentry_NOK("employee", "delete", e)
             result = None
         finally:
             session.close()

@@ -7,7 +7,7 @@ from constants.database import DB_URL
 from constants.department import COMMERCIAL, SUPERADMIN, SUPPORT, MANAGEMENT
 from models.employee_model import EmployeeModel
 from models.database_model import DatabaseModel
-from utils.utils_sentry import send_to_sentry
+from utils.utils_sentry import send_to_sentry_NOK
 
 
 class EventModel(Base):
@@ -51,7 +51,7 @@ class EventModel(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            send_to_sentry("event", "creation", e)
+            send_to_sentry_NOK("event", "creation", e)
             result = None
         finally:
             session.close()
@@ -76,7 +76,7 @@ class EventModel(Base):
                 .first()
             )
         except Exception as e:
-            send_to_sentry("event", "creation", e)
+            send_to_sentry_NOK("event", "creation", e)
             display_message(
                 f"Erreur lors de la creation de l'objet evenement : {str(e)}",
                 True,
@@ -110,7 +110,7 @@ class EventModel(Base):
             else:
                 return False
         except Exception as e:
-            send_to_sentry("event", "permission", e)
+            send_to_sentry_NOK("event", "permission", e)
             display_message(
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
@@ -139,7 +139,7 @@ class EventModel(Base):
             else:
                 return False
         except Exception as e:
-            send_to_sentry("event", "permission", e)
+            send_to_sentry_NOK("event", "permission", e)
             display_message(
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
@@ -173,7 +173,7 @@ class EventModel(Base):
             else:
                 return False
         except Exception as e:
-            send_to_sentry("event", "permission", e)
+            send_to_sentry_NOK("event", "permission", e)
             display_message(
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
@@ -207,7 +207,7 @@ class EventModel(Base):
             else:
                 return False
         except Exception as e:
-            send_to_sentry("event", "permission", e)
+            send_to_sentry_NOK("event", "permission", e)
             display_message(
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
@@ -229,7 +229,7 @@ class EventModel(Base):
                 session.query(EventModel).filter(EventModel.employee_id.is_(None)).all()
             )
         except Exception as e:
-            send_to_sentry("event", "search", e)
+            send_to_sentry_NOK("event", "search", e)
             display_message(
                 f"Erreur lors de la recherche d'evenements non assignés : {str(e)}",
                 True,
@@ -254,7 +254,7 @@ class EventModel(Base):
                 .all()
             )
         except Exception as e:
-            send_to_sentry("event", "search", e)
+            send_to_sentry_NOK("event", "search", e)
             display_message(
                 f"Erreur lors de la recherche d'evenements non terminés : {str(e)}",
                 True,
@@ -284,7 +284,7 @@ class EventModel(Base):
                 .first()
             )
         except Exception as e:
-            send_to_sentry("event", "search", e)
+            send_to_sentry_NOK("event", "search", e)
             display_message(
                 f"Erreur lors de la recherche de l'evenement : {str(e)}", True, True, 2
             )
@@ -312,7 +312,7 @@ class EventModel(Base):
             )
         except Exception as e:
             session.rollback()
-            send_to_sentry("event", "update", e)
+            send_to_sentry_NOK("event", "update", e)
             display_message(
                 f"Erreur lors de l'assignation de l'evenement : {str(e)}", True, True, 2
             )
@@ -334,7 +334,7 @@ class EventModel(Base):
                 session.query(EventModel).options(joinedload(EventModel.employee)).all()
             )
         except Exception as e:
-            send_to_sentry("event", "search", e)
+            send_to_sentry_NOK("event", "search", e)
             display_message(
                 f"Erreur lors de la recherche dans la table event : {str(e)}",
                 True,
@@ -363,7 +363,7 @@ class EventModel(Base):
                 .all()
             )
         except Exception as e:
-            send_to_sentry("event", "search", e)
+            send_to_sentry_NOK("event", "search", e)
             display_message(
                 f"Erreur lors de la recherche des evenements assignés : {str(e)}",
                 True,
@@ -394,7 +394,7 @@ class EventModel(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            send_to_sentry("event", "update", e)
+            send_to_sentry_NOK("event", "update", e)
             result = None
         finally:
             session.close()
@@ -416,7 +416,7 @@ class EventModel(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            send_to_sentry("event", "delete", e)
+            send_to_sentry_NOK("event", "delete", e)
             result = None
         finally:
             session.close()

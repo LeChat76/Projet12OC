@@ -6,7 +6,7 @@ from models.customer_model import CustomerModel
 from models.contract_model import ContractModel
 from models.event_model import EventModel
 from constants.database import DB_URL
-from utils.utils_sentry import send_to_sentry
+from utils.utils_sentry import send_to_sentry_NOK
 
 
 db = DatabaseModel(DB_URL)
@@ -115,7 +115,7 @@ def create_employees():
         session.commit()
     except Exception as e:
         session.rollback()
-        send_to_sentry("database", "employees_creation", e)
+        send_to_sentry_NOK("database", "employees_creation", e)
     finally:
         session.close()
 
@@ -152,7 +152,7 @@ def create_contracts():
         session.commit()
     except Exception as e:
         session.rollback()
-        send_to_sentry("database", "contracts_creation", e)
+        send_to_sentry_NOK("database", "contracts_creation", e)
     finally:
         session.close()
 
@@ -209,7 +209,7 @@ def create_events():
 
     except Exception as e:
         session.rollback()
-        send_to_sentry("database", "events_creation", e)
+        send_to_sentry_NOK("database", "events_creation", e)
     finally:
         session.close()
   

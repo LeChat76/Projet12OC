@@ -7,7 +7,7 @@ from models.employee_model import EmployeeModel
 from constants.department import COMMERCIAL, SUPERADMIN
 from models.database_model import Base
 from models.database_model import DatabaseModel
-from utils.utils_sentry import send_to_sentry
+from utils.utils_sentry import send_to_sentry_NOK
 
 
 class CustomerModel(Base):
@@ -63,7 +63,7 @@ class CustomerModel(Base):
             else:
                 return False
         except Exception as e:
-            send_to_sentry("customer", "permission", e)
+            send_to_sentry_NOK("customer", "permission", e)
             display_message(
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
@@ -97,7 +97,7 @@ class CustomerModel(Base):
             else:
                 return False
         except Exception as e:
-            send_to_sentry("customer", "permission", e)
+            send_to_sentry_NOK("customer", "permission", e)
             display_message(
                 f"Erreur lors de la verification des permissions : {str(e)}",
                 True,
@@ -123,7 +123,7 @@ class CustomerModel(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            send_to_sentry("customer", "customer_creation", e)
+            send_to_sentry_NOK("customer", "customer_creation", e)
             result = None
         finally:
             session.close()
@@ -142,7 +142,7 @@ class CustomerModel(Base):
                 .all()
             )
         except Exception as e:
-            send_to_sentry("customer", "select", e)
+            send_to_sentry_NOK("customer", "select", e)
             display_message(
                 f"Erreur lors de la recherche des clients : {str(e)}", True, True, 2
             )
@@ -166,7 +166,7 @@ class CustomerModel(Base):
             else:
                 customer = session.query(CustomerModel).filter(CustomerModel.status != 'DISABLE').filter_by(name=choice).first()
         except Exception as e:
-            send_to_sentry("customer", "creation", e)
+            send_to_sentry_NOK("customer", "creation", e)
             display_message(
                 f"Erreur lors de la creation de l'objet client : {str(e)}",
                 True,
@@ -190,7 +190,7 @@ class CustomerModel(Base):
             session = self.db.get_session()
             customer = session.get(CustomerModel, customer_id)
         except Exception as e:
-            send_to_sentry("customer", "creation", e)
+            send_to_sentry_NOK("customer", "creation", e)
             display_message(
                 f"Erreur lors de la creation de l'objet client : {str(e)}",
                 True,
@@ -218,7 +218,7 @@ class CustomerModel(Base):
                 .first()
             )
         except Exception as e:
-            send_to_sentry("customer", "creation", e)
+            send_to_sentry_NOK("customer", "creation", e)
             display_message(
                 f"Erreur lors de la creation de l'objet client : {str(e)}",
                 True,
@@ -253,7 +253,7 @@ class CustomerModel(Base):
             )
         except IntegrityError as e:
             session.rollback()
-            send_to_sentry("customer", "update", e)
+            send_to_sentry_NOK("customer", "update", e)
             display_message(
                 "Erreur lors de la modification du client : l'email est déjà associé à un autre client.",
                 True,
@@ -264,7 +264,7 @@ class CustomerModel(Base):
             return None
         except Exception as e:
             session.rollback()
-            send_to_sentry("customer", "update", e)
+            send_to_sentry_NOK("customer", "update", e)
             display_message(
                 f"Erreur lors de la modification du client : {str(e)}", True, True, 2
             )
@@ -290,7 +290,7 @@ class CustomerModel(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            send_to_sentry("customer", "delete", e)
+            send_to_sentry_NOK("customer", "delete", e)
             result = None
         finally:
             session.close()
@@ -308,7 +308,7 @@ class CustomerModel(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            send_to_sentry("employee", "delete", e)
+            send_to_sentry_NOK("employee", "delete", e)
             result = None
         finally:
             session.close()

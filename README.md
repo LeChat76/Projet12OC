@@ -197,8 +197,8 @@ When launching the application for the first time, there is 4 departmens autocre
 * management : used to manage employees, contracts and assignation of events to an support employee
 * support    : used to be assigned to an event, these can also modify their own event  
 
-If you want to autocreate employees, contracts and events, just enter "666" at the home menu :-)
-(in that way you can play with samples to navigate in menus...)
+If you want to autocreate employees, contracts and events, just enter "666" at the home menu :-)  
+(in that way you can play with samples to navigate in menus...).
 
 
 
