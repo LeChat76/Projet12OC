@@ -7,7 +7,7 @@ from constants.database import DB_URL
 from models.department_model import DepartmentModel
 from models.database_model import Base
 from models.database_model import DatabaseModel
-import bcrypt
+import bcrypt, os
 from utils.utils_sentry import send_to_sentry_NOK, send_creation_employee_message_to_sentry
 
 
@@ -23,6 +23,7 @@ class EmployeeModel(Base):
     password = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
     status = Column(Enum('ENABLE', 'DISABLE'), nullable=False, server_default="ENABLE")
+    token = Column(String(512), nullable=True)
     department_id = Column(Integer, ForeignKey("department.id", name="fk_employee_department"), nullable=False)
     department = relationship("DepartmentModel", back_populates="employee")
     customer = relationship("CustomerModel", back_populates="employee")
@@ -322,3 +323,80 @@ class EmployeeModel(Base):
         finally:
             session.close()
             return result
+    
+    def store_token_in_database(self, token, employee_id):
+        """
+        method to store generatred token in employee in database
+        INPUT : token + employee_id
+        RESULT : token recorded to the database
+        """
+
+        result = True
+
+        try:
+            session = self.db.get_session()
+            employee_obj = session.get(EmployeeModel, employee_id)
+            employee_obj.token = token
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            send_to_sentry_NOK("employee", "record_token", e)
+            result = False
+        finally:
+            session.close()
+            return result
+    
+    def store_token_in_file(self, token):
+        """ method to store toke in token.txt in root folder """
+
+        result = True
+
+        try:
+            # script_path = os.path.abspath(__file__)
+            # root_folder = os.path.dirname(script_path)
+            with open("token.txt", "w") as fichier:
+                fichier.write(token)
+        except Exception as e:
+            send_to_sentry_NOK("token", "record_in_file", e)
+            result = False
+        finally:
+            return result
+    
+    def read_token(self):
+        """
+        method to read token stored in file
+        OUPUT = token
+        """
+
+        token = None
+
+        try:
+            with open("token.txt", 'r') as fichier:
+                token = fichier.read()
+        except Exception as e:
+            send_to_sentry_NOK("token", "read_file", e)
+        finally:
+            return token
+    
+    def create_employee_obj_ty_token(self, token):
+        """
+        method to create employee object with token
+        INPUT : token
+        OUPUT : employee object or None if invalid token
+        """
+
+        employee_obj = None
+
+        try:
+            session = self.db.get_session()
+            employee_obj = (
+                session.query(EmployeeModel)
+                .options(joinedload(EmployeeModel.department))
+                .filter(EmployeeModel.token == token)
+                .first()
+            )
+            return employee_obj
+        except Exception as e:
+            send_to_sentry_NOK("employee", "create_employee_object_with_token", e)
+        finally:
+            return employee_obj

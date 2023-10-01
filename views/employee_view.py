@@ -4,6 +4,7 @@ from constants.employee import (
     MENU_EMPLOYEE_CREATION,
     MENU_EMPLOYEE_UPDATE,
     MENU_EMPLOYEE_DELETE,
+    MENU_EMPLOYEE_TOKEN,
     MENU_EMPLOYEE_EXIT,
 )
 from utils.utils_view import clear_screen
@@ -22,6 +23,7 @@ class EmployeeView:
             choice != MENU_EMPLOYEE_CREATION
             and choice != MENU_EMPLOYEE_UPDATE
             and choice != MENU_EMPLOYEE_DELETE
+            and choice != MENU_EMPLOYEE_TOKEN
             and choice != MENU_EMPLOYEE_EXIT
         ):
             clear_screen()
@@ -29,9 +31,9 @@ class EmployeeView:
             print("|          MENU EMPLOYE          |")
             print("+--------------------------------+")
             print("| 1 - création d'un employe      |")
-            print("| 2 - voir/modifier un employe   |")
-            print("| 3 - suppression d'un employe   |")
-            print("|                                |")
+            print("| 2 - voir/modifier un employé   |")
+            print("| 3 - suppression d'un employé   |")
+            print("| 4 - générer token              |")
             print("|--------------------------------|")
             print("| 5 - revenir au menu principal  |")
             print("+--------------------------------+")

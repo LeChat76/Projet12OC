@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from utils.utils_view import display_message
-import bcrypt
+# import bcrypt
 
 Base = declarative_base()
 
@@ -40,16 +40,16 @@ class DatabaseModel:
     def get_session(self):
         return self.Session()
     
-    def check_password(self, input_password):
-        """
-        method to check password to connecte to MySqlwith the entered one
-        INPUT : entered password
-        OUTPUT : True if valid or False if invalid
-        """
+    # def check_password(self, input_password):
+    #     """
+    #     method to check password to connecte to MySqlwith the entered one
+    #     INPUT : entered password
+    #     OUTPUT : True if valid or False if invalid
+    #     """
 
-        if bcrypt.checkpw(
-            input_password.encode("utf-8"), DB_HASHED_SALTED_PASSWORD.encode("utf-8")
-        ):
-            return True
-        else:
-            return None
+    #     if bcrypt.checkpw(
+    #         input_password.encode("utf-8"), DB_HASHED_SALTED_PASSWORD.encode("utf-8")
+    #     ):
+    #         return True
+    #     else:
+    #         return None

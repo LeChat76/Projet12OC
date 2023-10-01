@@ -44,30 +44,40 @@ class epicEvents:
         self.employee_controller = EmployeeController()
         self.employee_model = EmployeeModel()
 
-    def login_menu(self):
+    def login_menu(self, autologin):
         """login menu of Epic Events CRM"""
-
-        show_title = True
-        authentication = False
-        clear_screen()
         
-        while authentication == False:
-            input_username, input_password = self.login_view.login_menu(show_title)
-            show_title = False
-            employee_obj = self.employee_model.search_employee(input_username)
-            if employee_obj:
-                password_valid = self.employee_model.check_password(
-                    employee_obj.password, input_password
-                )
-                if password_valid:
-                    authentication = True
-                    self.main_menu(employee_obj.id)
-                else:
-                    display_message(
-                        "Password incorrect! Merci de resaisir.", True, True, 0
+        while True:
+            if autologin:
+                token = self.employee_model.read_token()
+                if token:
+                    employee_obj = self.employee_model.create_employee_obj_ty_token(token)
+                    if employee_obj:
+                        self.main_menu(employee_obj.id)
+                        break
+                    
+            show_title = True
+            authentication = False
+            clear_screen()
+            
+            while authentication == False:
+                input_username, input_password = self.login_view.login_menu(show_title)
+                show_title = False
+                employee_obj = self.employee_model.search_employee(input_username)
+                if employee_obj:
+                    password_valid = self.employee_model.check_password(
+                        employee_obj.password, input_password
                     )
-            else:
-                display_message("Utilisateur inexistant.", True, True, 0)
+                    if password_valid:
+                        authentication = True
+                        self.main_menu(employee_obj.id)
+                        break
+                    else:
+                        display_message(
+                            "Password incorrect! Merci de resaisir.", True, True, 0
+                        )
+                else:
+                    display_message("Utilisateur inexistant.", True, True, 0)
 
     def main_menu(self, employee_id):
         """main menu"""
@@ -87,4 +97,4 @@ class epicEvents:
                 create_contracts()
                 create_events()
             elif choice == MENU_EXIT:
-                self.login_menu()
+                self.login_menu(None)

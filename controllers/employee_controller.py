@@ -5,10 +5,12 @@ from utils.utils_view import display_message, input_message
 from constants.employee import (
     MENU_EMPLOYEE_CREATION,
     MENU_EMPLOYEE_UPDATE,
+    MENU_EMPLOYEE_TOKEN,
     MENU_EMPLOYEE_DELETE,
     MENU_EMPLOYEE_EXIT,
 )
-import bcrypt
+from constants.token import SECRET_KEY
+import bcrypt, jwt
 
 
 class EmployeeController:
@@ -30,6 +32,8 @@ class EmployeeController:
                 self.update_employee(employee_id)
             elif choice == MENU_EMPLOYEE_DELETE:
                 self.delete_employee(employee_id)
+            elif choice == MENU_EMPLOYEE_TOKEN:
+                self.generate_token(employee_id)
             elif choice == MENU_EMPLOYEE_EXIT:
                 break
 
@@ -232,4 +236,78 @@ class EmployeeController:
                             2,
                         )
                         break
+                break
+    
+    def generate_token(self, employee_id):
+        """ method to generate token for auto login """
+
+        # check permission to access to this menu
+        permission = self.employee_model.check_permission_employee(employee_id)
+        if not permission:
+            display_message(
+                "Vous n'avez pas les autorisations necessaires pour supprimer des utilisateurs.\nRetour au menu",
+                True,
+                True,
+                2,
+            )
+        else:
+            while True:
+                employee_obj = None
+                employee_choice = self.employee_view.select_employee_by_entry()
+                if employee_choice:
+                    employee_obj = self.employee_model.search_employee(employee_choice)
+                    if not employee_obj:
+                        display_message(
+                            "Nom d'utilisateur introuvable. Merci de choisir par liste: ",
+                            False,
+                            True,
+                            2,
+                        )
+                if not employee_obj:
+                    employees_obj_list = self.employee_model.select_all_employee()
+                    employee_choice = self.employee_view.select_employee_by_list(
+                        employees_obj_list
+                    )
+                    if employee_choice == "q":
+                        display_message("Retour au menu...", True, True, 2)
+                        break
+                    else:
+                        employee_obj = (
+                            self.employee_model.create_employee_object_from_list(
+                                employee_choice
+                            )
+                        )
+                user_data = {
+                'user_id': employee_obj.id,
+                'username': employee_obj.username,
+                }
+                token = jwt.encode(
+                    {
+                        'data': user_data
+                    },
+                    SECRET_KEY,
+                    algorithm = 'HS256'
+                )
+                store_in_databse = self.employee_model.store_token_in_database(token, employee_obj.id)
+                if not store_in_databse:
+                    display_message("Erreur lors de l'enregistrement du token dans l'utilisateur.\n Voir log Sentry", True, True, 2)
+                else:
+                    store_in_file = self.employee_model.store_token_in_file(token)
+                    if store_in_file:
+                        display_message(
+                            "Token stocké dans la base de donnée + fichier 'token.txt'" + 
+                            "\nExecutez la commande 'python.exe .\main.py --token' pour vous 'auto-connecter'." +
+                            "\\nAppuyez sur [ENTRER] pour retourner au menu...",
+                            True,
+                            True,
+                            "pause"
+                        )
+                    else:
+                        display_message(
+                            "Erreur lors de l'enregistrement du token dans le fichier." +
+                            "\nVoir logs Sentry.",
+                            True,
+                            True,
+                            3
+                        )
                 break

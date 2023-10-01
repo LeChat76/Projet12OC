@@ -3,7 +3,7 @@ from models.database_model import DatabaseModel
 from constants.database import DB_URL
 from constants.sentry import DSN
 from utils.utils_sentry import send_to_sentry_NOK
-import sentry_sdk
+import sentry_sdk, sys
 
 
 def main():
@@ -18,7 +18,7 @@ def main():
     epicevents = epicEvents()
 
     try:
-        epicevents.login_menu()
+        epicevents.login_menu(autologin)
     except KeyboardInterrupt as e:
         send_to_sentry_NOK("application", "interrupt", e)
         print("\n\nFin du script par l'utilisateur.\n")
@@ -28,4 +28,10 @@ def main():
             db.get_session().close()
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "--token":
+        autologin = True
+        main()
+    else:
+        autologin = False
+        main()
+
