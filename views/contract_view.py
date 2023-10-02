@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from utils.utils_view import clear_screen
 from views.customer_view import CustomerView
 from constants.contract import (
@@ -109,7 +110,7 @@ class ContractView:
                     print("\nMerci de renseigner uniquement des chiffres.\n")
                 elif int(due) > int(price):
                     print(
-                        "\nLe montant du ne peut pas etre superieur au montant du contrat.\n"
+                        "\nLe montant du ne peut pas etre superieur au montant du contrat."
                     )
                 else:
                     break
@@ -232,26 +233,6 @@ class ContractView:
             else:
                 print("\nMerci de préciser un montant en chiffre...\n")
 
-        # while True:
-        #     if contract_obj.status == "NOT-SIGNED":
-        #         status = input("\nSigner contrat? (o/N): ")
-        #         if (
-        #             not status.lower() == "o"
-        #             and not status.lower() == "n"
-        #             and not status == ""
-        #         ):
-        #             print("\nSaisie incorrect, reessayez svp.\n")
-        #         elif status.lower() == "o":
-        #             contract_obj.status = "SIGNED"
-        #             modification_state_boolean = True
-        #             break
-        #         elif status.lower() == "n" or not status.lower():
-        #             break
-        #     else:
-        #         print("\nCe contrat est déjà signé, on ne peut pas le 'déssigner' ;-)")
-        #         time.sleep(2)
-        #         break
-
         if modification_state_boolean:
             return contract_obj
         else:
@@ -295,6 +276,9 @@ class ContractView:
 
         print("\nVos droits ne vous donne accès qu'en lecture.\n")
         print(f"* Numéro           : {contract_obj.id}")
+        print(f"* Client           : {contract_obj.customer.name}")
+        print(f"* Société          : {contract_obj.customer.company}")
+        print(f"* Date du contrat  : {contract_obj.date_creation.strftime('%d-%m-%Y %H:%M:%S')}")
         print(f"* Prix             : {contract_obj.price}")
         print(f"* Due              : {contract_obj.due}")
         print(f"* Status           : {contract_obj.status}")

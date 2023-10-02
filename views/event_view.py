@@ -90,22 +90,27 @@ class EventView:
         notes = None
 
         while True:
-            date_start = input(
-                "Quel est la date de début de l'évènement (exemple 04/06/23 13:00)? "
-            )
-            try:
-                datetime.strptime(date_start, date_format)
+            while True:
+                date_start = input(
+                    "Quel est la date de début de l'évènement (exemple 04/06/23 13:00)? "
+                )
+                try:
+                    date_start = datetime.strptime(date_start, date_format)
+                    break
+                except ValueError:
+                    print("\nFormat de date incorrect. Merci de resaisir.\n")
+            if isinstance(date_start, str):
                 date_start = datetime.strptime(date_start, date_format)
+            if date_start < datetime.now():
+                print("\nDate passée. Merci de resaisir.\n")
+            else:
                 break
-            except ValueError:
-                print("\nFormat de date incorrect. Merci de resaisir.\n")
-
+            
         while True:
             date_end = input(
                 "\nQuel est la date de fin de l'évènement (exemple 04/06/23 13:00)? "
             )
             try:
-                datetime.strptime(date_end, date_format)
                 date_end = datetime.strptime(date_end, date_format)
                 if date_end <= date_start:
                     print(
@@ -210,8 +215,8 @@ class EventView:
         print(f"* Email            : {customer_obj.email}")
         if customer_obj.phone:
             print(f"* Telephone        : {customer_obj.phone}")
-        print(f"* Début            : {event_obj.date_start}")
-        print(f"* Fin              : {event_obj.date_end}")
+        print(f"* Début            : {event_obj.date_start.strftime('%d-%m-%Y %H:%M:%S')}")
+        print(f"* Fin              : {event_obj.date_end.strftime('%d-%m-%Y %H:%M:%S')}")
         if employee_obj:
             assigned_employee = employee_obj.username
         else:
@@ -244,7 +249,7 @@ class EventView:
             else:
                 try:
                     datetime.strptime(date_start, date_format)
-                    event_obj.date_start = date_start
+                    event_obj.date_start = datetime.strptime(date_start, date_format)
                     break
                 except ValueError:
                     print("\nFormat de date incorrect. Merci de resaisir.\n")
@@ -258,17 +263,17 @@ class EventView:
                 break
             else:
                 try:
-                    datetime.strptime(date_end, date_format)
+                    date_end = datetime.strptime(date_end, date_format)
                     if date_end <= event_date_start:
                         print(
                             "\nLa date de fin doit être forcement supérieure à la date de début. Merci de resaisir."
                         )
                     else:
                         modification_state_boolean = True
-                        event_obj.end_date = date_end
+                        event_obj.date_end = date_end
                         break
                 except ValueError:
-                    print("\nFormat de date incorrect. Merci de resaisir.\n")
+                    print("\nFormat de date incorrect. Merci de resaisir.")
 
         while True:
             location = input(

@@ -42,6 +42,9 @@ class ContractModel(Base):
         status_text = "Oui" if self.status == "SIGNED" else "Non"
         return f"Contrat numero '{self.id}' pour le client '{self.customer.name}' de la société '{self.customer.company}', signé : '{status_text}'."
 
+    def __eq__(self, other):
+        return self.id == other.id
+
     def add_contract(self, new_contract_obj):
         """
         method to add customer in the database

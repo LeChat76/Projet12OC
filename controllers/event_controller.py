@@ -109,17 +109,18 @@ class EventController:
                 while True:
                     contract_choice = self.contract_view.select_contract_by_entry()
                     if contract_choice:
-                        check_if_contract_exists_boolean = (
-                            self.contract_model.check_if_contract_exists(
-                                contract_choice
+                        contract_obj = (
+                            self.contract_model.create_contract_object_with_id(
+                            contract_choice
                             )
                         )
-                        if not check_if_contract_exists_boolean:
+                        if not contract_obj or not contract_obj in available_contracts:
                             display_message(
-                                "Ce numéro de contrat n'est pas repertorié dans la base de donnée.\nVeuillez en choisir un dans la liste :",
+                                "Ce numéro de contrat n'est pas repertorié dans la base de donnée" +
+                                "\nou n'est pas associé à un de vos clients.\nVeuillez en choisir un dans la liste :",
                                 False,
                                 True,
-                                0.5,
+                                1,
                             )
                             contract_choice = (
                                 self.contract_view.select_contract_by_list(

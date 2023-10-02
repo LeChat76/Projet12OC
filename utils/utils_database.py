@@ -91,7 +91,7 @@ def create_employees():
         {"name": "Tilt", "email": "a@a.com", "phone": "+331 25 65 98 74", "company": "Flipp and Go", "employee_id": 1},
         {"name": "www", "email": "w@w.fr", "phone": "0800 033 022", "company": "wWw & Web", "employee_id": 1},
         {"name": "Kevin", "email": "kevin@kevin.com", "phone": "0661994560", "company": "Kev Comp", "employee_id": 4},
-        {"name": "Rasta", "email": "09@gmail.com", "phone": "666-777-888", "company": "R&K Company", "employee_id": 1},
+        {"name": "Rasta", "email": "09@gmail.com", "phone": "666-777-888", "company": "R&K Company", "employee_id": 4},
         {"name": "Yo!", "email": "5@g.fr", "phone": "01 23 45 78 89", "company": "Wesh Studio", "employee_id": 1},
         {"name": "Cedrik", "email": "d@f.fr", "phone": "07 77 66 65 52", "company": "Ced K", "employee_id": 4},
         {"name": "LG", "email": "g@g.fr", "phone": "02 01 02 01 06", "company": "Lady G", "employee_id": 1},
@@ -129,8 +129,8 @@ def create_contracts():
         {"id": 1000001, "price": 2500.0, "due": 0.0, "status": "SIGNED", "customer_email": "d@f.fr", "employee_id": 3},
         {"id": 1000002, "price": 4000.0, "due": 0.0, "status": "SIGNED", "customer_email": "09@gmail.com", "employee_id": 3},
         {"id": 1000003, "price": 1500.0, "due": 0.0, "status": "SIGNED", "customer_email": "kevin@kevin.com", "employee_id": 3},
-        {"id": 1000004, "price": 2500.0, "due": 0.0, "status": "NOT-SIGNED", "customer_email": "d@f.fr", "employee_id": 3},
-        {"id": 1000005, "price": 4000.0, "due": 3500.0, "status": "NOT-SIGNED", "customer_email": "09@gmail.com", "employee_id": 3},
+        {"id": 1000004, "price": 2500.0, "due": 0.0, "status": "SIGNED", "customer_email": "d@f.fr", "employee_id": 3},
+        {"id": 1000005, "price": 4000.0, "due": 3500.0, "status": "SIGNED", "customer_email": "09@gmail.com", "employee_id": 3},
     ]
 
     try:
@@ -175,10 +175,10 @@ def create_events():
     session = db.get_session()
 
     event_data = [
-        {"id": 1000000, "date_start": "2024-07-16 12:00:00", "date_end": "2024-07-16 20:00:00", "location": "97 allée des Platanes, 76520 Boos", "attendees": 30, "notes": "Anniversaire du bézo!", "employee_id": 2, "contract_id": 1000003},
-        {"id": 1000001, "date_start": "2023-06-24 13:00:00", "date_end": "2023-06-25 14:00:00", "location": "Marie de Paris, 75000, Paris", "attendees": 5000, "notes": "Grand marathon de Noël à Paris!", "employee_id": None, "contract_id": 1000002},
-        {"id": 1000002, "date_start": "2023-06-04 13:00:00", "date_end": "2023-06-05 14:00:00", "location": "Rue de Rouen, 76000, Rouen", "attendees": 75, "notes": "Elections pestilentielles", "employee_id": 2, "contract_id": 1000001},
-        {"id": 1000003, "date_start": "2023-09-28 10:00:00", "date_end": "2023-09-28 16:30:00", "location": "rue de Rouen, 76000, Rouen", "attendees": 20, "notes": "Forum créateurs d'entreprise", "employee_id": None, "contract_id": 1000000}
+        {"id": 1000000, "date_start": "2024-07-16 12:00:00", "date_end": "2024-07-16 20:00:00", "location": "97 allée des Platanes, 76520 Boos", "attendees": 30, "notes": "Anniversaire du bézo!", "employee_id": 2, "contract_id": 1000000},
+        {"id": 1000001, "date_start": "2023-06-24 13:00:00", "date_end": "2023-06-25 14:00:00", "location": "Marie de Paris, 75000, Paris", "attendees": 5000, "notes": "Grand marathon de Noël à Paris!", "employee_id": None, "contract_id": 1000001},
+        {"id": 1000002, "date_start": "2023-06-04 13:00:00", "date_end": "2023-06-05 14:00:00", "location": "Rue de Rouen, 76000, Rouen", "attendees": 75, "notes": "Elections pestilentielles", "employee_id": 2, "contract_id": 1000002},
+        {"id": 1000003, "date_start": "2023-09-28 10:00:00", "date_end": "2023-09-28 16:30:00", "location": "rue de Rouen, 76000, Rouen", "attendees": 20, "notes": "Forum créateurs d'entreprise", "employee_id": None, "contract_id": 1000003}
     ]
     try:
         for data in event_data:

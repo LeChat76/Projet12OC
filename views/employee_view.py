@@ -218,37 +218,41 @@ class EmployeeView:
             else:
                 break
 
+        employee_department = None
+
         while True:
-            employee_department = input(
+            employee_choice = input(
                 f"\nDepartement de l'employé '{employee_obj.department}', changer? ('o' ou [ENTRER] pour conserver): "
             )
-            if employee_department.lower() == "o":
-                while True:
-                    counter_int = 1
-                    for department in department_obj_list:
-                        print(str(counter_int) + " - " + str(department))
-                        counter_int += 1
-                        time.sleep(0.1)
-                        if counter_int % 5 == 0:
-                            employee_department = input("\nSaisir numero de ligne: ")
-                            print()
-                            if employee_department.isalpha():
-                                print("\nMerci de saisir un chiffre.")
-                            elif employee_department.isnumeric():
-                                if int(employee_department) >= counter_int:
-                                    print(
-                                        "\nCe choix ne fait pas parti de la liste...\n"
-                                    )
-                                else:
-                                    department_chosen = True
-                    if department_chosen:
-                        break
-            break
+            if employee_choice.lower() == "o" or not employee_choice:
+                break
+            else:
+                print("\nMerci de saisir 'o' ou [ENTRER].")
+        print()
+        if employee_choice.lower() == "o":
+            counter_int = 1
+            for department in department_obj_list:
+                print(str(counter_int) + " - " + str(department))
+                counter_int += 1
+                time.sleep(0.1)
+                if counter_int % 5 == 0:
+                    employee_department = input("\nSaisir numero de ligne: ")
+                    print()
+                    if employee_department.isalpha():
+                        print("\nMerci de saisir un chiffre.")
+                    elif employee_department.isnumeric():
+                        if int(employee_department) >= counter_int:
+                            print(
+                                "\nCe choix ne fait pas parti de la liste..."
+                            )
+                        else:
+                            modification_state_boolean = True
+                            break
 
         while True:
             if employee_obj.status == "ENABLE":
                 employee_status = input(
-                    "\nStatus actuel de l'employé 'ENABLE'. Passer à 'DISABLE'? (o/N)"
+                    "Status actuel de l'employé 'ENABLE'. Passer à 'DISABLE'? (o/N)"
                 )
                 if employee_status.lower() == "o":
                     modification_state_boolean = True
