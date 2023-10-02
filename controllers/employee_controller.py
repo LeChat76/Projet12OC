@@ -245,7 +245,8 @@ class EmployeeController:
         permission = self.employee_model.check_permission_employee(employee_id)
         if not permission:
             display_message(
-                "Vous n'avez pas les autorisations necessaires pour supprimer des utilisateurs.\nRetour au menu",
+                "Vous n'avez pas les autorisations necessaires pour supprimer des utilisateurs" +
+                ".\nRetour au menu.",
                 True,
                 True,
                 2,
@@ -295,9 +296,9 @@ class EmployeeController:
                     store_in_file = self.employee_model.store_token_in_file(token)
                     if store_in_file:
                         display_message(
-                            "Token stocké dans la base de donnée + fichier 'token.txt'" + 
+                            "Token stocké dans la base de donnée + fichier 'token.tkn'" + 
                             "\nExecutez la commande 'python.exe .\main.py --token' pour vous 'auto-connecter'." +
-                            "\\nAppuyez sur [ENTRER] pour retourner au menu...",
+                            "\n([ENTRER] pour retourner au menu...)",
                             True,
                             True,
                             "pause"

@@ -55,6 +55,20 @@ class epicEvents:
                     if employee_obj:
                         self.main_menu(employee_obj.id)
                         break
+                    else:
+                        display_message(
+                            "Ce token ne correspond à aucun utilisateur." +
+                            "\nMerci de renseigner vos identifiants.",
+                            True,
+                            True,
+                            2)
+                else:
+                    display_message("Aucun fichier 'token.tkn' trouvé." +
+                                    "\nMerci de renseigner vos identifiants.",
+                                    True,
+                                    True,
+                                    2
+                                    )
                     
             show_title = True
             authentication = False

@@ -354,7 +354,7 @@ class EmployeeModel(Base):
         try:
             # script_path = os.path.abspath(__file__)
             # root_folder = os.path.dirname(script_path)
-            with open("token.txt", "w") as fichier:
+            with open("token.tkn", "w") as fichier:
                 fichier.write(token)
         except Exception as e:
             send_to_sentry_NOK("token", "record_in_file", e)
@@ -371,7 +371,7 @@ class EmployeeModel(Base):
         token = None
 
         try:
-            with open("token.txt", 'r') as fichier:
+            with open("token.tkn", 'r') as fichier:
                 token = fichier.read()
         except Exception as e:
             send_to_sentry_NOK("token", "read_file", e)

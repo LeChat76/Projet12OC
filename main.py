@@ -28,7 +28,7 @@ def main():
             db.get_session().close()
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "--token":
+    if len(sys.argv) == 2 and sys.argv[1] == "--token":
         autologin = True
         main()
     else:
