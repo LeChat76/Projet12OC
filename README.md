@@ -18,8 +18,8 @@ For this project I used MySql 8.0.34 and Python 3.11.5
 
 ## Configuration
 * Please replace values in `contants\database.py` with the values of your SQL server:
-    * DB_USER     : the username for accessing to your SQL database
-    * DB_PASSWORD : the password associated to the DB_USER
+    * DB_USER     : use fernet decryptor online https://8gwifi.org/fernet.jsp to generate new one
+    * DB_PASSWORD : use fernet decryptor online https://8gwifi.org/fernet.jsp to generate new one
     * DB_HOST     : the IP Address of the SQL server (if on your own computer, your can use `localhost`)
     * DB_NAME     : the name of the database you created on your SQL server (for example : `CREATE DATABASE epicevents;`)
 
