@@ -139,18 +139,17 @@ class ContractView:
             contract_number = input(
                 "\nQuel est le numero du contrat ([ENTRER] pour afficher une liste)? "
             )
-            print()
             if not contract_number:
                 return None
             elif not contract_number.isnumeric():
-                print("\nMerci de saisir un chiffre.\n")
+                print("\nMerci de saisir un chiffre.")
             else:
-                print()
                 return contract_number
 
     def select_contract_by_list(self, contracts_list):
         """selection of a contract by list"""
 
+        print()
         # display list of contracts
         while True:
             counter_int = 1

@@ -8,7 +8,7 @@ from models.department_model import DepartmentModel
 from models.database_model import Base
 from models.database_model import DatabaseModel
 import bcrypt, os
-from utils.utils_sentry import send_to_sentry_NOK, send_creation_employee_message_to_sentry
+from utils.utils_sentry import send_to_sentry_NOK, send_creation_employee_message_to_sentry, send_update_employee_message_to_sentry
 
 
 class EmployeeModel(Base):
@@ -260,12 +260,14 @@ class EmployeeModel(Base):
             session.close()
             return result
 
-    def update_employee(self, employee_to_update):
+    def update_employee(self, employee_id, employee_to_update):
         """
         method to update employee in database
         INPUT : employee object
         RESULT : update employee un database
         """
+
+        result = True
 
         try:
             session = self.db.get_session()
@@ -276,35 +278,16 @@ class EmployeeModel(Base):
             employee.department_id = employee_to_update.department_id
             employee.status = employee_to_update.status
             session.commit()
-            display_message(
-                f"Client '{employee_to_update.username}' mis à jour avec succès!",
-                True,
-                True,
-                2,
-            )
-        except IntegrityError as e:
-            session.rollback()
-            send_to_sentry_NOK("employee", "update", e)
-            display_message(
-                "Erreur lors de la modification de l'employee : l'email est déjà associé à un autre employee.",
-                True,
-                False,
-                0,
-            )
-            display_message("Retour au menu....", False, False, 2)
-            return None
+            logged_employee = session.get(EmployeeModel, employee_id)
+            send_update_employee_message_to_sentry(logged_employee.username, employee.username)
+            result = True
         except Exception as e:
             session.rollback()
             send_to_sentry_NOK("employee", "update", e)
-            display_message(
-                f"Erreur lors de la modification de l'employee : {str(e)}",
-                True,
-                True,
-                2,
-            )
-            return None
+            result = None
         finally:
             session.close()
+            return result
 
     def delete_last_employee(self):
         """ method to delete last employee from database """

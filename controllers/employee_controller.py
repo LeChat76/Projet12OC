@@ -143,7 +143,21 @@ class EmployeeController:
                                 department_choice
                             )
                             employee_obj.department_id = department_obj.id
-                        self.employee_model.update_employee(employee_obj)
+                        result = self.employee_model.update_employee(employee_id, employee_obj)
+                        if result:
+                            display_message(
+                                f"Client '{employee_obj.username}' mis à jour avec succès!",
+                                True,
+                                True,
+                                2,
+                            )
+                        else:
+                            display_message(
+                                "Erreur lors de la modification de l'employee. Voir logs Sentry",
+                                True,
+                                True,
+                                2,
+                            )
                         break
                     else:
                         display_message(

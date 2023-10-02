@@ -13,6 +13,12 @@ def send_creation_employee_message_to_sentry(loggedin_user, created_employee):
     set_tag("employee", "creation")
     capture_message(f"L'utilisateur '{loggedin_user}' a créé l'employé '{created_employee}'.", level="info")
 
+def send_update_employee_message_to_sentry(loggedin_user, created_employee):
+    """ method to send message to sentry """
+
+    set_tag("employee", "creation")
+    capture_message(f"L'utilisateur '{loggedin_user}' a mis à jour l'employé '{created_employee}'.", level="info")
+
 def send_contract_signature_message_to_sentry(loggedin_user, contract_id):
     """ method to send message to sentry """
     

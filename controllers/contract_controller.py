@@ -332,7 +332,7 @@ class ContractController:
                             elif choice.lower() == "n" or choice.lower() == "":
                                 display_message(
                                     "Annulation de la signature. Retour au menu.",
-                                    True,
+                                    False,
                                     True,
                                     2,
                                 )
