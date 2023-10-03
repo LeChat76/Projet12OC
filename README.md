@@ -17,22 +17,23 @@ For this project I used MySql 8.0.34 and Python 3.11.5
 * Run the webserver : `python .\main.py` 
 
 ## Configuration
-This application need two accounts : `admin_epicevents` and `guest_epicevents`.
-User `admin_epicevents` is used to create table and record when launching the application for the first time.
-User `guest_epicevents` is used to use the database. Guest should have restricted access to the database (DROP commands
-should be fordiben) (both user with password 'Toto1234!' for this demonstration).
+This application need two accounts : `admin_epicevents` and `guest_epicevents`.  
+User `admin_epicevents` is used to create table and record when launching the application for the first time.  
+User `guest_epicevents` is used to use the database.  Guest should have restricted access to the database (DROP commands should be fordiben).  
+(both user with password 'Toto1234!' for this demonstration)  
 Logged users will be connected to the database with limited MySql account. In that way, they could never delete tables
 or in worst case : the whole database!
  * from MySql CLI, create database : `CREATE DATABASE epicevents;`
  * select database                 : `USE epicevents;`
- * create user `admin_epicevents`  : `CREATE USER 'admin_epicevents' IDENTIFIED BY 'Toto1234!';`
+ * create user 'admin_epicevents'  : `CREATE USER 'admin_epicevents' IDENTIFIED BY 'Toto1234!';`
  * grant all privileges            : `GRANT ALL PRIVILEGES ON epicevents.* TO 'admin_epicevents';`
- * create user `guest_epicevents`  : `CREATE USER 'guest_epicevents' IDENTIFIED BY 'Toto1234!';`
+ * create user  'guest_epicevents' : `CREATE USER 'guest_epicevents' IDENTIFIED BY 'Toto1234!';`
  * grant limited privileges        : `GRANT SELECT, INSERT, UPDATE on epicevents.* to 'guest_epicevents';`
- * update privileges               : `FLUSH PRIVILEGES;`
+ * update privileges               : `FLUSH PRIVILEGES;`  
+
 You can modify those 2 options if needed:
   * DB_HOST     : the IP Address of the SQL server (if on your own computer, your can use `localhost`)
-  * DB_NAME     : the name of the database you created on your SQL server
+  * DB_NAME     : the name of the database you created ('epicevents' like in the demonstration or other) on your SQL server
 
 ## Utilisation
 See bellow all menus available:
@@ -77,10 +78,10 @@ See bellow all menus available:
     <img alt="logo" src="https://github.com/LeChat76/Projet12OC/assets/119883313/e23b8a34-0d87-4bac-aa9c-96fa6a026160">
 </p>
 
-<u>**Legend**</u> : **at the end of each title menu will appear 3 letters : C(ommercial), M(anagement) and S(upport).**  
-**This corresponds to the type of employee authorized to access this menu.**  
-**When star '*' after letter : mean access in write mode (creation + modification).**  
-**(superadmin is authorized to all menus)**  
+**Note** : at the end of each title menu appears letters : C(ommercial), M(anagement) and S(upport).  
+This corresponds to the type of employee authorized to access this menu.  
+When star '*' after letter : mean access in write mode (creation + modification).  
+(superadmin is authorized to all menus)  
 
 ### 1 - 1 creation of customers(M*)
 * name         : name of the customer (255 caracters max)
@@ -200,7 +201,8 @@ To check coverage, execute this command : `coverage report`
 </p>
 
 ## Features
-* When launching the application for the first time, there is 4 departmens autocreated + 4 employees with same names:
+* When launching the application for the first time, there is 4 departmens autocreated + 4 employees with same names
+(same password = 'Toto1234!'):  
   - superadmin : access to all menus and all features
   - commercial : used to manage customers and events
   - management : used to manage employees, contracts and assignation of events to an support employee
@@ -209,7 +211,7 @@ To check coverage, execute this command : `coverage report`
 * If you want to autocreate employees, contracts and events, just enter "666" at the home menu :-)  
 (in that way you can 'play' with samples to navigate in menus...).
 
-* Management of the login with token
+* Management of the login with token (see menu 4 - 4)
 
 * To avoid SQL injections, I didn't use any raw SQL queries, only the secure SQL Alchemy commands.  
 In addition, once the tables have been created by my application, all other queries are executed
