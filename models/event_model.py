@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey
 from sqlalchemy.orm import relationship, joinedload
 from models.database_model import Base
 from utils.utils_view import display_message
-from constants.database import DB_URL
+from constants.database import DB_URL_GUEST
 from constants.department import COMMERCIAL, SUPERADMIN, SUPPORT, MANAGEMENT
 from models.employee_model import EmployeeModel
 from models.database_model import DatabaseModel
@@ -14,7 +14,7 @@ class EventModel(Base):
     """Event class"""
 
     def __init__(self):
-        self.db = DatabaseModel(DB_URL)
+        self.db = DatabaseModel(DB_URL_GUEST)
 
     __tablename__ = "event"
     id = Column(Integer, primary_key=True, autoincrement=True)

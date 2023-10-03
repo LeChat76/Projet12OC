@@ -5,11 +5,11 @@ from models.database_model import DatabaseModel
 from models.customer_model import CustomerModel
 from models.contract_model import ContractModel
 from models.event_model import EventModel
-from constants.database import DB_URL
+from constants.database import DB_URL_GUEST
 from utils.utils_sentry import send_to_sentry_NOK
 
 
-db = DatabaseModel(DB_URL)
+db = DatabaseModel(DB_URL_GUEST)
 
 
 def create_departments():

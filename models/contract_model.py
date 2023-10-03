@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, TIMESTAMP, ForeignKey, text, Float, Enum
 from sqlalchemy.orm import relationship, joinedload
 from models.database_model import Base
-from constants.database import DB_URL
+from constants.database import DB_URL_GUEST
 from utils.utils_view import display_message
 from models.employee_model import EmployeeModel
 from models.customer_model import CustomerModel
@@ -15,7 +15,7 @@ class ContractModel(Base):
     """Contract class"""
 
     def __init__(self, price, due, status, customer, employee_id):
-        self.db = DatabaseModel(DB_URL)
+        self.db = DatabaseModel(DB_URL_GUEST)
         self.price = price
         self.due = due
         self.status = status

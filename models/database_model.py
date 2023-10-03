@@ -10,8 +10,8 @@ Base = declarative_base()
 class DatabaseModel:
     """Database class"""
 
-    def __init__(self, DB_URL):
-        self.engine = create_engine(DB_URL)
+    def __init__(self, DB_URL_ADMIN):
+        self.engine = create_engine(DB_URL_ADMIN)
         self.Session = sessionmaker(bind=self.engine)
 
     def create_tables(self):
@@ -39,17 +39,3 @@ class DatabaseModel:
 
     def get_session(self):
         return self.Session()
-    
-    # def check_password(self, input_password):
-    #     """
-    #     method to check password to connecte to MySqlwith the entered one
-    #     INPUT : entered password
-    #     OUTPUT : True if valid or False if invalid
-    #     """
-
-    #     if bcrypt.checkpw(
-    #         input_password.encode("utf-8"), DB_HASHED_SALTED_PASSWORD.encode("utf-8")
-    #     ):
-    #         return True
-    #     else:
-    #         return None

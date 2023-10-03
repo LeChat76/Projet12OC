@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
 from utils.utils_view import display_message
 from models.database_model import DatabaseModel
-from constants.database import DB_URL
+from constants.database import DB_URL_GUEST
 from models.database_model import Base
 from utils.utils_sentry import send_to_sentry_NOK
 
@@ -11,7 +11,7 @@ class DepartmentModel(Base):
     """Department class"""
 
     def __init__(self):
-        self.db = DatabaseModel(DB_URL)
+        self.db = DatabaseModel(DB_URL_GUEST)
 
     __tablename__ = "department"
     id = Column(Integer, primary_key=True, autoincrement=True)

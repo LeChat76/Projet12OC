@@ -1,6 +1,6 @@
 from controllers.base import epicEvents
 from models.database_model import DatabaseModel
-from constants.database import DB_URL
+from constants.database import DB_URL_GUEST
 from constants.sentry import DSN
 from utils.utils_sentry import send_to_sentry_NOK
 from utils.utils_view import display_message
@@ -16,7 +16,7 @@ def main():
     )
     while True:
         try:
-            db = DatabaseModel(DB_URL)
+            db = DatabaseModel(DB_URL_GUEST)
             epicevents = epicEvents()
         except Exception as e:
             send_to_sentry_NOK("databose", "open", e)

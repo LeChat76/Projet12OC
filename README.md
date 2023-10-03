@@ -17,11 +17,22 @@ For this project I used MySql 8.0.34 and Python 3.11.5
 * Run the webserver : `python .\main.py` 
 
 ## Configuration
-* Please replace values in `contants\database.py` with the values of your SQL server:
-    * DB_USER     : use fernet decryptor online https://8gwifi.org/fernet.jsp to generate new one (default = `root`)
-    * DB_PASSWORD : use fernet decryptor online https://8gwifi.org/fernet.jsp to generate new one (default = `Toto1234!`)
-    * DB_HOST     : the IP Address of the SQL server (if on your own computer, your can use `localhost`)
-    * DB_NAME     : the name of the database you created on your SQL server (for example : `CREATE DATABASE epicevents;`)
+This application need two accounts : `admin_epicevents` and `guest_epicevents`.
+User `admin_epicevents` is used to create table and record when launching the application for the first time.
+User `guest_epicevents` is used to use the database. Guest should have restricted access to the database (DROP commands
+should be fordiben) (both user with password 'Toto1234!' for this demonstration).
+Logged users will be connected to the database with limited MySql account. In that way, they could never delete tables
+or in worst case : the whole database!
+ * from MySql CLI, create database : `CREATE DATABASE epicevents;`
+ * select database                 : `USE epicevents;`
+ * create user `admin_epicevents`  : `CREATE USER 'admin_epicevents' IDENTIFIED BY 'Toto1234!';`
+ * grant all privileges            : `GRANT ALL PRIVILEGES ON epicevents.* TO 'admin_epicevents';`
+ * create user `guest_epicevents`  : `CREATE USER 'guest_epicevents' IDENTIFIED BY 'Toto1234!';`
+ * grant limited privileges        : `GRANT SELECT, INSERT, UPDATE on epicevents.* to 'guest_epicevents';`
+ * update privileges               : `FLUSH PRIVILEGES;`
+You can modify those 2 options if needed:
+  * DB_HOST     : the IP Address of the SQL server (if on your own computer, your can use `localhost`)
+  * DB_NAME     : the name of the database you created on your SQL server
 
 ## Utilisation
 See bellow all menus available:
@@ -150,7 +161,7 @@ See bellow all menus available:
 ### 4 - EMPLOYEES
 
 <p align="left">
-    <img alt="logo" src="https://github.com/LeChat76/Projet12OC/assets/119883313/818fa4f7-5575-4816-ac33-7b6bce54a428">
+    <img alt="logo" src="https://github.com/LeChat76/Projet12OC/assets/119883313/2864c06c-9627-4e5b-a436-f4f2372065fe">
 </p>
 
 ### 4 - 1 creation of employees(M*)
@@ -196,9 +207,13 @@ To check coverage, execute this command : `coverage report`
   - support    : used to be assigned to an event, these can also modify their own event  
 
 * If you want to autocreate employees, contracts and events, just enter "666" at the home menu :-)  
-(in that way you can play with samples to navigate in menus...).
+(in that way you can 'play' with samples to navigate in menus...).
 
 * Management of the login with token
+
+* To avoid SQL injections, I didn't use any raw SQL queries, only the secure SQL Alchemy commands.  
+In addition, once the tables have been created by my application, all other queries are executed
+by a limited user account (no DROP command allowed).
 
 
 

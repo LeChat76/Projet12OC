@@ -4,7 +4,7 @@ from models.database_model import DatabaseModel
 from models.employee_model import EmployeeModel
 from views.login_view import LoginMenu
 from views.main_menu import MainMenu
-from constants.database import DB_URL
+from constants.database import DB_URL_ADMIN
 from controllers.customer_controller import CustomerController
 from controllers.contract_controller import ContractController
 from controllers.event_controller import EventController
@@ -25,7 +25,7 @@ class epicEvents:
     """Epic Events class"""
 
     def __init__(self):
-        self.db = DatabaseModel(DB_URL)
+        self.db = DatabaseModel(DB_URL_ADMIN)
         if not self.db.tables_exist():
             try:
                 self.db.create_tables()

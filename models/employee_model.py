@@ -1,13 +1,12 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, or_, Enum
 from sqlalchemy.orm import relationship, joinedload
-from sqlalchemy.exc import IntegrityError
 from utils.utils_view import display_message
 from constants.department import SUPPORT, SUPERADMIN, MANAGEMENT
-from constants.database import DB_URL
+from constants.database import DB_URL_GUEST
 from models.department_model import DepartmentModel
 from models.database_model import Base
 from models.database_model import DatabaseModel
-import bcrypt, os
+import bcrypt
 from utils.utils_sentry import send_to_sentry_NOK, send_creation_employee_message_to_sentry, send_update_employee_message_to_sentry
 
 
@@ -15,7 +14,7 @@ class EmployeeModel(Base):
     """Employee class"""
 
     def __init__(self):
-        self.db = DatabaseModel(DB_URL)
+        self.db = DatabaseModel(DB_URL_GUEST)
 
     __tablename__ = "employee"
     id = Column(Integer, primary_key=True, autoincrement=True)

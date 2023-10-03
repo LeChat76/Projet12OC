@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, text, Enum
 from sqlalchemy.orm import relationship, joinedload
 from sqlalchemy.exc import IntegrityError
-from constants.database import DB_URL
+from constants.database import DB_URL_GUEST
 from utils.utils_view import display_message
 from models.employee_model import EmployeeModel
 from constants.department import COMMERCIAL, SUPERADMIN
@@ -14,7 +14,7 @@ class CustomerModel(Base):
     """Customer class"""
 
     def __init__(self, name, email, phone, company, employee_id):
-        self.db = DatabaseModel(DB_URL)
+        self.db = DatabaseModel(DB_URL_GUEST)
         self.name = name
         self.email = email
         self.phone = phone
