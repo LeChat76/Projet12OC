@@ -83,12 +83,12 @@ This corresponds to the type of employee authorized to access this menu.
 When star '*' after letter : mean access in write mode (creation + modification).  
 (superadmin is authorized to all menus)  
 
-### 1 - 1 creation of customers(M*)
+### 1 - 1 creation of customers(C*)
 * name         : name of the customer (255 caracters max)
 * email        : email of the customer (restricted to standard form of email, 255 caracters max), should be unique
 * phone number : not mandatory, phone number of the customer (restricted to standard form of phone number)
 * company name : company name of the customer (max 255 caracters)
-### 1 - : view and modification of customers(M*CS)
+### 1 - : view and modification of customers(C*MS)
 * select customer by name, if you don't know press [ENTER] to choose by list
 * if your rights access permit, you will be invited to modify values of the customer, else
   just view information

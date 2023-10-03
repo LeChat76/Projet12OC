@@ -84,21 +84,41 @@ class EmployeeController:
         # selection of the employee tu update
         while True:
 
-            all_employees = self.employee_model.select_all_employee()
-            if not all_employees:
-                display_message("Aucun employee, retour au menu...", True, True, 2)
+            permission = self.employee_model.check_permission_employee(employee_id)
+            if not permission:
+                display_message(
+                    "Vous n'etes pas autorisé à accéder à ce menu." +
+                    "\nRetour au menu",
+                    True,
+                    True,
+                    2)
+                break
+            else:
+                all_employees = self.employee_model.select_all_employee()
+                employee_choice = self.employee_view.select_employee_by_entry()
 
-            employee_choice = self.employee_view.select_employee_by_entry()
-
-            if employee_choice:
-                employee_obj = self.employee_model.search_employee(employee_choice)
-                if not employee_obj:
-                    display_message(
-                        "Cet employé n'existe pas. Selectionnez le par liste: ",
-                        False,
-                        True,
-                        2,
-                    )
+                if employee_choice:
+                    employee_obj = self.employee_model.search_employee(employee_choice)
+                    if not employee_obj:
+                        display_message(
+                            "Cet employé n'existe pas. Selectionnez le par liste: ",
+                            False,
+                            True,
+                            2,
+                        )
+                        employee_choice = self.employee_view.select_employee_by_list(
+                            all_employees
+                        )
+                        if employee_choice == "q":
+                            display_message("Retour au menu...", True, True, 2)
+                            break
+                        else:
+                            employee_obj = (
+                                self.employee_model.create_employee_object_from_list(
+                                    employee_choice
+                                )
+                            )
+                else:
                     employee_choice = self.employee_view.select_employee_by_list(
                         all_employees
                     )
@@ -106,67 +126,54 @@ class EmployeeController:
                         display_message("Retour au menu...", True, True, 2)
                         break
                     else:
-                        employee_obj = (
-                            self.employee_model.create_employee_object_from_list(
-                                employee_choice
-                            )
+                        employee_obj = self.employee_model.create_employee_object_from_list(
+                            employee_choice
                         )
-            else:
-                employee_choice = self.employee_view.select_employee_by_list(
-                    all_employees
-                )
-                if employee_choice == "q":
-                    display_message("Retour au menu...", True, True, 2)
-                    break
-                else:
-                    employee_obj = self.employee_model.create_employee_object_from_list(
-                        employee_choice
-                    )
 
-            if not employee_choice == "q":
+                if not employee_choice == "q":
 
-                # check permission
-                permission = self.employee_model.check_permission_employee(employee_id)
-                if not permission:
-                    self.employee_view.display_employee_informations(employee_obj)
-                    break
-                else:
-                    department_obj_list = self.department_model.select_all_department()
-                    employee_to_update = self.employee_view.update_employee(
-                        employee_obj, department_obj_list
-                    )
-                    if employee_to_update:
-                        employee_obj = employee_to_update[0]
-                        department_choice = employee_to_update[1]
-                        if department_choice:
-                            department_obj = self.department_model.create_department_object_from_list(
-                                department_choice
-                            )
-                            employee_obj.department_id = department_obj.id
-                        result = self.employee_model.update_employee(employee_id, employee_obj)
-                        if result:
-                            display_message(
-                                f"Client '{employee_obj.username}' mis à jour avec succès!",
-                                True,
-                                True,
-                                2,
-                            )
-                        else:
-                            display_message(
-                                "Erreur lors de la modification de l'employee. Voir logs Sentry",
-                                True,
-                                True,
-                                2,
-                            )
+                    # check permission
+                    permission = self.employee_model.check_permission_employee(employee_id)
+                    if not permission:
+                        self.employee_view.display_employee_informations(employee_obj)
                         break
                     else:
-                        display_message(
-                            "Aucune modification apportée à l'employee, retour au menu.",
-                            True,
-                            True,
-                            2,
+                        department_obj_list = self.department_model.select_all_department()
+                        employee_to_update = self.employee_view.update_employee(
+                            employee_obj, department_obj_list
                         )
-                        break
+                        if employee_to_update:
+                            employee_obj = employee_to_update[0]
+                            department_choice = employee_to_update[1]
+                            if department_choice:
+                                department_obj = self.department_model.create_department_object_from_list(
+                                    department_choice
+                                )
+                                employee_obj.department_id = department_obj.id
+                            result = self.employee_model.update_employee(employee_id, employee_obj)
+                            if result:
+                                display_message(
+                                    f"Client '{employee_obj.username}' mis à jour avec succès!",
+                                    True,
+                                    True,
+                                    2,
+                                )
+                            else:
+                                display_message(
+                                    "Erreur lors de la modification de l'employee. Voir logs Sentry",
+                                    True,
+                                    True,
+                                    2,
+                                )
+                            break
+                        else:
+                            display_message(
+                                "Aucune modification apportée à l'employee, retour au menu.",
+                                True,
+                                True,
+                                2,
+                            )
+                            break
 
     def delete_employee(self, employee_id):
         """method to delete employees"""

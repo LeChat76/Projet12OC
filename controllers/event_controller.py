@@ -191,7 +191,7 @@ class EventController:
         permission = self.event_model.check_permission_event_assignation(employee_id)
         if not permission:
             display_message(
-                "Vous n'avez les autorisations necessaire pour assigner un evenement à un employe.\Retour au menu...",
+                "Vous n'avez les autorisations necessaire pour assigner un evenement à un employé.\nRetour au menu...",
                 True,
                 True,
                 2,
@@ -390,7 +390,7 @@ class EventController:
         permission = self.event_model.check_permission_event(employee_id)
         if not permission:
             display_message(
-                "Vous n'avez pas les autorisations necessaires pour supprimer un evenement.\Retour au menu...",
+                "Vous n'avez pas les autorisations necessaires pour supprimer un evenement.\nRetour au menu...",
                 True,
                 True,
                 2,
