@@ -162,7 +162,7 @@ def create_contracts():
 
     counter = 0
 
-    for contract_obj in contracts_obj_list:
+    for contract_obj in contracts_obj_list[-6:]:
         contract_obj.customer_id = customers_ids[counter]
         session.commit()
         counter += 1
