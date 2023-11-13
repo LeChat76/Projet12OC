@@ -14,7 +14,7 @@ For this project I used MySql 8.0.34 and Python 3.11.5
     * for Linux `source .venv/bin/activate`  
     * for Windows `.\.venv\Scripts\activate`  
 * Install the necessary libraries: `pip install -r requirements.txt` 
-* Run the webserver : `python .\main.py` 
+* Run the webserver : `python .\main.py` ( !!! create MySql database before, see 'Configuration' bellow !!! )
 
 ## Configuration
 This application need two accounts : `admin_epicevents` and `guest_epicevents`.  
